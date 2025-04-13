@@ -1,0 +1,7 @@
+Criação do projeto (apenas 1 vez) - npm create vite@latest miteScan --template react
+
+Inicialização:
+- cd miteScan
+- npm install 
+- npm install react-router-dom
+- npm install react-icons
