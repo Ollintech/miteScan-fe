@@ -6,6 +6,11 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+
+    background-image: url('../../assets/images/icon-favo-top.png'), url('../../assets/images/icon-favo-bottom.png');
+    background-repeat: no-repeat, no-repeat;
+    background-position: left -140px top, right -220px bottom;
+    background-size: auto
   }
   
   .colmeias-header {
@@ -43,5 +48,6 @@
     box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
     text-align: center;
     color: #000000;
+    width: 100%;
   }
   
