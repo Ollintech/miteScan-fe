@@ -1,6 +1,6 @@
 // src/components/Navbar.jsx
 import { Link, useLocation } from 'react-router-dom'
-import { FaHome, FaPlus, FaHistory, FaSearch, FaUser } from 'react-icons/fa'
+import { FaHome, FaPlus, FaHistory, FaSearch, FaUser, FaSignOutAlt } from 'react-icons/fa'
 import './Navbar.css'
 
 function Navbar() {
@@ -22,7 +22,10 @@ function Navbar() {
           <Link to="/analysis"><FaSearch /> Analisar Colmeia</Link>
         </li>
         <li className={location.pathname === '/usuario' ? 'active' : ''}>
-          <Link to="/login"><FaUser /> Usuário</Link>
+          <Link to="/user"><FaUser /> Usuário</Link>
+        </li>
+        <li className={location.pathname === '/usuario' ? 'active' : ''}>
+          <Link to="/login"><FaSignOutAlt /> Sair</Link>
         </li>
       </ul>
     </nav>
