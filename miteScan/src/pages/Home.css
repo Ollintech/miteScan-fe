@@ -19,6 +19,11 @@ body {
     text-align: center;
     color: black;
     background-color: #FFFFFF;
+
+    background-image: url('../assets/icon-favo-top.png'), url('../assets/icon-favo-bottom.png');
+    background-repeat: no-repeat, no-repeat;
+    background-position: left -50px top, right -50px bottom;
+    background-size: auto
   }
   
   .dashboard {
