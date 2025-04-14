@@ -16,7 +16,7 @@
     border: 1px solid #ddd;
     background-color: #FFFFFF;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 2px 2px 5px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     color: #000; 
   }
@@ -39,6 +39,8 @@ button {
   border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
+
+  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.1);
 }
 
 .erro {
@@ -48,6 +50,8 @@ button {
 
 .btn-entrar{
     width: 50%;
+    border-radius: 14px;
+    color: #000;
 }
 
 .btn-cadastro {

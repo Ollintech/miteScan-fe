@@ -11,11 +11,11 @@ function Home() {
       <h2>Bem-vindo ao Dashboard das Abelhas 🐝</h2>
       
       {/* Botão para sair ou voltar */}
-      <button onClick={() => navigate('/login')} className="botao-sair">Sair</button>
+      {/* <button onClick={() => navigate('/login')} className="botao-sair">Sair</button> */}
 
       <div className="dashboard">
         {/* Card de exemplo 1 */}
-        <div className="card">
+        <div className="card" onClick={() => navigate('/hives')}> 
           <h3>Colmeia 1</h3>
           <p>Dados sobre a colmeia</p>
         </div>

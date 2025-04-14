@@ -36,26 +36,36 @@ function Login() {
                 </div>
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
-        <input
+
+      <div className="form-group">
+          <label htmlFor="email">Email:</label>
+          <input
           type="email"
           placeholder="E-mail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
+          />
+      </div>
+       
+      <div className="form-group">
+          <label htmlFor="senha">Senha:</label>
+          <input
           type="password"
           placeholder="Senha"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
         />
+      </div>
+        
         {erro && <p className="erro">{erro}</p>}
-        <button type="submit" className="btn-entrar">Entrar</button>
-        <button type="button" className="btn-cadastro" onClick={() => navigate('/registration')}>REGISTER</button>
+        <button type="submit" className="btn-entrar">ENTRAR</button>
+        <div className="cadastro">
+          <p>Não possui uma conta? <a href="/registration">Cadastre-se!</a></p>
+        </div>
 
       </form>
     </div>
     </div>
-    
   )
 }
 
