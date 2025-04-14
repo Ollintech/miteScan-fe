@@ -6,7 +6,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background-size: cover;
   }
+
 .login-container {
     width: 400px;
     margin: 80px auto;
@@ -42,6 +44,10 @@ button {
 .erro {
   color: red;
   margin-top: 10px;
+}
+
+.btn-entrar{
+    width: 50%;
 }
 
 .btn-cadastro {

@@ -1,0 +1,47 @@
+.colmeias-container {
+    background-color: #fff;
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .colmeias-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    color: #000000;
+  }
+  
+  .btn-criar {
+    padding: 10px 20px;
+    background-color: #ffbb00;
+    color: #000000;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .btn-criar:hover {
+    background-color: #e6a800;
+  }
+  
+  .colmeia-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .colmeia-card {
+    background-color: #dad9d8;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    color: #000000;
+  }
+  

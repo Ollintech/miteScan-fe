@@ -13,7 +13,7 @@ function Navbar() {
           <Link to="/home"><FaHome /> Home</Link>
         </li>
         <li className={location.pathname === '/cadastrar-colmeia' ? 'active' : ''}>
-          <Link to="/cadastrar-colmeia"><FaPlus /> Cadastrar Colmeia</Link>
+          <Link to="/hives"><FaPlus /> Cadastrar Colmeia</Link>
         </li>
         <li className={location.pathname === '/historico' ? 'active' : ''}>
           <Link to="/historico"><FaHistory /> Histórico</Link>
@@ -22,7 +22,7 @@ function Navbar() {
           <Link to="/analisar"><FaSearch /> Analisar Colmeia</Link>
         </li>
         <li className={location.pathname === '/usuario' ? 'active' : ''}>
-          <Link to="/usuario"><FaUser /> Usuário</Link>
+          <Link to="/login"><FaUser /> Usuário</Link>
         </li>
       </ul>
     </nav>

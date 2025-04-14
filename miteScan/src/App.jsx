@@ -4,6 +4,7 @@ import DefaultLayout from './components/DefaultLayout'
 import Login from './pages/Login'
 import Home from './pages/Home' 
 import Registration from './pages/Registration'
+import Hives from '../src/pages/Hives'
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
         {/* Páginas com navbar */}
         <Route element={<DefaultLayout />}>
           <Route path="/home" element={<Home />} />
+        </Route>
+        
+        <Route element={<DefaultLayout />}>
+          <Route path="/hives" element={<Hives />} />
         </Route>
       </Routes>
     </Router>
