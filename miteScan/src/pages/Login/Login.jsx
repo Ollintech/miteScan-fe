@@ -1,7 +1,8 @@
 // src/pages/Login.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import '../Login/Login.css' // se quiser estilizar separado
+import { CSSTransition } from 'react-transition-group';  // Importando para animações
+import '../Login/Login.css'
 import logo from '../../assets/images/bee-icon.png'
 
 function Login() {
@@ -29,44 +30,44 @@ function Login() {
   }
 
   return (
-    <div className="wrapper">
+    <CSSTransition in={true} timeout={500} classNames="fade" unmountOnExit>
+      <div className="wrapper">
         <div className="login-container">
           <div className="logo">
-                  <img src={logo} alt="Logo Abelha" />
-                </div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+            <img src={logo} alt="Logo Abelha" />
+          </div>
+          <h2>Login</h2>
+          <form onSubmit={handleLogin}>
+            <div className="form-group">
+              <label htmlFor="email">Email:</label>
+              <input
+                type="email"
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-      <div className="form-group">
-          <label htmlFor="email">Email:</label>
-          <input
-          type="email"
-          placeholder="E-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          />
-      </div>
-       
-      <div className="form-group">
-          <label htmlFor="senha">Senha:</label>
-          <input
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-      </div>
-        
-        {erro && <p className="erro">{erro}</p>}
-        <button type="submit" className="btn-entrar">ENTRAR</button>
-        <div className="cadastro">
-          <p>Não possui uma conta? <a href="/registration">Cadastre-se!</a></p>
+            <div className="form-group">
+              <label htmlFor="senha">Senha:</label>
+              <input
+                type="password"
+                placeholder="Senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
+            </div>
+
+            {erro && <p className="erro">{erro}</p>}
+            <button type="submit" className="btn-entrar">ENTRAR</button>
+            <div className="cadastro">
+              <p>Não possui uma conta? <a href="/registration">Cadastre-se!</a></p>
+            </div>
+          </form>
         </div>
-
-      </form>
-    </div>
-    </div>
+      </div>
+    </CSSTransition>
   )
 }
 
-export default Login
+export default Login;

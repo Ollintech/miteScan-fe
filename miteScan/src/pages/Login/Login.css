@@ -84,3 +84,10 @@ button {
     width: 130px; /* Ou o tamanho desejado */
     height: 130px; /* Ou o tamanho desejado */
   }
+
+  input,
+  textarea,
+  select {
+    color: #000 !important;            /* texto digitado */ 
+    caret-color: #000;                 /* cor da barrinha de digitação */
+  }
