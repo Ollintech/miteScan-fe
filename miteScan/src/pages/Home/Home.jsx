@@ -8,26 +8,25 @@ function Home() {
   return (
     <div className="wrapper-home">
     <div className="home-container">
-      <h2>Bem-vindo ao Dashboard das Abelhas 🐝</h2>
-      
-      {/* Botão para sair ou voltar */}
-      {/* <button onClick={() => navigate('/login')} className="botao-sair">Sair</button> */}
+      <h2>SUAS COLMEIAS <b>EM TEMPO REAL!</b> 🐝</h2>
 
       <div className="dashboard">
-        {/* Card de exemplo 1 */}
+        {/* Card 1 */}
         <div className="card" onClick={() => navigate('/hives')}> 
+        <img src="../src/assets/images/colmeia-home.png" alt="Colmeia 1" className="card-image" />
           <h3>Colmeia 1</h3>
           <p>Dados sobre a colmeia</p>
         </div>
 
-        {/* Card de exemplo 2 */}
-        <div className="card">
+        {/* Card 2 */}
+        <div className="card"><img src="../src/assets/images/colmeia-home.png" alt="Colmeia 1" className="card-image" />
           <h3>Colmeia 2</h3>
           <p>Mais dados sobre outra colmeia</p>
         </div>
 
-        {/* Card de exemplo 3 */}
+        {/* Card 3 */}
         <div className="card">
+        <img src="../src/assets/images/colmeia-home.png" alt="Colmeia 1" className="card-image" />
           <h3>Colmeia 3</h3>
           <p>Mais algumas informações aqui</p>
         </div>
