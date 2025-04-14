@@ -3,7 +3,7 @@ body {
     font-family: 'Arial', sans-serif;
     height: 100vh; /* Preenche a tela inteira */
   }
-  
+
   .page{
     background-image: url('../../assets/images/bees.png');
     background-color: #ffbb00;
@@ -53,4 +53,11 @@ body {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
+  }
+
+  input,
+  textarea,
+  select {
+    color: #000 !important;            /* texto digitado */ 
+    caret-color: #000;                 /* cor da barrinha de digitação */
   }
