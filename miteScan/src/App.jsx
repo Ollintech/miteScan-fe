@@ -1,10 +1,10 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import DefaultLayout from './components/DefaultLayout'
-import Login from './pages/Login'
-import Home from './pages/Home' 
-import Registration from './pages/Registration'
-import Hives from '../src/pages/Hives'
+import Login from '../src/pages/Login/Login'
+import Home from '../src/pages/Home/Home' 
+import Registration from '../src/pages/Registration/Registration'
+import Hives from '../src/pages/Hives/Hives'
 
 function App() {
   return (

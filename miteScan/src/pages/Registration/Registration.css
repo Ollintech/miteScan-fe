@@ -5,7 +5,7 @@ body {
   }
   
   .page{
-    background-image: url('../assets/bees.png');
+    background-image: url('../../assets/images/bees.png');
     background-color: #ffbb00;
     min-height: 100vh;
     min-width: 100vw;

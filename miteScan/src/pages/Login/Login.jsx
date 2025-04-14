@@ -1,8 +1,8 @@
 // src/pages/Login.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Login.css' // se quiser estilizar separado
-import logo from '../assets/bee-icon.png'
+import '../Login/Login.css' // se quiser estilizar separado
+import logo from '../../assets/images/bee-icon.png'
 
 function Login() {
   const [email, setEmail] = useState('')

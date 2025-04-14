@@ -1,8 +1,8 @@
 // src/pages/Registration.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Registration.css'
-import logo from '../assets/bee-icon.png'
+import '../Registration/Registration.css'
+import logo from '../../assets/images/bee-icon.png'
 
 function Registration() {
   const [nome, setNome] = useState('')

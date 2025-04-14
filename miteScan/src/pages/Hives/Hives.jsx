@@ -1,6 +1,6 @@
 // src/pages/Colmeias.jsx
 import { useNavigate } from 'react-router-dom'
-import './Hives.css'
+import '../Hives/Hives.css'
 
 function Hives() {
   const navigate = useNavigate()
