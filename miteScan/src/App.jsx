@@ -7,6 +7,7 @@ import Home from '../src/pages/Home/Home'
 import Registration from '../src/pages/Registration/Registration'
 import Hives from '../src/pages/Hives/Hives'
 import Historical from '../src/pages/Historical/Historical'
+import Analysis from '../src/pages/Analysis/Analysis'
 
 function App() {
   return (
@@ -27,6 +28,10 @@ function App() {
 
       <Route element={<DefaultLayout />}>
           <Route path="/historical" element={<Historical />} />
+        </Route>
+
+        <Route element={<DefaultLayout />}>
+          <Route path="/analysis" element={<Analysis />} />
         </Route>
       </Routes>
       

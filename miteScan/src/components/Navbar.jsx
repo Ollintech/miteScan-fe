@@ -19,7 +19,7 @@ function Navbar() {
           <Link to="/historical"><FaHistory /> Histórico</Link>
         </li>
         <li className={location.pathname === '/analisar' ? 'active' : ''}>
-          <Link to="/historical"><FaSearch /> Analisar Colmeia</Link>
+          <Link to="/analysis"><FaSearch /> Analisar Colmeia</Link>
         </li>
         <li className={location.pathname === '/usuario' ? 'active' : ''}>
           <Link to="/login"><FaUser /> Usuário</Link>
