@@ -29,7 +29,8 @@ function Login() {
   }
 
   return (
-    <div className="login-container">
+    <div className="wrapper">
+        <div className="login-container">
           <div className="logo">
                   <img src={logo} alt="Logo Abelha" />
                 </div>
@@ -53,6 +54,8 @@ function Login() {
 
       </form>
     </div>
+    </div>
+    
   )
 }
 

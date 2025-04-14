@@ -1,16 +1,17 @@
 // src/pages/Home.jsx
 import { useNavigate } from 'react-router-dom'
-import './Home.css' // Para estilos, se quiser
+import './Home.css' 
 
 function Home() {
   const navigate = useNavigate()
 
   return (
+    <div className="wrapper-home">
     <div className="home-container">
       <h2>Bem-vindo ao Dashboard das Abelhas 🐝</h2>
       
       {/* Botão para sair ou voltar */}
-      <button onClick={() => navigate('/login')}>Sair</button>
+      <button onClick={() => navigate('/login')} className="botao-sair">Sair</button>
 
       <div className="dashboard">
         {/* Card de exemplo 1 */}
@@ -32,6 +33,8 @@ function Home() {
         </div>
       </div>
     </div>
+    </div>
+    
   )
 }
 

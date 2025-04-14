@@ -1,33 +1,33 @@
-/* src/pages/Home.css */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .wrapper-home {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
 .home-container {
-    padding: 20px;
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-  }
-  
-  h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #ffbb00;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 30px;
-  }
-  
-  button:hover {
-    background-color: #ff9900;
+    color: black;
+    background-color: #FFFFFF;
   }
   
   .dashboard {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
+    width: 100%;
+    max-width: 800px; /* ou o valor que preferir */
+    margin-top: 20px;
   }
   
   .card {
@@ -35,24 +35,8 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
   }
-  
-  .card h3 {
-    margin-bottom: 10px;
+
+  .botao-sair{
+    width:30%
   }
-  
-  .card p {
-    font-size: 1rem;
-    color: #666;
-  }
-  
-  body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Preenche a tela inteira */
-  }
-  

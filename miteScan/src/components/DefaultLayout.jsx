@@ -1,15 +1,16 @@
-import Navbar from './Navbar'
-import { Outlet } from 'react-router-dom'
+// src/components/DefaultLayout.jsx
+import { Outlet } from 'react-router-dom';
+import Navbar from './Navbar'; // Importe a navbar
 
-function DefaultLayout() {
+const DefaultLayout = () => {
   return (
-    <>
+    <div>
       <Navbar />
-      <div style={{ padding: '2rem' }}>
+      <main>
         <Outlet />
-      </div>
-    </>
-  )
-}
+      </main>
+    </div>
+  );
+};
 
-export default DefaultLayout
+export default DefaultLayout;
