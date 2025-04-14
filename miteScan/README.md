@@ -7,8 +7,8 @@ Esse repositório contém o front-end do projeto MiteScan, que está sendo desen
 `git clone (url do repositório)` <br>
 
 - Dentro do repositório, no terminal, entre na pasta 'mitescan' e execute os comandos para instalar as depêndencias:
-<br>
 
+  
 `npm install` <br>
 
 
@@ -19,4 +19,8 @@ Esse repositório contém o front-end do projeto MiteScan, que está sendo desen
 
 
 <br>
-Por fim, rode o projeto com: `npm run dev`
+Por fim, rode o projeto com:
+
+`npm run dev`
+
+
