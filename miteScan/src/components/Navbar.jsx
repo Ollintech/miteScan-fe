@@ -16,10 +16,10 @@ function Navbar() {
           <Link to="/hives"><FaPlus /> Cadastrar Colmeia</Link>
         </li>
         <li className={location.pathname === '/historico' ? 'active' : ''}>
-          <Link to="/historico"><FaHistory /> Histórico</Link>
+          <Link to="/historical"><FaHistory /> Histórico</Link>
         </li>
         <li className={location.pathname === '/analisar' ? 'active' : ''}>
-          <Link to="/analisar"><FaSearch /> Analisar Colmeia</Link>
+          <Link to="/historical"><FaSearch /> Analisar Colmeia</Link>
         </li>
         <li className={location.pathname === '/usuario' ? 'active' : ''}>
           <Link to="/login"><FaUser /> Usuário</Link>

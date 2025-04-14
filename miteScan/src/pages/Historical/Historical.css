@@ -1,0 +1,53 @@
+.historical-wrapper {
+    background-color: #fff;
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    background-image: url('../../assets/images/icon-favo-top.png'), url('../../assets/images/icon-favo-bottom.png');
+    background-repeat: no-repeat, no-repeat;
+    background-position: left -140px top, right -220px bottom;
+    background-size: auto
+  }
+  
+  .historical-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #222;
+    text-align: center;
+  }
+  
+  .historical-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #333;
+  }
+  
+  .historical-card h3 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .historical-card p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+  }
+  
+  .status-sucesso {
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 2px solid #4CAF50;
+    border-radius: 5px;
+    color: #2e7d32;
+    background-color: #e8f5e9;
+    font-weight: bold;
+    text-align: center;
+  }
+  
