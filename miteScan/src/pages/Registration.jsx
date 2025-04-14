@@ -1,7 +1,7 @@
 // src/pages/Registration.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Login.css' // reutiliza o mesmo CSS
+import './Registration.css'
 import logo from '../assets/bee-icon.png'
 
 function Registration() {
@@ -28,13 +28,13 @@ function Registration() {
 
   return (
     <div className="page">
-      <div className="login-container">
+      <div className="registration-container">
         <div className="logo">
           <img src={logo} alt="Logo Abelha" />
         </div>
-        <h2>Registration</h2>
+        <h2>Cadastre-se</h2>
         <form onSubmit={handleRegister}>
-          <label htmlFor="nome">Name:</label>
+          <label htmlFor="nome">Nome:</label>
           <input
             type="text"
             id="nome"
@@ -52,7 +52,7 @@ function Registration() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <label htmlFor="login">Username:</label>
+          <label htmlFor="login">Login:</label>
           <input
             type="text"
             id="login"
@@ -61,7 +61,7 @@ function Registration() {
             onChange={(e) => setLogin(e.target.value)}
           />
 
-          <label htmlFor="senha">Password:</label>
+          <label htmlFor="senha">Senha:</label>
           <input
             type="password"
             id="senha"

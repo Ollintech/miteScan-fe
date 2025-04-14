@@ -49,7 +49,7 @@ function Login() {
           onChange={(e) => setSenha(e.target.value)}
         />
         {erro && <p className="erro">{erro}</p>}
-        <button type="submit">Entrar</button>
+        <button type="submit" className="btn-entrar">Entrar</button>
         <button type="button" className="btn-cadastro" onClick={() => navigate('/registration')}>REGISTER</button>
 
       </form>
