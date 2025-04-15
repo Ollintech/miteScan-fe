@@ -9,6 +9,8 @@ import Hives from '../src/pages/Hives/Hives'
 import Historical from '../src/pages/Historical/Historical'
 import Analysis from '../src/pages/Analysis/Analysis'
 import User from '../src/pages/User/User'
+import CreateHive from '../src/pages/CreateHive/CreateHive'
+import MapSelect from '../src/pages/MapSelect/MapSelect'
 
 function App() {
   return (
@@ -40,6 +42,14 @@ function App() {
 
         <Route element={<DefaultLayout />}>
           <Route path="/user" element={<User />} />
+        </Route>
+
+        <Route element={<DefaultLayout />}>
+          <Route path="/create-hive" element={<CreateHive />} />
+        </Route>
+
+        <Route element={<DefaultLayout />}>
+          <Route path="/select-location" element={<MapSelect />} />
         </Route>
       </Routes>
       
