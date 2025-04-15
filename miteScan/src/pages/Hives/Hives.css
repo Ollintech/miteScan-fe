@@ -42,10 +42,10 @@
   }
   
   .colmeia-card {
-    background-color: #dad9d8;
+    background-color: #F5F5F5;
+    box-shadow: 1px 1px 7px 7px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     padding: 1rem;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
     text-align: center;
     color: #000000;
     width: 100%;
@@ -54,7 +54,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    border: 1px solid #ddd;
     border-radius: 10px;
     margin: 1rem 0;
   }

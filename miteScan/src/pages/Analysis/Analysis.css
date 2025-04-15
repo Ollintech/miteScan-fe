@@ -54,10 +54,10 @@
   .analysis-image-card {
     max-width: 600px;
     margin: 0 auto;
-    background-color: #fff;
+    background-color: #F5F5F5;
+    box-shadow: 1px 1px 7px 7px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     text-align: center;
   }
   
