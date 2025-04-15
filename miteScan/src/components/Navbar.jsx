@@ -12,19 +12,19 @@ function Navbar() {
         <li className={location.pathname === '/home' ? 'active' : ''}>
           <Link to="/home"><FaHome /> Home</Link>
         </li>
-        <li className={location.pathname === '/cadastrar-colmeia' ? 'active' : ''}>
+        <li className={location.pathname === '/hives' ? 'active' : ''}>
           <Link to="/hives"><FaPlus /> Cadastrar Colmeia</Link>
         </li>
-        <li className={location.pathname === '/historico' ? 'active' : ''}>
+        <li className={location.pathname === '/historical' ? 'active' : ''}>
           <Link to="/historical"><FaHistory /> Histórico</Link>
         </li>
-        <li className={location.pathname === '/analisar' ? 'active' : ''}>
+        <li className={location.pathname === '/analysis' ? 'active' : ''}>
           <Link to="/analysis"><FaSearch /> Analisar Colmeia</Link>
         </li>
-        <li className={location.pathname === '/usuario' ? 'active' : ''}>
+        <li className={location.pathname === '/user' ? 'active' : ''}>
           <Link to="/user"><FaUser /> Usuário</Link>
         </li>
-        <li className={location.pathname === '/usuario' ? 'active' : ''}>
+        <li className={location.pathname === '/login' ? 'active' : ''}>
           <Link to="/login"><FaSignOutAlt /> Sair</Link>
         </li>
       </ul>
