@@ -1,6 +1,8 @@
 // src/App.jsx
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import DefaultLayout from './components/DefaultLayout'
+import SplashScreen from '../src/pages/SplashScreen/SplashScreen'
 
 import Login from '../src/pages/Login/Login'
 import Home from '../src/pages/Home/Home' 
@@ -13,47 +15,37 @@ import CreateHive from '../src/pages/CreateHive/CreateHive'
 import MapSelect from '../src/pages/MapSelect/MapSelect'
 
 function App() {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 3000) // 3 segundos
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (loading) {
+    return <SplashScreen />
+  }
+
   return (
     <Router>
       <Routes>
-        {/* Redirecionar da raiz para login */}
         <Route path="/" element={<Navigate to="/login" />} />
-
-        {/* Páginas sem navbar */}
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
 
-        {/* Páginas com navbar */}
         <Route element={<DefaultLayout />}>
           <Route path="/home" element={<Home />} />
-        </Route>
-        
-        <Route element={<DefaultLayout />}>
           <Route path="/hives" element={<Hives />} />
-        </Route>
-
-      <Route element={<DefaultLayout />}>
           <Route path="/historical" element={<Historical />} />
-        </Route>
-
-        <Route element={<DefaultLayout />}>
           <Route path="/analysis" element={<Analysis />} />
-        </Route>
-
-        <Route element={<DefaultLayout />}>
           <Route path="/user" element={<User />} />
-        </Route>
-
-        <Route element={<DefaultLayout />}>
           <Route path="/create-hive" element={<CreateHive />} />
-        </Route>
-
-        <Route element={<DefaultLayout />}>
           <Route path="/select-location" element={<MapSelect />} />
         </Route>
       </Routes>
-      
-     
     </Router>
   )
 }
