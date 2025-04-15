@@ -21,6 +21,11 @@
     color: #000; 
   }
   
+  .input-login{
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.1);
+    background-color: #EEEDED;
+  }
+
 input {
   display: block;
   width: 94%;
@@ -29,18 +34,6 @@ input {
   border-radius: 5px;
   background-color: #EEEDED;
   border: 0px solid #000000;
-}
-
-button {
-  padding: 12px;
-  width: 100%;
-  background-color: #ffbb00;
-  border: none;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-
-  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.1);
 }
 
 .erro {
@@ -52,6 +45,17 @@ button {
     width: 50%;
     border-radius: 14px;
     color: #000;
+    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.1);
+
+    background-color: #ffbb00;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-entrar:hover{
+  background-color: #d69d00;
+  box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-cadastro {
@@ -81,13 +85,13 @@ button {
   }
 
   .login-container .logo img {
-    width: 130px; /* Ou o tamanho desejado */
-    height: 130px; /* Ou o tamanho desejado */
+    width: 130px; 
+    height: 130px; 
   }
 
   input,
   textarea,
   select {
-    color: #000 !important;            /* texto digitado */ 
-    caret-color: #000;                 /* cor da barrinha de digitação */
+    color: #000 !important;          
+    caret-color: #000;                 
   }

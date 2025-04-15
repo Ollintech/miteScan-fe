@@ -40,7 +40,7 @@ function Registration() {
             <input
               type="text"
               id="nome"
-              placeholder="Seu nome"
+              placeholder=""
               value={nome}
               onChange={(e) => setNome(e.target.value)}
             />
@@ -51,7 +51,7 @@ function Registration() {
             <input
               type="email"
               id="email"
-              placeholder="Seu email"
+              placeholder=""
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -62,7 +62,7 @@ function Registration() {
             <input
               type="text"
               id="login"
-              placeholder="Escolha um nome"
+              placeholder=""
               value={login}
               onChange={(e) => setLogin(e.target.value)}
             />
@@ -73,7 +73,7 @@ function Registration() {
             <input
               type="password"
               id="senha"
-              placeholder="Crie uma senha"
+              placeholder=""
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
@@ -86,10 +86,10 @@ function Registration() {
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
               style={{
-                padding: '12px',
+                padding: '10px',
                 borderRadius: '5px',
                 border: 'none',
-                backgroundColor: '#f2f2f2',
+                backgroundColor: '#EEEDED',
                 color: 'black',
                 fontSize: '1rem',
                 width: '100%'
