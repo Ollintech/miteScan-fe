@@ -49,5 +49,23 @@
     text-align: center;
     color: #000000;
     width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 1rem 0;
   }
   
+  .colmeia-image {
+  width: 220px; /* Defina a largura da imagem */
+  height: 120px; /* Defina a altura da imagem */
+  object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
+  border-radius: 20px;
+}
+
+.colmeia-info {
+  flex-grow: 1; /* Faz com que o conteúdo ocupe o restante do espaço */
+}
