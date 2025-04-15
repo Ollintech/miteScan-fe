@@ -1,10 +1,21 @@
 .create-hive-container {
-    padding: 2rem;
-    text-align: center;
+    background-color: #fff;
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #000;
+
+    background-image: url('../../assets/images/icon-favo-top.png'), url('../../assets/images/icon-favo-bottom.png');
+    background-repeat: no-repeat, no-repeat;
+    background-position: left -140px top, right -220px bottom;
+    background-size: auto
   }
   
   .form-card {
-    background: #fff3cd;
+    background: #ececea;
     padding: 2rem;
     border-radius: 10px;
     max-width: 500px;
@@ -24,5 +35,61 @@
   .location-preview {
     margin-top: 1rem;
     color: #333;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .form-card {
+    background: #e6e6e6;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-card h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .form-card input,
+  .form-card select,
+  .form-card button {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #333;
+    box-sizing: border-box;
+  }
+  
+  .form-card input::placeholder {
+    color: #999;
+  }
+  
+  .form-card button {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .form-card button:hover {
+    background-color: #e0a800;
+  }
+  
+  .location-preview {
+    margin-bottom: 1rem;
+    font-weight: bold;
+    text-align: center;
+    color: #444;
   }
   
