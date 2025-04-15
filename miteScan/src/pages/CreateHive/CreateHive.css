@@ -1,0 +1,28 @@
+.create-hive-container {
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .form-card {
+    background: #fff3cd;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 500px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-card input,
+  .form-card select,
+  .form-card button {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+  
+  .location-preview {
+    margin-top: 1rem;
+    color: #333;
+  }
+  
