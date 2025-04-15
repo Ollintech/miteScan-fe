@@ -29,7 +29,7 @@ function Hives() {
     <div className="colmeias-container">
   <div className="colmeias-header">
     <h2>Minhas Colmeias 🐝</h2>
-    <button className="btn-criar" onClick={() => navigate('/criar-colmeia')}>
+    <button className="btn-criar" onClick={() => navigate('/create-hive')}>
       + Criar Colmeia
     </button>
   </div>
