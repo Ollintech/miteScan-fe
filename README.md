@@ -1,4 +1,4 @@
-# MiteScan - Font-end
+# MiteScan - Front-end
 Esse repositório contém o front-end do projeto MiteScan, que está sendo desenvolvido em React.js.
 <hr>
 <h3>Inicializando o Projeto</h3>
