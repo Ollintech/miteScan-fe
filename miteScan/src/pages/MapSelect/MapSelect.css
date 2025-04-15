@@ -37,7 +37,6 @@ button {
     cursor: pointer;
     border: none;
     transition: background-color 0.3s;
-    width: 20%;
 }
 
 button:hover {
