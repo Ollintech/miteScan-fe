@@ -28,26 +28,26 @@ function CreateHive() {
 
   return (
     <div className="create-hive-container">
-      <h2>Register Hive</h2>
+      <h2>Cadastrar Colmeia</h2>
       <div className="form-card">
-        <h3>Fill in the information below</h3>
-        <input type="text" name="name" placeholder="Hive Name" value={formData.name} onChange={handleChange} />
+        <h3>PREENCHA AS INOFRMAÇÕES ABAIXO </h3>
+        <input type="text" name="name" placeholder="Nome da colmeia" value={formData.name} onChange={handleChange} />
 
         <select name="size" value={formData.size} onChange={handleChange}>
-          <option value="">Select Size</option>
-          <option value="Small">Small</option>
-          <option value="Medium">Medium</option>
-          <option value="Large">Large</option>
+          <option value="">Selecione o tamanho:</option>
+          <option value="Small">Pequena</option>
+          <option value="Medium">Media</option>
+          <option value="Large">Grande</option>
         </select>
 
         <select name="beeType" value={formData.beeType} onChange={handleChange}>
-          <option value="">Select Bee Type</option>
+          <option value="">Selecione o tipo de abelha:</option>
           <option value="Bee 1">Bee 1</option>
           <option value="Bee 2">Bee 2</option>
           <option value="Bee 3">Bee 3</option>
         </select>
 
-        <button onClick={handleLocationClick}>Set Location</button>
+        <button onClick={handleLocationClick}>Selecione a localização</button>
 
         {formData.location && (
           <div className="location-preview">
@@ -56,7 +56,7 @@ function CreateHive() {
         )}
 
         {formData.location && (
-          <button onClick={handleConnectCamera}>Connect Camera</button>
+          <button onClick={handleConnectCamera}>Conectar Câmera</button>
         )}
       </div>
     </div>
