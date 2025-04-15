@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import DefaultLayout from './components/DefaultLayout'
 
 import Login from '../src/pages/Login/Login'
@@ -14,6 +14,9 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Redirecionar da raiz para login */}
+        <Route path="/" element={<Navigate to="/login" />} />
+
         {/* Páginas sem navbar */}
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
