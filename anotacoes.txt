@@ -7,19 +7,12 @@ Inicialização:
 - npm install react-icons
 - npm run dev (rodar o projeto)
 
+ConnectCamera:
+- Para fazer a identificação da câmera, é utilizado de algumas funções para enumerar os dispostivos de vídeo conectados e retornar o modelo do primeiro, após isso existe um redirecionamento para a tela de ánalise.
 
+MapSelect: 
+- usamos da OSM para base de dados do mapa, e a biblioteca 'leaf' para geração dos mapas, a partir disso geramos um icon para referenciar o ponto selecionado no mapa, mostrando latitude e longitude. 
+-- Tecnicamente a captura de pontos do mapa: um evento click do leaflet é acionado, e a função "useMapEvents" intercepta o clique e acessa o 'e.latlng' que contém as coordenadas do ponto. Esses valores são salvos e no "useState" e depois enviados ao componente anterior com o "react-router-dom".
 
-Box do login (Antes de adicionar a label, para caso algo dê errado):
-
-        <input
-          type="email"
-          placeholder="E-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
+SplashScreen:
+- Um keyframe + useEffect para criar a animação de entrada e saída da tela.
