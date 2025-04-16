@@ -34,7 +34,7 @@ function CreateHive() {
   }
 
   const handleConnectCamera = () => {
-    alert('Câmera conectada! (simulado)')
+    navigate('/connect-camera', { state: formData }) // redirecionando para a página de conectar a câmera
   }
 
   return (
