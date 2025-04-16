@@ -1,10 +1,11 @@
 // src/pages/CreateHive/CreateHive.jsx
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import './CreateHive.css'
 
 function CreateHive() {
   const navigate = useNavigate()
+  const location = useLocation() // 👈 aqui pegamos os dados vindos do MapSelect
 
   const [formData, setFormData] = useState({
     name: '',
@@ -12,6 +13,16 @@ function CreateHive() {
     beeType: '',
     location: null,
   })
+
+  // Se voltou da tela de mapa, atualiza o estado com a nova localização
+  useEffect(() => {
+    if (location.state?.location) {
+      setFormData((prevData) => ({
+        ...prevData,
+        location: location.state.location,
+      }))
+    }
+  }, [location.state])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -31,12 +42,18 @@ function CreateHive() {
       <h2>Cadastrar Colmeia</h2>
       <div className="form-card">
         <h3>PREENCHA AS INOFRMAÇÕES ABAIXO </h3>
-        <input type="text" name="name" placeholder="Nome da colmeia" value={formData.name} onChange={handleChange} />
+        <input
+          type="text"
+          name="name"
+          placeholder="Nome da colmeia"
+          value={formData.name}
+          onChange={handleChange}
+        />
 
         <select name="size" value={formData.size} onChange={handleChange}>
           <option value="">Selecione o tamanho:</option>
           <option value="Small">Pequena</option>
-          <option value="Medium">Media</option>
+          <option value="Medium">Média</option>
           <option value="Large">Grande</option>
         </select>
 
@@ -47,7 +64,9 @@ function CreateHive() {
           <option value="Bee 3">Bee 3</option>
         </select>
 
-        <button onClick={handleLocationClick}>Selecione a localização</button>
+        <button onClick={handleLocationClick}>
+          {formData.location ? 'Editar localização' : 'Selecionar localização'}
+        </button>
 
         {formData.location && (
           <div className="location-preview">
