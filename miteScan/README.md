@@ -12,10 +12,13 @@ Esse repositório contém o front-end do projeto MiteScan, que está sendo desen
 `npm install` <br>
 
 
-`npm install react-router-dom` <br>
+`npm install react-router-dom` - Biblioteca para criação de rotas<br>
 
 
-`npm install react-icons` <br>
+`npm install react-icons` - Ícones utilizados<br>
+
+
+`npm install leaflet react-leaflet` - Execução do Mapa<br>
 
 
 <br>
