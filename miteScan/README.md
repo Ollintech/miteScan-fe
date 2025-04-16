@@ -18,7 +18,7 @@ Esse repositório contém o front-end do projeto MiteScan, que está sendo desen
 `npm install react-icons` - Ícones utilizados<br>
 
 
-`npm install leaflet react-leaflet` - Execução do Mapa<br>
+`npm install react-leaflet leaflet` - Execução do Mapa<br>
 
 
 <br>
