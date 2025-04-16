@@ -13,6 +13,7 @@ import Analysis from '../src/pages/Analysis/Analysis'
 import User from '../src/pages/User/User'
 import CreateHive from '../src/pages/CreateHive/CreateHive'
 import MapSelect from '../src/pages/MapSelect/MapSelect'
+import ConnectCamera from '../src/pages/ConnectCamera/ConnectCamera'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -44,6 +45,7 @@ function App() {
           <Route path="/user" element={<User />} />
           <Route path="/create-hive" element={<CreateHive />} />
           <Route path="/select-location" element={<MapSelect />} />
+          <Route path="/connect-camera" element={<ConnectCamera />} />
         </Route>
       </Routes>
     </Router>
