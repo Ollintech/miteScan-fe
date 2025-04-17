@@ -8,28 +8,47 @@ function Home() {
   return (
     <div className="wrapper-home">
     <div className="home-container">
-      <h2>SUAS COLMEIAS <b>EM TEMPO REAL!</b> 🐝</h2>
+      <div className="kpi">
+        <div className="card-kpi">
+          <h3>🐝 Colmeias</h3>
+          <p>3</p>
+        </div>
+        <div className="card-kpi">
+          <h3>🐝 Taxa de Varroa</h3>
+          <p>0%</p>
+        </div>
+        <div className="card-kpi">
+          <h3>🐝 Colmeias C/ Varroa</h3>
+          <p>0</p>
+        </div>
+      </div>
 
       <div className="dashboard">
+      <div className="top"><h2>SUAS COLMEIAS <b>EM TEMPO REAL!</b> 🐝</h2></div>
+      <div className="card-box">
         {/* Card 1 */}
         <div className="card" onClick={() => navigate('/hives')}> 
         <img src="../src/assets/images/colmeia-home.png" alt="Colmeia 1" className="card-image" />
           <h3>Colmeia 1</h3>
-          <p>Dados sobre a colmeia</p>
+          <p>Colmeia 1</p>
+          <p>23 | 45 %</p>
         </div>
 
         {/* Card 2 */}
         <div className="card"><img src="../src/assets/images/colmeia-home.png" alt="Colmeia 1" className="card-image" />
           <h3>Colmeia 2</h3>
-          <p>Mais dados sobre outra colmeia</p>
+          <p>Colmeia 1</p>
+          <p>23 | 45 %</p>
         </div>
 
         {/* Card 3 */}
         <div className="card">
         <img src="../src/assets/images/colmeia-home.png" alt="Colmeia 1" className="card-image" />
           <h3>Colmeia 3</h3>
-          <p>Mais algumas informações aqui</p>
+          <p>Colmeia 1</p>
+          <p>23 | 45 %</p>
         </div>
+      </div>
       </div>
     </div>
     </div>

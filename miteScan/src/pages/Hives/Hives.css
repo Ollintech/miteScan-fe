@@ -19,6 +19,7 @@
     align-items: center;
     margin-bottom: 2rem;
     color: #000000;
+    gap: 130px
   }
   
   .btn-criar {
@@ -59,8 +60,8 @@
   }
   
   .colmeia-image {
-  width: 220px; /* Defina a largura da imagem */
-  height: 120px; /* Defina a altura da imagem */
+  width: 300px; /* Defina a largura da imagem */
+  height: 200px; /* Defina a altura da imagem */
   object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
   border-radius: 20px;
 }
