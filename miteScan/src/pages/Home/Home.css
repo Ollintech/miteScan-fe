@@ -32,18 +32,24 @@ body {
     
     width: 100%;
     max-width: 1000px; /* ou o valor que preferir */
-    background-color: #e9e9e9;
+    background-color: #f1f1f1;
     border-radius: 14px;
     box-shadow: 2px 3px 7px 7px rgba(0, 0, 0, 0.1);
   }
   
   .card {
     background-color: #f1f1f1;
-    box-shadow: 1px 1px 7px 7px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 1px 7px 3px rgba(0, 0, 0, 0.1);
     padding: 20px;
     border-radius: 10px;
     width: 60%;
-    
+  }
+
+  .content-card{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
   }
 
   .top{
@@ -63,11 +69,12 @@ body {
   .top{
     margin-bottom: 50px;
     max-width: 1000px;
+    margin-left: 0px;
   }
 
   .kpi{
     display: flex;
-    gap: 200px;
+    gap: 150px;
     margin-bottom: 50px;
     margin-top: 50px;
   }
@@ -75,6 +82,18 @@ body {
   .card-kpi{
     background-color: #f1f1f1;
     border-radius: 14px;
-    box-shadow: 1px 1px 7px 7px rgba(0, 0, 0, 0.1);
-    width: 200px;
+    box-shadow: 1px 1px 7px 5px rgba(0, 0, 0, 0.1);
+    width: 230px;
+  }
+
+  .title-kpi{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 5px;
+  }
+
+  .card-image{
+    width: 90%
   }
