@@ -38,7 +38,7 @@ function CreateHive() {
   }
 
   return (
-    <div className="create-hive-container">
+    <div className="container-all">
       <h2>Cadastrar Colmeia</h2>
       <div className="form-card">
         <h3>PREENCHA AS INOFRMAÇÕES ABAIXO </h3>

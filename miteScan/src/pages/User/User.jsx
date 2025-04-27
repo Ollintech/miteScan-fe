@@ -17,7 +17,7 @@ function User() {
   };
 
   return (
-    <div className="user-page">
+    <div className="container-all">
       <div className="user-card">
         <div className="avatar">
           <img src={defaultAvatar} alt="Avatar" className="avatar-img" />

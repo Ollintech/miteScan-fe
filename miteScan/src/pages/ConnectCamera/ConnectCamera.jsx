@@ -37,7 +37,7 @@ function ConnectCamera() {
   }
 
   return (
-    <div className="connect-camera-container">
+    <div className="container-all">
       <h2>Conectar Câmera</h2>
       {cameraInfo ? (
         <div className="camera-card">

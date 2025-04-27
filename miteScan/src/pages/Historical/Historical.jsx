@@ -4,7 +4,7 @@ import './Historical.css'
 
 function Historical() {
   return (
-    <div className="historical-wrapper">
+    <div className="container-all">
       <h2 className="historical-title">Histórico de Análises</h2>
 
       <div className="historical-card">

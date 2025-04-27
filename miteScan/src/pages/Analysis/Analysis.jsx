@@ -13,7 +13,7 @@ function Analysis() {
   }
 
   return (
-    <div className="analysis-wrapper">
+    <div className="container-all">
       <h2 className="analysis-title">Analisar agora</h2>
 
       <div className="analysis-controls">

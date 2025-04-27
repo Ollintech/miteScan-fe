@@ -1,18 +1,4 @@
-.create-hive-container {
-    background-color: #fff;
-    min-height: 100vh;
-    min-width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color: #000;
 
-    background-image: url('../../assets/images/icon-favo-top.png'), url('../../assets/images/icon-favo-bottom.png');
-    background-repeat: no-repeat, no-repeat;
-    background-position: left -140px top, right -220px bottom;
-    background-size: auto
-  }
   
   .form-card {
     background-color: #F5F5F5;

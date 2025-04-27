@@ -35,7 +35,7 @@ function MapSelect() {
   }
 
   return (
-    <div className="map-select-container">
+    <div className="container-all">
       <h2>Escolha a localização da sua colmeia</h2>
       <MapContainer center={[-23.5505, -46.6333]} zoom={12} style={{ width: '60%', height: '500px' }}>
         <TileLayer

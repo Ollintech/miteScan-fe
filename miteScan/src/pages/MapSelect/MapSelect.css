@@ -1,20 +1,4 @@
 /* src/pages/MapSelect/MapSelect.css */
-.map-select-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    min-width: 100vw;
-    
-    background-color: #fff;
-    color: #000;
-    background-image: url('../../assets/images/icon-favo-top.png'), url('../../assets/images/icon-favo-bottom.png');
-    background-repeat: no-repeat, no-repeat;
-    background-position: left -140px top, right -220px bottom;
-    background-size: auto
-}
 
 #map {
     width: 100%;

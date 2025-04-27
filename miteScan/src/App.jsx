@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import DefaultLayout from './components/DefaultLayout'
 import SplashScreen from '../src/pages/SplashScreen/SplashScreen'
+import './styles/globals.css'
 
 import Login from '../src/pages/Login/Login'
-import Home from '../src/pages/Home/Home' 
+import Home from './pages/Home/Home' 
 import Registration from '../src/pages/Registration/Registration'
 import Hives from '../src/pages/Hives/Hives'
 import Historical from '../src/pages/Historical/Historical'
