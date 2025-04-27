@@ -54,44 +54,46 @@ const colmeias = [
 
 export default function HomeHives() {
   const navigate = useNavigate()
-  
+
   return (
     <>
-      <div className="bg-yellow-400 text-gray-800 text-lg font-bold py-3 px-4 rounded-t-xl shadow-md w-5xl">
+      <div className="bg-yellow-400 text-gray-800 text-lg font-bold py-1 rounded-t-xl shadow-md w-full mx-auto px-4">
         SUAS COLMEIAS <span className="font-extrabold">EM TEMPO REAL! 🐝</span>
       </div>
 
       {/* Grid das colmeias */}
-      <div className="bg-gray-100 p-10 rounded-b-xl shadow-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-8 align-center w-5xl">
+      <div className="bg-gray-100 py-4 px-10 rounded-b-xl shadow-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-6 align-center w-full mx-auto">
         {colmeias.map((colmeia) => (
           <div
             key={colmeia.id}
-            className="flex flex-col items-start bg-gray-200 p-4 rounded-lg shadow-md hover:scale-105 transition-transform"
+            className="text-sm flex flex-col items-start bg-gray-200 rounded-xl shadow-md hover:scale-105 transition-transform max-w-50 min-w-37 mx-auto"
             onClick={() => navigate('/hives')}
           >
             {/* Imagem da colmeia */}
             <img
               src={colmeia.imagem}
               alt={colmeia.nome}
-              className="h-32 w-full object-cover rounded mb-4"
+              className="h-25 w-full object-cover rounded-xl mb-2"
             />
 
             {/* Nome e status */}
-            <div className="flex items-center gap-2 mb-2 w--full">
-              <img src={favIcon} alt="" />
+            <div className="flex items-center justify-between mx-2 w-full">
+              <div className="flex gap-1">
+              <img src={favIcon} alt="" className="w-4 h-4"/>
               <h3 className="text-gray-800 font-semibold">{colmeia.nome}</h3>
+              </div>
 
               {/* Ícone de status */}
               {colmeia.status === 'ok' && (
-                <img src={secureIcon} alt="OK" className="ml-22" />
+                <img src={secureIcon} alt="OK" className="max-w-8 mr-2"/>
               )}
               {colmeia.status === 'alerta' && (
-                <img src={alertIcon} alt="Perigo" className="ml-23" />
+                <img src={alertIcon} alt="Perigo" className="max-w-8 mr-2"/>
               )}
             </div>
 
             {/* Temperatura e Umidade */}
-            <div className="text-md font-bold text-gray-700 flex items-center">
+            <div className="text-md font-bold text-gray-700 flex items-center mx-2 mb-3">
               <img src={tempIcon} />{colmeia.temperatura}°C | <img src={waterIcon} />{colmeia.umidade}%
             </div>
           </div>

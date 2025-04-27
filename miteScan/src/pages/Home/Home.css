@@ -1,12 +1,9 @@
-body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-  }
+
   
   .wrapper-home {
     display: flex;
     justify-content: center;
-    align-items: center;
+    padding: 2rem 1rem; 
   }
 
   
