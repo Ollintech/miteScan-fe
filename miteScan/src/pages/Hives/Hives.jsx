@@ -1,12 +1,12 @@
 // src/pages/Colmeias.jsx
 import { useNavigate } from 'react-router-dom'
 import '../Hives/Hives.css'
-import colmeia1Img from '../../assets/images/colmeia1.png';
+import HivesList from '../../components/hives/hives-list';
 
 function Hives() {
   const navigate = useNavigate()
 
-  const colmeias = [
+  {/*} const colmeias = [
     {
       id: 1,
       nome: 'Colmeia Rainha',
@@ -23,36 +23,40 @@ function Hives() {
       umidade: '65%',
       imagemUrl: colmeia1Img,
     }
-  ]
+  ]*/}
 
   return (
     <div className="container-all">
-  <div className="colmeias-header">
-    <h2>Minhas Colmeias</h2>
-    <button className="btn-criar" onClick={() => navigate('/create-hive')}>
-      + Criar Colmeia
-    </button>
-  </div>
-
-  <div className="colmeia-grid">
-    {colmeias.map((colmeia) => (
-      <div key={colmeia.id} className="colmeia-card">
-        {/* Imagem ao lado das informações */}
-        <img
-          src={colmeia.imagemUrl} // Imagem de cada colmeia, se houver
-          alt={`Imagem da Colmeia ${colmeia.nome}`}
-          className="colmeia-image"
-        />
-        <div className="colmeia-info">
-          <h3>{colmeia.nome}</h3>
-          <p><strong>Abelha:</strong> {colmeia.abelha}</p>
-          <p><strong>Temperatura:</strong> {colmeia.temperatura}</p>
-          <p><strong>Umidade:</strong> {colmeia.umidade}</p>
-        </div>
+      <div className='w-full max-w-4xl p-20'>
+        <HivesList />
       </div>
-    ))}
-  </div>
-</div>
+
+      {/*<div className="colmeias-header">
+        <h2>Minhas Colmeias</h2>
+        <button className="btn-criar" onClick={() => navigate('/create-hive')}>
+          + Criar Colmeia
+        </button>
+      </div>
+
+      <div className="colmeia-grid">
+        {colmeias.map((colmeia) => (
+          <div key={colmeia.id} className="colmeia-card">
+            {/* Imagem ao lado das informações
+            <img
+              src={colmeia.imagemUrl} // Imagem de cada colmeia, se houver
+              alt={`Imagem da Colmeia ${colmeia.nome}`}
+              className="colmeia-image"
+            />
+            <div className="colmeia-info">
+              <h3>{colmeia.nome}</h3>
+              <p><strong>Abelha:</strong> {colmeia.abelha}</p>
+              <p><strong>Temperatura:</strong> {colmeia.temperatura}</p>
+              <p><strong>Umidade:</strong> {colmeia.umidade}</p>
+            </div>
+          </div>
+        ))}
+      </div>*/}
+    </div>
   )
 }
 

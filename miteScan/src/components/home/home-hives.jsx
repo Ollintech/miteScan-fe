@@ -1,9 +1,9 @@
-import HivesImg from "../assets/images/colmeia1.png"
-import secureIcon from "../assets/images/secure-icon.png"
-import alertIcon from "../assets/images/AlertIcon.png"
-import favIcon from "../assets/images/favIcon-home.png"
-import tempIcon from "../assets/images/temIcon-home.png"
-import waterIcon from "../assets/images/waterIcon-home.png"
+import HivesImg from "../../assets/images/colmeia1.png"
+import secureIcon from "../../assets/images/secure-icon.png"
+import alertIcon from "../../assets/images/AlertIcon.png"
+import favIcon from "../../assets/images/favIcon-home.png"
+import tempIcon from "../../assets/images/temIcon-home.png"
+import waterIcon from "../../assets/images/waterIcon-home.png"
 import { useNavigate } from "react-router-dom"
 
 const colmeias = [
@@ -79,16 +79,16 @@ export default function HomeHives() {
             {/* Nome e status */}
             <div className="flex items-center justify-between mx-2 w-full">
               <div className="flex gap-1">
-              <img src={favIcon} alt="" className="w-4 h-4"/>
-              <h3 className="text-gray-800 font-semibold">{colmeia.nome}</h3>
+                <img src={favIcon} alt="" className="w-4 h-4" />
+                <h3 className="text-gray-800 font-semibold">{colmeia.nome}</h3>
               </div>
 
               {/* Ícone de status */}
               {colmeia.status === 'ok' && (
-                <img src={secureIcon} alt="OK" className="max-w-8 mr-2"/>
+                <img src={secureIcon} alt="OK" className="max-w-8 mr-2" />
               )}
               {colmeia.status === 'alerta' && (
-                <img src={alertIcon} alt="Perigo" className="max-w-8 mr-2"/>
+                <img src={alertIcon} alt="Perigo" className="max-w-8 mr-2" />
               )}
             </div>
 

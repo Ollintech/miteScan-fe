@@ -1,21 +1,26 @@
 // src/pages/Analysis.jsx
-import { useState } from 'react'
+//import { useState } from 'react'
 import '../Analysis/Analysis.css'
-import colmeia1 from '../../assets/images/colmeia1.png'
-import colmeia2 from '../../assets/images/colmeia2.jpg'
+import { FaArrowLeft } from 'react-icons/fa'
+import AnalysisCard from '../../components/analysis/analysis'
 
 function Analysis() {
-  const [selectedHive, setSelectedHive] = useState('colmeia1')
-
-  const hiveImages = {
-    colmeia1: colmeia1,
-    colmeia2: colmeia2
-  }
+  //const [selectedHive, setSelectedHive] = useState('colmeia1')
 
   return (
     <div className="container-all">
-      <h2 className="analysis-title">Analisar agora</h2>
-
+      <div className='max-w-2/3'>
+        <div className="flex items-center justify-between mb-2">
+          <div className='flex items-center gap-4 text-2xl font-bold'>
+            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md mb-4">
+              <FaArrowLeft size={25} />
+            </button>
+            ANALISAR AGORA
+          </div>
+        </div>
+        <AnalysisCard />
+      </div>
+      {/*
       <div className="analysis-controls">
         <label htmlFor="hive-select">Selecione a colmeia:</label>
         <select
@@ -31,7 +36,7 @@ function Analysis() {
       <div className="analysis-image-card">
         <img src={hiveImages[selectedHive]} alt={selectedHive} className="hive-image" />
         <button className="analyze-button">🔍 Analisar</button>
-      </div>
+      </div>*/}
     </div>
   )
 }
