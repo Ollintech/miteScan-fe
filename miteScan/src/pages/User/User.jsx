@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import './User.css'; // Estilos personalizados
+import { useNavigate } from 'react-router-dom';
 import defaultAvatar from '../../assets/images/default-avatar.png'; // Imagem padrão do avatar
 import UserCard from '../../components/user/user-card';
 import { FaArrowLeft } from 'react-icons/fa';
 
 function User() {
+  const navigate = useNavigate()
+
   {/*
   // Dados do usuário (podem ser vindo de um API ou estado global)
   const [nome, setNome] = useState('João da Silva');
@@ -22,13 +25,14 @@ function User() {
   return (
     <div className="container-all">
       <div className='w-2/5'>
-      <div className='flex items-center gap-4 text-2xl font-bold mb-6'>
-            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4">
-              <FaArrowLeft size={25} />
-            </button>
-            MEUS DADOS 
-          </div>
-        <UserCard/>
+        <div className='flex items-center gap-4 text-2xl font-bold mb-6'>
+          <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
+            onClick={() => navigate('/home')}>
+            <FaArrowLeft size={25} />
+          </button>
+          MEUS DADOS
+        </div>
+        <UserCard />
       </div>
 
       {/*

@@ -26,15 +26,7 @@
     background-color: #EEEDED;
   }
 
-input {
-  display: block;
-  width: 94%;
-  margin: 10px 0;
-  padding: 12px;
-  border-radius: 5px;
-  background-color: #EEEDED;
-  border: 0px solid #000000;
-}
+
 
 .erro {
   color: red;
@@ -54,9 +46,3 @@ input {
     height: 130px; 
   }
 
-  input,
-  textarea,
-  select {
-    color: #000 !important;          
-    caret-color: #000;                 
-  }

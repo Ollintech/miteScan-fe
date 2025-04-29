@@ -2,6 +2,7 @@
 
 body {
   font-family: 'Arial', sans-serif;
+  overflow-x: hidden;
 }
 
 /* Background geral e organização de conteudo */
@@ -15,6 +16,7 @@ body {
     text-align: center;
     color: black;
     background-color: #FFFFFF;
+    margin-top: 10vh;
 
     background-image: url('.././assets/images/icon-favo-top.png'), url('.././assets/images/icon-favo-bottom.png');
     background-repeat: no-repeat, no-repeat;

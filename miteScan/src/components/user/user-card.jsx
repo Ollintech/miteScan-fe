@@ -15,72 +15,72 @@ export default function UserCard() {
     // Aqui você pode salvar os dados no backend ou no estado global
   };
 
-    return(
-        <div className="bg-gray-100 rounded-xl shadow-2xl p-10 w-full">
-        <div className="avatar">
-          <img src={defaultAvatar} alt="Avatar" className="avatar-img" />
-        </div>
-
-        <div className="">
-          <div className="">
-            <strong>Nome:</strong> 
-            {isEditing ? (
-              <input 
-                type="text" 
-                value={nome} 
-                onChange={(e) => setNome(e.target.value)} 
-              />
-            ) : (
-              <span>{nome}</span>
-            )}
-          </div>
-
-          <div className="info-field">
-            
-            <strong>Email:</strong> 
-            {isEditing ? (
-              <input 
-                type="email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-              />
-            ) : (
-              <span>{email}</span>
-            )}
-          </div>
-
-          <div className="info-field">
-            <strong>Login:</strong> 
-            {isEditing ? (
-              <input 
-                type="text" 
-                value={login} 
-                onChange={(e) => setLogin(e.target.value)} 
-              />
-            ) : (
-              <span>{login}</span>
-            )}
-          </div>
-
-          <div className="info-field">
-            <strong>Acesso:</strong> 
-            {isEditing ? (
-              <select value={tipoAcesso} onChange={(e) => setTipoAcesso(e.target.value)}>
-                <option value="Administrador">Administrador</option>
-                <option value="Funcionário">Funcionário</option>
-              </select>
-            ) : (
-              <span>{tipoAcesso}</span>
-            )}
-          </div>
-        </div>
-
-        <button
-          className="btn-editar"
-          onClick={() => setIsEditing(!isEditing)}
-        >
-          {isEditing ? 'Salvar' : 'Editar'}
-        </button>
+  return (
+    <div className="bg-gray-100 rounded-xl shadow-2xl p-10 w-full">
+      <div className="w-37 mx-auto">
+        <img src={defaultAvatar} alt="Avatar" className="avatar-img" />
       </div>
-    )
+
+      <div className="bg-blue-100">
+        <div className="">
+          <strong>Nome:</strong>
+          {isEditing ? (
+            <input
+              type="text"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+            />
+          ) : (
+            <span className='bg-gray-200 px-1 py-1 shadow'>{nome}</span>
+          )}
+        </div>
+
+        <div className="info-field">
+
+          <strong>Email:</strong>
+          {isEditing ? (
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          ) : (
+            <span className='bg-gray-200 px-1 py-1 shadow'>{email}</span>
+          )}
+        </div>
+
+        <div className="info-field">
+          <strong>Login:</strong>
+          {isEditing ? (
+            <input
+              type="text"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+            />
+          ) : (
+            <span className='bg-gray-200 px-1 py-1 shadow'>{login}</span>
+          )}
+        </div>
+
+        <div className="info-field">
+          <strong>Acesso:</strong>
+          {isEditing ? (
+            <select value={tipoAcesso} onChange={(e) => setTipoAcesso(e.target.value)}>
+              <option value="Administrador">Administrador</option>
+              <option value="Funcionário">Funcionário</option>
+            </select>
+          ) : (
+            <span className='bg-gray-200 px-1 py-1 shadow'>{tipoAcesso}</span>
+          )}
+        </div>
+      </div>
+
+      <button
+        className="bg-yellow-400 py-2 px-7 font-bold shadow-md rounded-xl"
+        onClick={() => setIsEditing(!isEditing)}
+      >
+        {isEditing ? 'SALVAR' : 'EDITAR'}
+      </button>
+    </div>
+  )
 }

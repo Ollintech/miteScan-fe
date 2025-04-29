@@ -4,7 +4,7 @@ import '../Hives/Hives.css'
 import HivesList from '../../components/hives/hives-list';
 
 function Hives() {
-  const navigate = useNavigate()
+
 
   {/*} const colmeias = [
     {

@@ -1,7 +1,10 @@
 import Image from '../../assets/images/colmeia-home.png'
+import { useNavigate } from 'react-router-dom'
 import { MdHexagon } from 'react-icons/md'
 
 export default function AnalysisHist() {
+const navigate = useNavigate()
+
   return (
     <div className="bg-gray-100 rounded-xl shadow-xl">
       <div className='p-8'>

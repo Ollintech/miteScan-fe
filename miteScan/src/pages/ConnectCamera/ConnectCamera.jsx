@@ -2,8 +2,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './ConnectCamera.css'
+import CameraCard from '../../components/connectCamera/connect-camera'
+import { FaArrowLeft } from 'react-icons/fa'
 
 function ConnectCamera() {
+  {/*
   const location = useLocation()
   const navigate = useNavigate() // Para redirecionar para a tela de "analysis"
   const videoRef = useRef(null)
@@ -34,10 +37,26 @@ function ConnectCamera() {
   // Função para navegar para a tela de "analysis"
   const handleFinish = () => {
     navigate('/analysis') // Aqui você redireciona para a página de "analysis"
-  }
+  }*/}
 
   return (
     <div className="container-all">
+      <div className='w-2/3 max-w-2xl'>
+        <div className="flex items-center justify-between mb-2">
+          <div className='flex items-center gap-4 text-2xl font-bold'>
+            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
+              onClick={() => navigate('/hives')}>
+              <FaArrowLeft size={25} />
+            </button>
+            ANALISAR AGORA
+          </div>
+        </div>
+        <div>
+          <CameraCard />
+        </div>
+      </div>
+
+      {/*
       <h2>Conectar Câmera</h2>
       {cameraInfo ? (
         <div className="camera-card">
@@ -48,8 +67,8 @@ function ConnectCamera() {
         <p>Nenhuma câmera conectada ou permissão negada.</p>
       )}
 
-      {/* Botão "Finalizar" para redirecionar para a tela de "analysis" */}
-      <button onClick={handleFinish}>Finalizar</button>
+      {/* Botão "Finalizar" para redirecionar para a tela de "analysis" 
+      <button onClick={handleFinish}>Finalizar</button>*/}
     </div>
   )
 }

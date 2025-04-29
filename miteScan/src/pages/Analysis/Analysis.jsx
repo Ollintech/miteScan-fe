@@ -1,18 +1,21 @@
 // src/pages/Analysis.jsx
 //import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import '../Analysis/Analysis.css'
 import { FaArrowLeft } from 'react-icons/fa'
 import AnalysisCard from '../../components/analysis/analysis'
 
 function Analysis() {
   //const [selectedHive, setSelectedHive] = useState('colmeia1')
+  const navigate = useNavigate()
 
   return (
     <div className="container-all">
-      <div className='w-1/2 max-w-5xl w-full p-25'>
+      <div className='w-2/3 max-w-2xl'>
         <div className="flex items-center justify-between mb-2">
           <div className='flex items-center gap-4 text-2xl font-bold'>
-            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4">
+            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
+              onClick={() => navigate('/hives')}>
               <FaArrowLeft size={25} />
             </button>
             ANALISAR AGORA

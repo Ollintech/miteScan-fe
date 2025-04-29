@@ -2,9 +2,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './CreateHive.css'
+import CreateHiveCard from '../../components/createHive/create-hive'
+import { FaArrowLeft } from 'react-icons/fa'
 
 function CreateHive() {
-  const navigate = useNavigate()
+  {/*const navigate = useNavigate()
   const location = useLocation() // 👈 aqui pegamos os dados vindos do MapSelect
 
   const [formData, setFormData] = useState({
@@ -35,10 +37,28 @@ function CreateHive() {
 
   const handleConnectCamera = () => {
     navigate('/connect-camera', { state: formData }) // redirecionando para a página de conectar a câmera
-  }
+  }*/}
 
   return (
     <div className="container-all">
+      <div className='w-1/2 max-w-3xl'>
+        <div className="flex items-center justify-between my-6">
+          <div className='flex items-center gap-4 text-2xl font-bold'>
+            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
+              onClick={() => navigate('/hives')}>
+              <FaArrowLeft size={25} />
+            </button>
+            EDITAR DADOS DA COLMEIA
+          </div>
+        </div>
+        <div>
+          <CreateHiveCard />
+        </div>
+      </div>
+
+
+      {/*   -> sem modularização
+
       <h2>Cadastrar Colmeia</h2>
       <div className="form-card">
         <h3>PREENCHA AS INOFRMAÇÕES ABAIXO </h3>
@@ -77,7 +97,7 @@ function CreateHive() {
         {formData.location && (
           <button onClick={handleConnectCamera}>Conectar Câmera</button>
         )}
-      </div>
+      </div>*/}
     </div>
   )
 }

@@ -2,10 +2,13 @@
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
-import './MapSelect.css'
+//import 'leaflet/dist/leaflet.css'
+//import L from 'leaflet'
+//import './MapSelect.css'
+import MapCard from '../../components/mapselect/map-card'
+import { FaArrowLeft } from 'react-icons/fa'
 
+{/*
 // Corrige o ícone do marcador no Leaflet
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
@@ -21,9 +24,10 @@ function MapClickHandler({ setMapData }) {
     },
   })
   return null
-}
+}*/}
 
 function MapSelect() {
+  {/*}
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -32,10 +36,24 @@ function MapSelect() {
 
   const handleBackToForm = () => {
     navigate('/create-hive', { state: { ...formData, location: mapData } })
-  }
+  }*/}
 
   return (
     <div className="container-all">
+      <div className='w-2/3 max-w-3xl'>
+        <div className="flex items-center justify-between my-6">
+          <div className='flex items-center gap-4 text-2xl font-bold'>
+            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
+              onClick={() => navigate('/hives')}>
+              <FaArrowLeft size={25} />
+            </button>
+            DEFINIR LOCALIZAÇÃO
+          </div>
+        </div>
+        <MapCard />
+      </div>
+
+      {/*}
       <h2>Escolha a localização da sua colmeia</h2>
       <MapContainer center={[-23.5505, -46.6333]} zoom={12} style={{ width: '60%', height: '500px' }}>
         <TileLayer
@@ -57,7 +75,7 @@ function MapSelect() {
         )}
       </div>
 
-      <button onClick={handleBackToForm}>Voltar ao formulário</button>
+      <button onClick={handleBackToForm}>Voltar ao formulário</button>*/}
     </div>
   )
 }

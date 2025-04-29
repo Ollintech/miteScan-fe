@@ -55,9 +55,3 @@ body {
     border-radius: 5px;
   }
 
-  input,
-  textarea,
-  select {
-    color: #000 !important;            /* texto digitado */ /* fundo branco */
-    caret-color: #000;                 /* cor da barrinha de digitação */
-  }
