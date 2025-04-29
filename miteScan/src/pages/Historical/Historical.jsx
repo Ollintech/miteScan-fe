@@ -10,7 +10,7 @@ function Historical() {
       <div className='max-w-2/3'>
         <div className="flex items-center justify-between mb-2">
           <div className='flex items-center gap-4 text-2xl font-bold'>
-            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md mb-4">
+            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4">
               <FaArrowLeft size={25} />
             </button>
             HISTÓRICO DE ANÁLISES

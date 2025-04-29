@@ -36,15 +36,15 @@ export default function HivesList() {
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-6">
         <div className='flex items-center gap-4 text-2xl font-bold'>
-          <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md mb-4">
+          <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4">
             <FaArrowLeft size={25} />
           </button>
 
           MINHAS COLMEIAS
         </div>
-        <button className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-xl mb-4">
+        <button className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-xl p-3">
           Adicionar
           <MdAdd size={25} />
         </button>
@@ -53,70 +53,76 @@ export default function HivesList() {
       {/* Lista de colmeias */}
       <div className="grid gap-6">
         {colmeias.map((colmeia) => (
-          <div key={colmeia.id} className="flex items-center gap-4 shadow-lg">
+          <div className='flex items-center'>
+            <div key={colmeia.id} className="flex h-full gap-4 shadow-lg rounded-xl">
 
-            {/* Card da Colmeia */}
-            <div className="flex items-center h-full flex-1 gap-3 shadow-md rounded-xl bg-gray-100 overflow-hidden">
-              {/* Imagem */}
-              <img
-                src={Image}
-                alt={`Imagem da Colmeia ${colmeia.nome}`}
-                className="w-32 h-full object-cover"
-              />
+              {/* Card da Colmeia */}
+              <div className="flex items-center h-full flex-1 gap-3 shadow-md rounded-xl bg-gray-100 overflow-hidden">
+                {/* Imagem */}
+                <img
+                  src={Image}
+                  alt={`Imagem da Colmeia ${colmeia.nome}`}
+                  className="w-32 h-full object-cover"
+                />
 
-              {/* Informações */}
-              <div className="flex-1 flex flex-col gap-1 py-5 text-start font-bold text-sm p-2">
-                <div className="flex items-center gap-2">
-                  <MdHexagon size={19} />
-                  {colmeia.nome}
-                </div>
-                <div className="flex items-center gap-2">
-                  <img src={Bee} className='w-4' />
-                  {colmeia.abelha}
-                </div>
-                <div className="flex items-center gap-2">
-                  <FaMapMarkerAlt size={18} />
-                  {colmeia.localizacao}
-                </div>
-                <div className="flex items-center gap-2">
-                  <TbWorldLatitude size={18} />
-                  {colmeia.coordenadas}
-                </div>
-                <div className="flex items-center gap-4 mt-2">
-                  <div className="flex items-center gap-1">
-                    <FaThermometerHalf color={colmeia.temperatura > 28 ? "red" : "green"} />
-                    {colmeia.temperatura}°C
+                {/* Informações */}
+                <div className="flex-1 flex flex-col gap-1 py-5 text-start font-bold text-sm p-2">
+                  <div className="flex items-center gap-2">
+                    <MdHexagon size={19} />
+                    {colmeia.nome}
                   </div>
-                  <div className="flex items-center gap-1">
-                    <MdOutlineWaterDrop color={colmeia.umidade < 30 ? "red" : "green"} />
-                    {colmeia.umidade}%
+                  <div className="flex items-center gap-2">
+                    <img src={Bee} className='w-4' />
+                    {colmeia.abelha}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FaMapMarkerAlt size={18} />
+                    {colmeia.localizacao}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TbWorldLatitude size={18} />
+                    {colmeia.coordenadas}
                   </div>
                 </div>
-              </div>
+                <div className='h-25 w-0.5 bg-gray-600 mx-3 rounded-xl'></div>
+                <div>
 
-              {/* Botões de ação*/}
-              <div className="flex flex-col gap-2 items-center">
-                <button >
-                  <MdEdit size={25} />
-                </button>
-                <button>
-                  <FaTrash size={20} />
-                </button>
-              </div>
+                  <div className="items-center gap-2 mt-2 pr-6 p-4">
+                    <div className="flex items-center gap-1">
+                      <FaThermometerHalf color={colmeia.temperatura > 28 ? "red" : "green"} />
+                      {colmeia.temperatura}°C
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MdOutlineWaterDrop color={colmeia.umidade < 30 ? "red" : "green"} />
+                      {colmeia.umidade}%
+                    </div>
+                  </div>
+                </div>
 
-              {/* Estado */}
-              <div className={`flex flex-col items-center justify-center p-3 w-28 h-full
+
+
+                {/* Estado */}
+                <div className={`flex flex-col items-center justify-center p-3 w-28 h-full
                   ${colmeia.estado === "segura" ? "bg-green-200" : "bg-red-200"}
               `}>
-                <img
-                  src={colmeia.estado === "segura" ? Seguro : Perigo}
-                  alt="Ícone estado"
-                  className="w-8 mb-1"
-                />
-                <span className="font-bold">
-                  {colmeia.estado.toUpperCase()}
-                </span>
+                  <img
+                    src={colmeia.estado === "segura" ? Seguro : Perigo}
+                    alt="Ícone estado"
+                    className="w-8 mb-1"
+                  />
+                  <span className="font-bold">
+                    {colmeia.estado.toUpperCase()}
+                  </span>
+                </div>
               </div>
+            </div>{/* Botões de ação*/}
+            <div className="flex flex-col gap-6 ml-3 items-center">
+              <button >
+                <MdEdit size={25} />
+              </button>
+              <button>
+                <FaTrash size={20} />
+              </button>
             </div>
 
 

@@ -41,41 +41,6 @@ input {
   margin-top: 10px;
 }
 
-.btn-entrar{
-    width: 50%;
-    border-radius: 14px;
-    color: #000;
-    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.1);
-
-    background-color: #ffbb00;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.btn-entrar:hover{
-  background-color: #d69d00;
-  box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.1);
-}
-
-.btn-cadastro {
-    padding: 12px;
-    width: 100%;
-    background-color: #ffffff;
-    color: #ffbb00;
-    border: 2px solid #ffbb00;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 1rem;
-    margin-top: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .btn-cadastro:hover {
-    background-color: #ffe082;
-    color: #000;
-  }
 
   body {
     margin: 0;

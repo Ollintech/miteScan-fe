@@ -1,11 +1,7 @@
 import { useState } from 'react';
-import './User.css'; // Estilos personalizados
-import defaultAvatar from '../../assets/images/default-avatar.png'; // Imagem padrão do avatar
-import UserCard from '../../components/user/user-card';
-import { FaArrowLeft } from 'react-icons/fa';
+import defaultAvatar from '../../assets/images/default-avatar.png';
 
-function User() {
-  {/*
+export default function UserCard() {
   // Dados do usuário (podem ser vindo de um API ou estado global)
   const [nome, setNome] = useState('João da Silva');
   const [email, setEmail] = useState('joao@abelhas.com');
@@ -17,30 +13,16 @@ function User() {
   const handleSave = () => {
     setIsEditing(false);
     // Aqui você pode salvar os dados no backend ou no estado global
-  };*/}
+  };
 
-  return (
-    <div className="container-all">
-      <div className='w-2/5'>
-      <div className='flex items-center gap-4 text-2xl font-bold mb-6'>
-            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4">
-              <FaArrowLeft size={25} />
-            </button>
-            MEUS DADOS 
-          </div>
-        <UserCard/>
-      </div>
-
-      {/*
-      <div className="user-card">
+    return(
+        <div className="bg-gray-100 rounded-xl shadow-2xl p-10 w-full">
         <div className="avatar">
           <img src={defaultAvatar} alt="Avatar" className="avatar-img" />
         </div>
 
-        <h2>Meus Dados</h2>
-
-        <div className="user-info">
-          <div className="info-field">
+        <div className="">
+          <div className="">
             <strong>Nome:</strong> 
             {isEditing ? (
               <input 
@@ -54,6 +36,7 @@ function User() {
           </div>
 
           <div className="info-field">
+            
             <strong>Email:</strong> 
             {isEditing ? (
               <input 
@@ -98,9 +81,6 @@ function User() {
         >
           {isEditing ? 'Salvar' : 'Editar'}
         </button>
-      </div>*/}
-    </div>
-  );
+      </div>
+    )
 }
-
-export default User;

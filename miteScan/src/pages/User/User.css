@@ -74,18 +74,4 @@ h2 {
     color: #333;
 }
 
-/* Botão de edição */
-.btn-editar {
-    background-color: #FFDD00;
-    color: #333;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
 
-.btn-editar:hover {
-    background-color: #FFD700;
-}

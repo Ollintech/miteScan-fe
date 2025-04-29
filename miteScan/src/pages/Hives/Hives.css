@@ -10,17 +10,13 @@
   
   .btn-criar {
     padding: 10px 20px;
-    background-color: #ffbb00;
     color: #000000;
     border: none;
     border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
   }
-  
-  .btn-criar:hover {
-    background-color: #e6a800;
-  }
+
   
   .colmeia-grid {
     display: grid;

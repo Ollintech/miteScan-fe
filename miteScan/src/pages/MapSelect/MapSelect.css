@@ -11,18 +11,5 @@
     text-align: center;
 }
 
-button {
-    margin-top: 1rem;
-    padding: 0.8rem;
-    background-color: #ffc107;
-    color: #000;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.3s;
-}
 
-button:hover {
-    background-color: #e0a800;
-}
+

@@ -12,7 +12,7 @@ const colmeias = [
     nome: 'COLMEIA 1',
     temperatura: 23,
     umidade: 42,
-    status: 'ok',
+    status: 'alerta',
     imagem: HivesImg,
   },
   {

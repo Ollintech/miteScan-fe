@@ -26,8 +26,8 @@ export default function AnalysisCard() {
             </div>
 
             <div className="bg-gray-100 rounded-xl shadow-2xl">
-                <img src={hiveImages[selectedHive]} alt={selectedHive} className="" />
-                <button className="bg-yellow-300 rounded-xl shadow-lg mb-4 w-1/3">🔍 Analisar</button>
+                <img src={hiveImages[selectedHive]} alt={selectedHive} className="w-full" />
+                <button className="rounded-xl shadow-lg bg-yellow-400 my-4 w-1/3 p-3">🔍 Analisar</button>
             </div>
         </>
     )
