@@ -21,8 +21,8 @@ export default function UserCard() {
         <img src={defaultAvatar} alt="Avatar" className="avatar-img" />
       </div>
 
-      <div className="bg-blue-100">
-        <div className="">
+      <div className='justify-items-start mt-5 mb-8'>
+        <div className="space-x-10 p-2">
           <strong>Nome:</strong>
           {isEditing ? (
             <input
@@ -31,11 +31,11 @@ export default function UserCard() {
               onChange={(e) => setNome(e.target.value)}
             />
           ) : (
-            <span className='bg-gray-200 px-1 py-1 shadow'>{nome}</span>
+            <span className='bg-gray-200 px-6 py-1 shadow'>{nome}</span>
           )}
         </div>
 
-        <div className="info-field">
+        <div className="space-x-10 p-2">
 
           <strong>Email:</strong>
           {isEditing ? (
@@ -49,7 +49,7 @@ export default function UserCard() {
           )}
         </div>
 
-        <div className="info-field">
+        <div className="space-x-10 p-2">
           <strong>Login:</strong>
           {isEditing ? (
             <input
@@ -58,11 +58,11 @@ export default function UserCard() {
               onChange={(e) => setLogin(e.target.value)}
             />
           ) : (
-            <span className='bg-gray-200 px-1 py-1 shadow'>{login}</span>
+            <span className='bg-gray-200 px-10 py-1 shadow'>{login}</span>
           )}
         </div>
 
-        <div className="info-field">
+        <div className="space-x-7 p-2">
           <strong>Acesso:</strong>
           {isEditing ? (
             <select value={tipoAcesso} onChange={(e) => setTipoAcesso(e.target.value)}>
@@ -70,7 +70,7 @@ export default function UserCard() {
               <option value="Funcionário">Funcionário</option>
             </select>
           ) : (
-            <span className='bg-gray-200 px-1 py-1 shadow'>{tipoAcesso}</span>
+            <span className='bg-gray-200 px-7.5 py-1 shadow'>{tipoAcesso}</span>
           )}
         </div>
       </div>

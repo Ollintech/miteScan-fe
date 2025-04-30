@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './CreateHive.css'
-import CreateHiveCard from '../../components/createHive/create-hive'
-import { FaArrowLeft } from 'react-icons/fa'
+import CreateHiveCard from '../../components/FormsHives/create-hive'
+import ButtonBack from '../../components/buttonBack'
 
 function CreateHive() {
   {/*const navigate = useNavigate()
@@ -43,13 +43,7 @@ function CreateHive() {
     <div className="container-all">
       <div className='w-1/2 max-w-3xl'>
         <div className="flex items-center justify-between my-6">
-          <div className='flex items-center gap-4 text-2xl font-bold'>
-            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
-              onClick={() => navigate('/hives')}>
-              <FaArrowLeft size={25} />
-            </button>
-            EDITAR DADOS DA COLMEIA
-          </div>
+          <ButtonBack title="Cadastro de colmeia" redirect='/hives' />
         </div>
         <div>
           <CreateHiveCard />

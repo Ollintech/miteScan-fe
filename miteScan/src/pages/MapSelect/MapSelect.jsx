@@ -5,8 +5,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 //import 'leaflet/dist/leaflet.css'
 //import L from 'leaflet'
 //import './MapSelect.css'
-import MapCard from '../../components/mapselect/map-card'
-import { FaArrowLeft } from 'react-icons/fa'
+import MapCard from '../../components/MapSelect/map-card'
+import ButtonBack from '../../components/buttonBack'
 
 {/*
 // Corrige o ícone do marcador no Leaflet
@@ -42,13 +42,7 @@ function MapSelect() {
     <div className="container-all">
       <div className='w-2/3 max-w-3xl'>
         <div className="flex items-center justify-between my-6">
-          <div className='flex items-center gap-4 text-2xl font-bold'>
-            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
-              onClick={() => navigate('/hives')}>
-              <FaArrowLeft size={25} />
-            </button>
-            DEFINIR LOCALIZAÇÃO
-          </div>
+          <ButtonBack title="definir localização" redirect='/create-hive' />
         </div>
         <MapCard />
       </div>

@@ -55,7 +55,7 @@ export default function HivesList() {
       </div>
 
       {/* Lista de colmeias */}
-      <div className='max-h-[calc(100vh-320px)] overflow-y-auto pr-2'>
+      <div className='max-h-[calc(100vh-340px)] overflow-y-auto pr-2'>
         <div className="grid gap-6">
           {colmeias.map((colmeia) => (
             <div className='flex items-center w-full'>

@@ -1,8 +1,8 @@
 // src/pages/Analysis.jsx
 import { useNavigate } from 'react-router-dom'
 import './Historical.css'
-import { FaArrowLeft } from 'react-icons/fa'
-import AnalysisHist from '../../components/historical/analysis-card'
+import AnalysisHist from '../../components/Historical/analysis-card'
+import ButtonBack from '../../components/buttonBack'
 
 function Historical() {
   const navigate = useNavigate()
@@ -11,13 +11,7 @@ function Historical() {
     <div className="container-all">
       <div className='max-w-2/3'>
         <div className="flex items-center justify-between mb-2">
-          <div className='flex items-center gap-4 text-2xl font-bold'>
-            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
-              onClick={() => navigate('/hives')}>
-              <FaArrowLeft size={25} />
-            </button>
-            HISTÓRICO DE ANÁLISES
-          </div>
+          <ButtonBack title="histórico de análises" redirect='/hives'/>
         </div>
         <AnalysisHist />
       </div>

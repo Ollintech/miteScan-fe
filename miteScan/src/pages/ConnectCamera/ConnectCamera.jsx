@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './ConnectCamera.css'
-import CameraCard from '../../components/connectCamera/connect-camera'
-import { FaArrowLeft } from 'react-icons/fa'
+import CameraCard from '../../components/ConnectCamera/connect-camera'
+import ButtonBack from '../../components/buttonBack'
 
 function ConnectCamera() {
   {/*
@@ -43,13 +43,7 @@ function ConnectCamera() {
     <div className="container-all">
       <div className='w-2/3 max-w-2xl'>
         <div className="flex items-center justify-between mb-2">
-          <div className='flex items-center gap-4 text-2xl font-bold'>
-            <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
-              onClick={() => navigate('/hives')}>
-              <FaArrowLeft size={25} />
-            </button>
-            ANALISAR AGORA
-          </div>
+          <ButtonBack title="conectar câmera" redirect='/create-hive' />
         </div>
         <div>
           <CameraCard />
