@@ -12,9 +12,7 @@ function Analysis() {
   return (
     <div className="container-all">
       <div className='w-2/5 max-w-4xl min-w-xl'>
-        <div className="flex items-center justify-between mb-2">
           <ButtonBack title="analisar agora" redirect='/hives' />
-        </div>
         <AnalysisCard />
       </div>
       {/*

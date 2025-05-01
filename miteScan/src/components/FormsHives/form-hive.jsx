@@ -53,6 +53,9 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
   const handleFinish = () => {
     navigate('/hives')
   }
+  const handleAnalysis = () => {
+    navigate('/analysis')
+  }
 
   const isLeitura = modo === 'excluir'
 
@@ -157,7 +160,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
         <div className="flex justify-center mt-6">
           {modo === 'criar' && formData.location && formData.cameraConnected && (
             <button
-              onClick={handleFinish}
+              onClick={handleAnalysis}
               className="bg-yellow-400 hover:bg-yellow-300 font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
             >
               Confirmar

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { CSSTransition } from 'react-transition-group';  // Importando para animações
 import '../Login/Login.css'
 import logo from '../../assets/images/bee-icon.png'
+import LoginForm from '../../components/AuthForms/LoginForm';
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -32,7 +33,9 @@ function Login() {
   return (
     <CSSTransition in={true} timeout={500} classNames="fade" unmountOnExit>
       <div className="wrapper">
-        <div className="login-container">
+        <div className="max-w-3xl min-w-lg">
+          <LoginForm/>
+          {/*
           <div className="logo">
             <img src={logo} alt="Logo Abelha" />
           </div>
@@ -65,7 +68,7 @@ function Login() {
             <div className="cadastro">
               <p>Não possui uma conta? <a href="/registration">Cadastre-se!</a></p>
             </div>
-          </form>
+          </form>*/}
         </div>
       </div>
     </CSSTransition>

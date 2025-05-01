@@ -41,17 +41,5 @@ body {
     width: 95%
   }
   
-  .form-group label {
-    width: 70px; /* largura fixa para alinhar as labels */
-    font-weight: 500;
-    text-align: right;
-  }
-  
-  .form-group input,
-  .form-group select {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
+
 

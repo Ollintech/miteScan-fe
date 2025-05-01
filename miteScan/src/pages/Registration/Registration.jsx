@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../Registration/Registration.css'
 import logo from '../../assets/images/bee-icon.png'
+import RegistrationForm from '../../components/AuthForms/RegistrationForm'
 
 function Registration() {
-  const [nome, setNome] = useState('')
+  {/* const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [login, setLogin] = useState('')
   const [senha, setSenha] = useState('')
@@ -24,11 +25,14 @@ function Registration() {
     console.log('Usuário registrado:', { nome, email, login, senha, tipo })
     setErro('')
     navigate('/login')
-  }
+  }*/}
 
   return (
     <div className="page">
-      <div className="registration-container">
+      <div className='max-w-3xl min-w-lg'>
+        <RegistrationForm />
+      </div>
+      {/*<div className="registration-container">
         <div className="logo">
           <img src={logo} alt="Logo Abelha" />
         </div>
@@ -109,7 +113,7 @@ function Registration() {
         <div className="cadastro">
           <p>Possui uma conta? <a href="/login">Voltar ao login</a></p>
         </div>
-      </div>
+      </div>*/}
     </div>
   )
 }
