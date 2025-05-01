@@ -2,85 +2,98 @@ import { useState } from 'react';
 import defaultAvatar from '../../assets/images/default-avatar.png';
 
 export default function UserCard() {
-  // Dados do usuário (podem ser vindo de um API ou estado global)
-  const [nome, setNome] = useState('João da Silva');
-  const [email, setEmail] = useState('joao@abelhas.com');
-  const [login, setLogin] = useState('joao.silva');
-  const [tipoAcesso, setTipoAcesso] = useState('Funcionário');
-  const [isEditing, setIsEditing] = useState(false); // Controla se está em modo de edição
+  const [nome, setNome] = useState('José Abelha');
+  const [email, setEmail] = useState('jose.abelha@gmail.com');
+  const [login, setLogin] = useState('jose.abelha');
+  const [tipoAcesso, setTipoAcesso] = useState('Administrador');
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Função para salvar as alterações
   const handleSave = () => {
     setIsEditing(false);
-    // Aqui você pode salvar os dados no backend ou no estado global
+    // salvar alterações
   };
 
   return (
-    <div className="bg-gray-100 rounded-xl shadow-2xl p-10 w-full">
-      <div className="w-37 mx-auto">
-        <img src={defaultAvatar} alt="Avatar" className="avatar-img" />
+    <div className="bg-gray-100 rounded-xl shadow-xl p-8 w-full mx-auto text-left">
+      {/* Avatar */}
+      <div className="flex justify-center">
+          <img src={defaultAvatar} alt="Avatar" className="w-35" />
       </div>
 
-      <div className='justify-items-start mt-5 mb-8'>
-        <div className="space-x-10 p-2">
-          <strong>Nome:</strong>
+      {/* Informações */}
+      <div className="mt-6 space-y-4 mx-20">
+        {/* Nome */}
+        <div className="flex items-center space-x-2">
+          <label className="w-20 font-medium">Nome:</label>
           {isEditing ? (
             <input
               type="text"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
+              className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             />
           ) : (
-            <span className='bg-gray-200 px-6 py-1 shadow'>{nome}</span>
+            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{nome}</div>
           )}
         </div>
 
-        <div className="space-x-10 p-2">
-
-          <strong>Email:</strong>
+        {/* Email */}
+        <div className="flex items-center space-x-2">
+          <label className="w-20 font-medium">Email:</label>
           {isEditing ? (
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             />
           ) : (
-            <span className='bg-gray-200 px-1 py-1 shadow'>{email}</span>
+            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{email}</div>
           )}
         </div>
 
-        <div className="space-x-10 p-2">
-          <strong>Login:</strong>
+        {/* Login */}
+        <div className="flex items-center space-x-2">
+          <label className="w-20 font-medium">Login:</label>
           {isEditing ? (
             <input
               type="text"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
+              className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             />
           ) : (
-            <span className='bg-gray-200 px-10 py-1 shadow'>{login}</span>
+            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{login}</div>
           )}
         </div>
 
-        <div className="space-x-7 p-2">
-          <strong>Acesso:</strong>
+        {/* Acesso */}
+        <div className="flex items-center space-x-2">
+          <label className="w-20 font-medium">Acesso:</label>
           {isEditing ? (
-            <select value={tipoAcesso} onChange={(e) => setTipoAcesso(e.target.value)}>
+            <select
+              value={tipoAcesso}
+              onChange={(e) => setTipoAcesso(e.target.value)}
+              className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
+            >
               <option value="Administrador">Administrador</option>
               <option value="Funcionário">Funcionário</option>
             </select>
           ) : (
-            <span className='bg-gray-200 px-7.5 py-1 shadow'>{tipoAcesso}</span>
+            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{tipoAcesso}</div>
           )}
         </div>
       </div>
 
-      <button
-        className="bg-yellow-400 py-2 px-7 font-bold shadow-md rounded-xl"
-        onClick={() => setIsEditing(!isEditing)}
-      >
-        {isEditing ? 'SALVAR' : 'EDITAR'}
-      </button>
+      {/* Botão */}
+      <div className="flex justify-center mt-6">
+        <button
+          className="bg-yellow-400 hover:bg-yellow-500 transition-colors px-8 py-2 font-bold rounded-lg shadow-md"
+          onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+        >
+          {isEditing ? 'SALVAR' : 'EDITAR'}
+        </button>
+      </div>
     </div>
-  )
+  );
 }

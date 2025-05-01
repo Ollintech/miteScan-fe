@@ -29,9 +29,16 @@ export default function CameraCard() {
         getCameraInfo()
     }, [])
 
-    // Função para navegar para a tela de "analysis"
-    const handleFinish = () => {
-        navigate('/analysis') // Aqui você redireciona para a página de "analysis"
+    const handleBackToForm = () => {
+        const origem = location.state?.origem || 'criar'
+        const rotaDestino = origem === 'editar' ? '/edit-hive' : '/create-hive'
+
+        navigate(rotaDestino, {
+            state: {
+                ...location.state,
+                cameraConnected: true
+            }
+        })
     }
 
     return (
@@ -47,7 +54,7 @@ export default function CameraCard() {
             )}
 
             {/* Botão "Finalizar" para redirecionar para a tela de "analysis" */}
-            <button onClick={handleFinish}
+            <button onClick={handleBackToForm}
                 className='bg-yellow-400 py-2 px-8 rounded-xl shadow-md font-bold mt-4'
             >Finalizar</button>
         </>

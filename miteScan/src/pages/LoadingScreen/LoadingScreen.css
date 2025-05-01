@@ -1,0 +1,22 @@
+.background {
+    background-image: url(../../assets/images/LoadingBackground.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
+@keyframes fadeZoomIn {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  

@@ -3,10 +3,12 @@ import ButtonBack from "../../components/buttonBack"
 
 function EditHive() {
 
-    return(
+    return (
         <div className="container-all">
-            <ButtonBack title="Editar dados da colmeia" redirect='/hives'/>
-            <div>{/* desenvolvendo o componente */}</div>
+            <div className="w-2/5 max-w-4xl min-w-xl">
+                <ButtonBack title="Editar dados da colmeia" redirect='/hives' />
+                <EditHiveCard />
+            </div>
         </div>
     )
 }

@@ -1,22 +1,28 @@
-import HiveForm from "../FormsHives/form-hive";
+import { useParams } from 'react-router-dom'
+import FormHive from './form-hive'
 
 export default function DeleteHiveCard() {
-  const formData = {
-    name: 'COLMEIA 1',
+  const { id } = useParams()
+
+  // Simulação de dados da colmeia
+  const colmeia = {
+    id,
+    name: 'Colmeia A',
     size: 'Large',
-    beeType: 'BOMBUS TEMERIUS',
-    location: { lat: -24.708450, lng: -48.002531 },
-  };
+    beeType: 'Bee 3',
+    location: { lat: -24.709, lng: -48.001 }
+  }
+
+  const handleExcluir = (colmeia) => {
+    console.log(`🗑 Excluir colmeia ${id}:`, colmeia)
+    // Aqui você realiza a exclusão no banco
+  }
 
   return (
-    <HiveForm
-      title="DESEJA EXCLUIR ESTA COLMEIA?"
-      formData={formData}
-      readOnly={true}
-      onSubmit={() => alert('Excluir colmeia')}
-      submitLabel="EXCLUIR"
-      submitColor="bg-red-500"
-      showCamera={false}
+    <FormHive
+      modo="excluir"
+      colmeia={colmeia}
+      onExcluir={handleExcluir}
     />
-  );
+  )
 }

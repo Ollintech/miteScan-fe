@@ -9,7 +9,7 @@ function Historical() {
 
   return (
     <div className="container-all">
-      <div className='max-w-2/3'>
+      <div className='w-2/5 max-w-4xl min-w-xl'>
         <div className="flex items-center justify-between mb-2">
           <ButtonBack title="histórico de análises" redirect='/hives'/>
         </div>

@@ -31,13 +31,21 @@ export default function MapCard() {
   const [mapData, setMapData] = useState({ lat: null, lng: null })
 
   const handleBackToForm = () => {
-    navigate('/create-hive', { state: { ...formData, location: mapData } })
+    const origem = location.state?.origem || 'criar' // fallback
+    const rotaDestino = origem === 'editar' ? '/edit-hive' : '/create-hive'
+
+    navigate(rotaDestino, {
+      state: {
+        ...location.state, // inclui formData, cameraConnected etc.
+        location: mapData // nova localização selecionada
+      }
+    })
   }
 
   return (
     <>
 
-      <div className="bg-gray-100 shadow-2xl rounded-xl w-2xl mx-auto">
+      <div className="bg-gray-100 shadow-2xl rounded-xl mx-auto">
         <div className="w-full h-80 rounded-lg overflow-hidden mb-0">
           <MapContainer
             center={[-23.5505, -46.6333]}
@@ -57,7 +65,7 @@ export default function MapCard() {
           <div className="flex items-center justify-between text-sm text-gray-800 border-t p-5">
             <div className="flex items-center gap-2">
               <span className=""><FaMapMarkerAlt size={25} /></span>
-              <span>JACUPIRANGA</span>
+              <span>Cidade</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xl"><TbWorldLatitude size={25} /></span>

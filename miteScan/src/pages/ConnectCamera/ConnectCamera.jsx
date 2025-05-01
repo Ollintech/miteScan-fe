@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './ConnectCamera.css'
-import CameraCard from '../../components/ConnectCamera/connect-camera'
+import CameraCard from '../../components/connectCamera/connect-camera'
 import ButtonBack from '../../components/buttonBack'
 
 function ConnectCamera() {
@@ -41,7 +41,7 @@ function ConnectCamera() {
 
   return (
     <div className="container-all">
-      <div className='w-2/3 max-w-2xl'>
+      <div className='w-2/5 max-w-4xl min-w-xl'>
         <div className="flex items-center justify-between mb-2">
           <ButtonBack title="conectar câmera" redirect='/create-hive' />
         </div>

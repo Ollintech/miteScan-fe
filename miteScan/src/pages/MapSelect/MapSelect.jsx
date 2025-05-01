@@ -40,7 +40,7 @@ function MapSelect() {
 
   return (
     <div className="container-all">
-      <div className='w-2/3 max-w-3xl'>
+      <div className='w-2/5 max-w-3xl min-w-lg'>
         <div className="flex items-center justify-between my-6">
           <ButtonBack title="definir localização" redirect='/create-hive' />
         </div>

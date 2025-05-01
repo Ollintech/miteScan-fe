@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import DefaultLayout from './components/DefaultLayout'
 import SplashScreen from '../src/pages/SplashScreen/SplashScreen'
+import LoadingScreen from './pages/LoadingScreen/LoadingScreen';
 import './styles/globals.css'
 
 import Login from '../src/pages/Login/Login'
