@@ -27,7 +27,7 @@ export default function RegistrationForm() {
   };
 
   return (
-    <div className="w-full bg-gray-100 text-gray-600 rounded-xl p-6 shadow-lg flex flex-col items-center">
+    <div className="w-full px-20 bg-gray-100 text-gray-600 rounded-xl p-6 shadow-lg flex flex-col items-center">
       <div className="w-35 h-35 rounded-full bg-black flex items-center justify-center -mt-24 mb-4">
         <img src={BeeIcon} alt="Ícone" className="w-35" />
       </div>

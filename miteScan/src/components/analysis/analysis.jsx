@@ -18,7 +18,7 @@ export default function AnalysisCard() {
                     id="hive-select"
                     value={selectedHive}
                     onChange={(e) => setSelectedHive(e.target.value)}
-                    className='bg-gray-200 py-2 px-6 rounded-lg'
+                    className='bg-gray-200 py-1 px-6 rounded-lg'
                 >
                     <option value="colmeia1">Colmeia 1</option>
                     <option value="colmeia2">Colmeia 2</option>
@@ -26,8 +26,8 @@ export default function AnalysisCard() {
             </div>
 
             <div className="bg-gray-100 rounded-xl shadow-2xl">
-                <img src={hiveImages[selectedHive]} alt={selectedHive} className="w-full h-80" />
-                <button className="rounded-xl shadow-lg bg-yellow-400 my-4 w-1/3 p-3">🔍 Analisar</button>
+                <img src={hiveImages[selectedHive]} alt={selectedHive} className="w-full h-75" />
+                <button className="rounded-xl shadow-lg bg-yellow-400 my-4 w-1/4 p-2">🔍 Analisar</button>
             </div>
         </>
     )

@@ -66,7 +66,7 @@ export default function HomeHives() {
         {colmeias.map((colmeia) => (
           <div
             key={colmeia.id}
-            className="text-sm flex flex-col items-start bg-gray-200 rounded-xl shadow-md hover:scale-105 transition-transform max-w-50 min-w-37 mx-auto"
+            className="text-sm flex flex-col items-start bg-gray-200 rounded-xl shadow-md hover:scale-105 transition-transform max-w-50 min-w-35 mx-auto"
             onClick={() => navigate('/hives')}
           >
             {/* Imagem da colmeia */}

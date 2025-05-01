@@ -71,7 +71,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
         </h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="mx-15 space-y-4">
         {/* Nome */}
         <div className="flex items-center gap-4">
           <label className="min-w-[90px] text-gray-600 font-medium">Nome:</label>

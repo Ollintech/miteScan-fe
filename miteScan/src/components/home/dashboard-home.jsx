@@ -25,7 +25,7 @@ export default function InfoHome() {
       {dashboard.map((item) => (
         <div
           key={item.id}
-          className="bg-gray-100 rounded-xl shadow-lg w-50 h-30 flex flex-col items-center justify-center"
+          className="bg-gray-100 rounded-xl shadow-lg max-w-50 w-1/4 min-w-30 h-30 flex flex-col items-center justify-center"
         >
           <div className="flex items-center gap-2 mb-1">
             <img src={favIcon} className="w-7 h-6" />

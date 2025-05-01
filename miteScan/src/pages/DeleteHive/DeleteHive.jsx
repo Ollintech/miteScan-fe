@@ -5,7 +5,7 @@ function DeleteHive() {
 
     return(
         <div className="container-all">
-            <div className="w-2/5 max-w-4xl min-w-xl">
+            <div className="w-2/5 max-w-3xl min-w-xl">
             <ButtonBack title="Deletar colmeia" redirect='/hives'/>
             <DeleteHiveCard/>
             </div>

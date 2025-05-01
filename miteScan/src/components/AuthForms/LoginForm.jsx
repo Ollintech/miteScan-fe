@@ -43,7 +43,7 @@ export default function LoginForm() {
   }; */}
 
   return (
-    <div className="w-full bg-gray-100 rounded-xl p-6 shadow-lg flex flex-col items-center">
+    <div className="w-full px-20 bg-gray-100 rounded-xl p-6 shadow-lg flex flex-col items-center">
       <div className="w-35 h-35 rounded-full bg-black flex items-center justify-center -mt-24 mb-4">
         <img src={BeeIcon} alt="Ícone" className="w-35" />
       </div>
@@ -63,7 +63,7 @@ export default function LoginForm() {
           onChange={(e) => setSenha(e.target.value)}
           className="bg-gray-200 rounded p-2"
         />
-        <button type="submit" className="bg-yellow-400 text-black font-bold py-2 rounded-xl shadow-md mt-6 mx-auto w-1/2">
+        <button type="submit" className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 rounded-xl shadow-md mt-6 mx-auto w-1/2">
           ENTRAR
         </button>
       </form>

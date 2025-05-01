@@ -14,14 +14,14 @@ export default function UserCard() {
   };
 
   return (
-    <div className="bg-gray-100 rounded-xl shadow-xl p-8 w-full mx-auto text-left">
+    <div className="bg-gray-100 rounded-xl shadow-xl p-6 w-full mx-auto text-left">
       {/* Avatar */}
       <div className="flex justify-center">
-          <img src={defaultAvatar} alt="Avatar" className="w-35" />
+          <img src={defaultAvatar} alt="Avatar" className="w-30" />
       </div>
 
       {/* Informações */}
-      <div className="mt-6 space-y-4 mx-20">
+      <div className="mt-6 space-y-3 mx-20">
         {/* Nome */}
         <div className="flex items-center space-x-2">
           <label className="w-20 font-medium">Nome:</label>
