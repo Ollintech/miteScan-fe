@@ -18,6 +18,7 @@ import MapSelect from '../src/pages/MapSelect/MapSelect'
 import ConnectCamera from '../src/pages/ConnectCamera/ConnectCamera'
 import EditHive from './pages/EditHive/EditHive';
 import DeleteHive from './pages/DeleteHive/DeleteHive';
+import ResultAnalysis from './pages/ResultAnalysis/ResultAnalysis';
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -46,6 +47,7 @@ function App() {
           <Route path="/hives" element={<Hives />} />
           <Route path="/historical" element={<Historical />} />
           <Route path="/analysis" element={<Analysis />} />
+          <Route path="/result-analysis" element={<ResultAnalysis />} />
           <Route path="/user" element={<User />} />
           <Route path="/create-hive" element={<CreateHive />} />
           <Route path="/select-location" element={<MapSelect />} />

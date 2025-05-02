@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import colmeia1 from '../../assets/images/colmeia1.png'
 import colmeia2 from '../../assets/images/colmeia2.jpg'
+import { useNavigate } from 'react-router-dom'
 
 export default function AnalysisCard() {
     const [selectedHive, setSelectedHive] = useState('colmeia1')
@@ -9,6 +10,8 @@ export default function AnalysisCard() {
         colmeia1: colmeia1,
         colmeia2: colmeia2
     }
+
+    const navigate = useNavigate()
 
     return (
         <>
@@ -27,7 +30,11 @@ export default function AnalysisCard() {
 
             <div className="bg-gray-100 rounded-xl shadow-2xl">
                 <img src={hiveImages[selectedHive]} alt={selectedHive} className="w-full h-75" />
-                <button className="rounded-xl shadow-lg bg-yellow-400 my-4 w-1/4 p-2">🔍 Analisar</button>
+                <button 
+                className="rounded-xl shadow-lg bg-yellow-400 hover:bg-yellow-300 font-bold my-4 w-1/4 p-2"
+                onClick={() => navigate('/result-analysis')}
+                >🔍 Analisar
+                </button>
             </div>
         </>
     )

@@ -6,7 +6,7 @@ function Historical() {
 
   return (
     <div className="container-all">
-      <div className='w-2/3 max-w-3xl min-w-xl'>
+      <div className='w-2/3 max-w-3xl min-w-xl mb-10'>
           <ButtonBack title="histórico de análises" redirect='/hives'/>
         <AnalysisHist />
         </div>
