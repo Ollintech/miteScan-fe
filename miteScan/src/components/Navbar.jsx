@@ -1,41 +1,71 @@
-// src/components/Navbar.jsx
-import { Link, useLocation } from 'react-router-dom'
-import { FaHome, FaPlus, FaHistory, FaSearch, FaUser, FaSignOutAlt } from 'react-icons/fa'
-import './Navbar.css'
+import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import './Navbar.css';
 
 function Navbar() {
-  const location = useLocation()
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  //Função para menu
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  // Função para fechar o menu quando um item for clicado
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
 
   return (
     <nav className="navbar">
       <div className="item">
-      <img src="../../src/assets/images/logo-nav.png" alt="" />
+        <img src="../../src/assets/images/logo-nav.png" alt="Logo" />
       </div>
-     <div className="item2">
-      <ul>
-        <li className={location.pathname === '/home' ? 'active' : ''}>
-          <Link to="/home"> <img src="../../src/assets/images/home-icon.png" alt="" style={{width: '50px'}}/></Link>
-        </li>
-        <li className={location.pathname === '/hives' ? 'active' : ''}>
-          <Link to="/hives"><img src="../../src/assets/images/cadastrar-colmeia.png" alt="" style={{width: '50px'}}/> </Link>
-        </li>
-        <li className={location.pathname === '/historical' ? 'active' : ''}>
-          <Link to="/historical"><img src="../../src/assets/images/historico-analise.png" alt="" style={{width: '50px'}}/> </Link>
-        </li>
-        <li className={location.pathname === '/analysis' ? 'active' : ''}>
-          <Link to="/analysis"><img src="../../src/assets/images/analisar.png" alt="" style={{width: '50px'}}/></Link>
-        </li>
-        <li className={location.pathname === '/user' ? 'active' : ''}>
-          <Link to="/user"><img src="../../src/assets/images/usuario.png" alt="" style={{width: '50px'}}/></Link>
-        </li>
-        <li className={location.pathname === '/login' ? 'active' : ''}>
-          <Link to="/login"><img src="../../src/assets/images/logout.png" alt="" style={{width: '50px'}}/></Link>
-        </li>
-      </ul>
-     </div>
-      
+
+      {/* Menu principal com links */}
+      <div className={`item2 ${menuOpen ? 'active' : ''}`}>
+        <ul>
+          <li className={location.pathname === '/home' ? 'active' : ''}>
+            <Link to="/home" onClick={closeMenu}>
+              <img src="../../src/assets/images/home-icon.png" alt="Home" style={{ width: '50px' }} />
+            </Link>
+          </li>
+          <li className={location.pathname === '/hives' ? 'active' : ''}>
+            <Link to="/hives" onClick={closeMenu}>
+              <img src="../../src/assets/images/cadastrar-colmeia.png" alt="Cadastrar Colmeia" style={{ width: '50px' }} />
+            </Link>
+          </li>
+          <li className={location.pathname === '/historical' ? 'active' : ''}>
+            <Link to="/historical" onClick={closeMenu}>
+              <img src="../../src/assets/images/historico-analise.png" alt="Histórico de Análise" style={{ width: '50px' }} />
+            </Link>
+          </li>
+          <li className={location.pathname === '/analysis' ? 'active' : ''}>
+            <Link to="/analysis" onClick={closeMenu}>
+              <img src="../../src/assets/images/analisar.png" alt="Analisar" style={{ width: '50px' }} />
+            </Link>
+          </li>
+          <li className={location.pathname === '/user' ? 'active' : ''}>
+            <Link to="/user" onClick={closeMenu}>
+              <img src="../../src/assets/images/usuario.png" alt="Usuário" style={{ width: '50px' }} />
+            </Link>
+          </li>
+          <li className={location.pathname === '/login' ? 'active' : ''}>
+            <Link to="/login" onClick={closeMenu}>
+              <img src="../../src/assets/images/logout.png" alt="Logout" style={{ width: '50px' }} />
+            </Link>
+          </li>
+        </ul>
+      </div>
+
+      {/* Ícone do menu hamburger */}
+      <div className="menu-icon" onClick={toggleMenu}>
+        <span className="bar"></span>
+        <span className="bar"></span>
+        <span className="bar"></span>
+      </div>
     </nav>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;
