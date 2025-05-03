@@ -24,7 +24,7 @@ body {
     background-size: auto
   }
 
-  .bg-auth{
+  .bg-auth {
     background-image: url('.././assets/images/bees.png');
     background-color: #ffbb00;
     min-height: 100vh;
@@ -33,4 +33,6 @@ body {
     justify-content: center;
     align-items: center;
     background-size: cover;
+    padding: 1rem; 
+    box-sizing: border-box; 
   }

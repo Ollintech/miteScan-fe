@@ -27,8 +27,8 @@ export default function RegistrationForm() {
   };
 
   return (
-    <div className="w-full px-20 bg-gray-100 text-gray-600 rounded-xl p-6 shadow-lg flex flex-col items-center">
-      <div className="w-35 h-35 rounded-full bg-black flex items-center justify-center -mt-24 mb-4">
+    <div className="w-full px-[13vw] bg-gray-100 text-gray-600 rounded-xl p-6 shadow-lg flex flex-col items-center">
+      <div className="w-30 h-30 rounded-full bg-black flex items-center justify-center -mt-24 mb-4">
         <img src={BeeIcon} alt="Ícone" className="w-35" />
       </div>
       <h2 className="text-xl font-bold mb-4">Cadastrar-se</h2>
@@ -41,7 +41,7 @@ export default function RegistrationForm() {
           <option>Administrador</option>
           <option>Usuário</option>
         </select>
-        <button type="submit" className="bg-yellow-400 text-black font-bold py-2 rounded shadow-md mx-auto w-1/2 mt-2">
+        <button type="submit" className="bg-yellow-400 text-black font-bold py-2 rounded shadow-md mx-auto w-2/3 mt-2">
           CADASTRAR
         </button>
       </form>

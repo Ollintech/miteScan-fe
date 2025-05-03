@@ -43,9 +43,9 @@ export default function LoginForm() {
   }; */}
 
   return (
-    <div className="w-full px-20 bg-gray-100 rounded-xl p-6 shadow-lg flex flex-col items-center">
-      <div className="w-35 h-35 rounded-full bg-black flex items-center justify-center -mt-24 mb-4">
-        <img src={BeeIcon} alt="Ícone" className="w-35" />
+    <div className="w-full px-[13vw] bg-gray-100 rounded-xl p-6 shadow-lg flex flex-col items-center">
+      <div className="w-30 h-30 rounded-full bg-black flex items-center justify-center -mt-24 mb-4">
+        <img src={BeeIcon} alt="Ícone" className="w-30" />
       </div>
       <h2 className="text-xl text-gray-600 font-bold mb-4">Login</h2>
       <form onSubmit={handleLogin} className="w-full flex  text-gray-600 flex-col gap-2">
@@ -54,14 +54,14 @@ export default function LoginForm() {
           type="text"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-gray-200 rounded p-2"
+          className="bg-gray-200 rounded p-2 w-full"
         />
         <label className="textmd">Senha:</label>
         <input
           type="password"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
-          className="bg-gray-200 rounded p-2"
+          className="bg-gray-200 rounded p-2 w-full"
         />
         <button type="submit" className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 rounded-xl shadow-md mt-6 mx-auto w-1/2">
           ENTRAR
