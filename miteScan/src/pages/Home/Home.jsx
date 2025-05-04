@@ -9,7 +9,7 @@ function Home() {
 
   return (
     <div className="container-all">
-      <div className='w-2/5 max-w-3xl min-w-lg mt-20 mb-5'>
+      <div className='w-full max-w-3xl px-4 sm:px-8 mt-20 mb-5'>
         <InfoHome />
         <HomeHives />
       </div>

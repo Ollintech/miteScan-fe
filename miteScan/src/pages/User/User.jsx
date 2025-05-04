@@ -5,7 +5,7 @@ function User() {
 
   return (
     <div className="container-all">
-      <div className='w-2/5 max-w-3xl min-w-lg mb-10'>
+      <div className='w-full max-w-3xl px-4 sm:px-8 mb-10'>
         <ButtonBack title="meus dados" redirect='/home' />
         <UserCard />
       </div>

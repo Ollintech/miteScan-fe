@@ -6,7 +6,7 @@ function ConnectCamera() {
 
   return (
     <div className="container-all">
-      <div className='w-2/5 max-w-4xl min-w-xl'>
+      <div className='w-full max-w-4xl px-4 sm:px-8'>
         <ButtonBack title="conectar câmera" redirect='/create-hive' />
         <CameraCard />
       </div>

@@ -21,7 +21,7 @@ export default function UserCard() {
       </div>
 
       {/* Informações */}
-      <div className="mt-6 space-y-3 mx-20">
+      <div className="mt-6 space-y-3 mx-[4%]">
         {/* Nome */}
         <div className="flex items-center space-x-2">
           <label className="w-20 font-medium">Nome:</label>

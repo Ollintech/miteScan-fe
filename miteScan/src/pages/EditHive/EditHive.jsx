@@ -5,7 +5,7 @@ function EditHive() {
 
     return (
         <div className="container-all">
-            <div className="w-2/5 max-w-3xl min-w-xl mt-20">
+            <div className="w-full max-w-3xl px-4 sm:px-8 mt-20">
                 <ButtonBack title="Editar dados da colmeia" redirect='/hives' />
                 <EditHiveCard />
             </div>

@@ -31,7 +31,7 @@ export default function AnalysisCard() {
             <div className="bg-gray-100 rounded-xl shadow-2xl">
                 <img src={hiveImages[selectedHive]} alt={selectedHive} className="w-full h-75" />
                 <button 
-                className="rounded-xl shadow-lg bg-yellow-400 hover:bg-yellow-300 font-bold my-4 w-1/4 p-2"
+                className="rounded-xl shadow-lg bg-yellow-400 hover:bg-yellow-300 font-bold my-4 w-1/3 p-2"
                 onClick={() => navigate('/result-analysis')}
                 >🔍 Analisar
                 </button>

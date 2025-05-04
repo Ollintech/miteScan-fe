@@ -61,7 +61,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
 
 
   return (
-    <div className="bg-gray-100 rounded-xl shadow-xl py-10 px-6 w-full mx-auto">
+    <div className="bg-gray-100 rounded-xl shadow-xl py-10 px-4 w-full mx-auto">
       <div className='flex items-center gap-4 mx-auto mb-6'>
         <img src={yellowBee} alt="Abelha" className='w-8' />
         <h3 className="text-gray-700 font-semibold text-center">
@@ -71,7 +71,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
         </h3>
       </div>
 
-      <div className="mx-15 space-y-4">
+      <div className="space-y-4">
         {/* Nome */}
         <div className="flex items-center gap-4">
           <label className="min-w-[90px] text-gray-600 font-medium">Nome:</label>
@@ -81,7 +81,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
             value={formData.name}
             onChange={handleChange}
             readOnly={isLeitura}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none shadow-sm"
+            className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none shadow-sm"
           />
         </div>
 
@@ -93,7 +93,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
             value={formData.size}
             onChange={handleChange}
             disabled={isLeitura}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
+            className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
           >
             <option value="">Selecione o tamanho:</option>
             <option value="Small">Pequena</option>
@@ -110,7 +110,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
             value={formData.beeType}
             onChange={handleChange}
             disabled={isLeitura}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
+            className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
           >
             <option value="">Selecione o tipo de abelha:</option>
             <option value="Bee 1">Bee 1</option>

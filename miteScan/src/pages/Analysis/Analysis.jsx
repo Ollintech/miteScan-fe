@@ -6,7 +6,7 @@ function Analysis() {
 
   return (
     <div className="container-all">
-      <div className='w-2/3 max-w-3xl min-w-xl mb-10'>
+      <div className='w-full max-w-3xl px-4 sm:px-8 mb-10'>
         <ButtonBack title="analisar agora" redirect='/hives' />
         <AnalysisCard />
       </div>

@@ -6,7 +6,7 @@ function CreateHive() {
 
   return (
     <div className="container-all">
-      <div className='w-1/2 max-w-3xl'>
+      <div className='w-full max-w-3xl px-4 sm:px-8'>
         <ButtonBack title="Cadastro de colmeia" redirect='/hives' />
         <CreateHiveCard />
       </div>

@@ -6,7 +6,7 @@ function MapSelect() {
 
   return (
     <div className="container-all">
-      <div className='w-2/5 max-w-3xl min-w-lg'>
+      <div className='w-full max-w-3xl px-4 sm:px-8'>
         <ButtonBack title="definir localização" redirect='/create-hive' />
         <MapCard />
       </div>
