@@ -15,19 +15,17 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
   })
 
   useEffect(() => {
-    // Preenche dados se estiver editando ou excluindo
     if ((modo === 'editar' || modo === 'excluir') && colmeia) {
       setFormData({
         name: colmeia.name || '',
         size: colmeia.size || '',
         beeType: colmeia.beeType || '',
         location: colmeia.location || null,
-        cameraConnected: true, // em edição/exclusão presumimos que já foi conectada
+        cameraConnected: true, 
       })
     }
   }, [modo, colmeia])
 
-  // Atualiza com dados vindos do mapa ou da câmera
   useEffect(() => {
     if (location.state?.location) {
       setFormData(prev => ({ ...prev, location: location.state.location }))

@@ -15,20 +15,38 @@ L.Icon.Default.mergeOptions({
 
 function MapClickHandler({ setMapData }) {
   useMapEvents({
-    click(e) {
+    click: async (e) => {
       const { lat, lng } = e.latlng
-      setMapData({ lat, lng })
+      const city = await getCityFromCoords(lat, lng)
+
+      setMapData({ lat, lng, city })
     },
   })
   return null
 }
+
+
+async function getCityFromCoords(lat, lon) {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+  )
+  const data = await response.json()
+  const city =
+    data.address?.city ||
+    data.address?.town ||
+    data.address?.village ||
+    data.address?.hamlet
+
+  return city || 'Cidade não encontrada'
+}
+
 
 export default function MapCard() {
   const navigate = useNavigate()
   const location = useLocation()
 
   const formData = location.state?.fromForm || {}
-  const [mapData, setMapData] = useState({ lat: null, lng: null })
+  const [mapData, setMapData] = useState({ lat: null, lng: null, city: '' })
 
   const handleBackToForm = () => {
     const origem = location.state?.origem || 'criar' // fallback
@@ -64,8 +82,8 @@ export default function MapCard() {
         {mapData.lat && mapData.lng ? (
           <div className="flex items-center justify-between text-sm text-gray-800 border-t p-5">
             <div className="flex items-center gap-2">
-              <span className=""><FaMapMarkerAlt size={25} /></span>
-              <span>Cidade</span>
+              <FaMapMarkerAlt size={25} />
+              <span>{mapData.city}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xl"><TbWorldLatitude size={25} /></span>

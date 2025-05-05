@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 import BeeIcon from '../../assets/images/bee-icon.png'
 
 export default function RegistrationForm() {
@@ -18,9 +17,8 @@ export default function RegistrationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/cadastrar", form);
+      const response = await axios.post("url-back", form);
       console.log("Cadastro realizado:", response.data);
-      // Redirecionar ou mostrar mensagem de sucesso
     } catch (error) {
       console.error("Erro no cadastro:", error.response?.data || error.message);
     }

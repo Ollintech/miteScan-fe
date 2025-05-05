@@ -5,7 +5,7 @@ export default function CreateHiveCard() {
     console.log('Criar colmeia com dados:', dados)
 
     try {
-      const response = await fetch('/api/hives', {
+      const response = await fetch('/url-back', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

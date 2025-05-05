@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 import BeeIcon from '../../assets/images/bee-icon.png'
 import { useNavigate } from "react-router-dom";
 
