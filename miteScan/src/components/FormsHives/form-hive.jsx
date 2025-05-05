@@ -160,7 +160,10 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
         <div className="flex justify-center mt-6">
           {modo === 'criar' && formData.location && formData.cameraConnected && (
             <button
-              onClick={handleAnalysis}
+              onClick={() => {
+                onConfirmar(formData) // envia os dados pro back
+                navigate('/analysis')
+              }}
               className="bg-yellow-400 hover:bg-yellow-300 font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
             >
               Confirmar
@@ -169,7 +172,10 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
 
           {modo === 'editar' && (
             <button
-              onClick={handleFinish}
+              onClick={() => {
+                onConfirmar(formData)
+                navigate('/hives')
+              }}
               className="bg-yellow-400 hover:bg-yellow-300 font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
             >
               Confirmar
@@ -178,7 +184,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
 
           {modo === 'excluir' && (
             <button
-              onClick={handleFinish}
+              onClick={onExcluir}
               className="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
             >
               Excluir

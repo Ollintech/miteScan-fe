@@ -1,23 +1,74 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import defaultAvatar from '../../assets/images/default-avatar.png';
 
 export default function UserCard() {
-  const [nome, setNome] = useState('José Abelha');
-  const [email, setEmail] = useState('jose.abelha@gmail.com');
-  const [login, setLogin] = useState('jose.abelha');
-  const [tipoAcesso, setTipoAcesso] = useState('Administrador');
+  const [userData, setUserData] = useState({
+    name: '',
+    email: '',
+    login: '',
+    access: '', // ex: "Administrador"
+  });
+
   const [isEditing, setIsEditing] = useState(false);
+
+  // Simula carregamento inicial
+  useEffect(() => {
+    // MOCK de usuário (substitua com fetch real depois)
+    const mockUser = {
+      name: 'José Abelha',
+      email: 'jose.abelha@gmail.com',
+      login: 'jose.abelha',
+      access: 'Administrador',
+    };
+
+    setUserData(mockUser);
+
+    // Quando for usar o back-end:
+    /*
+    fetch('/api/users/me') // ou `/api/users/${id}`
+      .then((res) => res.json())
+      .then((data) => {
+        setUserData({
+          name: data.name,
+          email: data.email,
+          login: data.login, // certifique-se que o campo esteja no back
+          access: data.access_type || 'Funcionário',
+        });
+      })
+      .catch((err) => console.error('Erro ao carregar usuário', err));
+    */
+  }, []);
+
+  const handleChange = (field, value) => {
+    setUserData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSave = () => {
     setIsEditing(false);
-    // salvar alterações
+
+    // Salvar alterações no back (comentado por enquanto)
+    /*
+    fetch('/api/users/me', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Erro ao atualizar usuário');
+        return res.json();
+      })
+      .then((updatedUser) => {
+        setUserData(updatedUser);
+      })
+      .catch((err) => console.error('Erro ao salvar alterações', err));
+    */
   };
 
   return (
     <div className="bg-gray-100 rounded-xl shadow-xl p-6 w-full mx-auto text-left">
       {/* Avatar */}
       <div className="flex justify-center">
-          <img src={defaultAvatar} alt="Avatar" className="w-30" />
+        <img src={defaultAvatar} alt="Avatar" className="w-30" />
       </div>
 
       {/* Informações */}
@@ -28,12 +79,12 @@ export default function UserCard() {
           {isEditing ? (
             <input
               type="text"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
+              value={userData.name}
+              onChange={(e) => handleChange('name', e.target.value)}
               className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             />
           ) : (
-            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{nome}</div>
+            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{userData.name}</div>
           )}
         </div>
 
@@ -43,12 +94,12 @@ export default function UserCard() {
           {isEditing ? (
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={userData.email}
+              onChange={(e) => handleChange('email', e.target.value)}
               className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             />
           ) : (
-            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{email}</div>
+            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{userData.email}</div>
           )}
         </div>
 
@@ -58,12 +109,12 @@ export default function UserCard() {
           {isEditing ? (
             <input
               type="text"
-              value={login}
-              onChange={(e) => setLogin(e.target.value)}
+              value={userData.login}
+              onChange={(e) => handleChange('login', e.target.value)}
               className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             />
           ) : (
-            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{login}</div>
+            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{userData.login}</div>
           )}
         </div>
 
@@ -72,15 +123,15 @@ export default function UserCard() {
           <label className="w-20 font-medium">Acesso:</label>
           {isEditing ? (
             <select
-              value={tipoAcesso}
-              onChange={(e) => setTipoAcesso(e.target.value)}
+              value={userData.access}
+              onChange={(e) => handleChange('access', e.target.value)}
               className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             >
               <option value="Administrador">Administrador</option>
               <option value="Funcionário">Funcionário</option>
             </select>
           ) : (
-            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{tipoAcesso}</div>
+            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{userData.access}</div>
           )}
         </div>
       </div>

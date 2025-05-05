@@ -1,39 +1,72 @@
 import Image from '../../assets/images/colmeia2.jpg'
-import Seguro from '../../assets/images/secure-icon.png'
-import Perigo from '../../assets/images/AlertIcon.png'
 import Bee from '../../assets/images/miniBee.png'
-import { FaMapMarkerAlt, FaTrash, FaThermometerHalf, FaArrowLeft } from 'react-icons/fa';
-import { MdAdd, MdEdit, MdHexagon, MdOutlineWaterDrop } from "react-icons/md";
-import { TbWorldLatitude } from "react-icons/tb";
-import { useNavigate } from 'react-router-dom';
-
-
-const colmeias = [
-
-  {
-    id: 1,
-    nome: "COLMEIA 1",
-    abelha: "Bombus Temarius",
-    localizacao: "Jacupiranga",
-    coordenadas: "-24.708450, -48.002531",
-    temperatura: 23,
-    umidade: 42,
-    estado: "segura",
-  },
-  {
-    id: 2,
-    nome: "COLMEIA 2",
-    abelha: "Bombus Affinis",
-    localizacao: "Jacupiranga",
-    coordenadas: "-24.708450, -48.002531",
-    temperatura: 30,
-    umidade: 20,
-    estado: "perigo",
-  },
-];
+import { FaMapMarkerAlt, FaTrash, FaThermometerHalf, FaArrowLeft } from 'react-icons/fa'
+import { MdAdd, MdEdit, MdHexagon, MdOutlineWaterDrop, MdVerifiedUser } from "react-icons/md"
+import { TbAlertTriangleFilled, TbAlertOctagonFilled } from "react-icons/tb";
+import { TbWorldLatitude } from "react-icons/tb"
+import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
 export default function HivesList() {
+  const [hives, setHives] = useState([])
   const navigate = useNavigate()
+
+  useEffect(() => {
+    // Simulação de API com base nas entidades reais
+    const mockData = [
+      {
+        id: 1,
+        name: "COLMEIA 1",
+        species: "Bombus Temarius",
+        location: "Jacupiranga",
+        latitude: -24.708450,
+        longitude: -48.002531,
+        hive_analyses: [
+          {
+            temperature: 25,
+            humidity: 45,
+            has_varroa: false,
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: "COLMEIA 2",
+        species: "Bombus Affinis",
+        location: "Jacupiranga",
+        latitude: -24.708450,
+        longitude: -48.002531,
+        hive_analyses: [
+          {
+            temperature: 31,
+            humidity: 72,
+            has_varroa: true,
+          }
+        ]
+      },
+    ]
+
+    setHives(mockData)
+  }, [])
+
+  function getEstado(analysis) {
+    if (!analysis) return 'segura'
+    if (analysis.has_varroa) return 'perigo'
+    if (analysis.temperature > 28 || analysis.humidity < 30) return 'alerta'
+    return 'segura'
+  }
+
+  function getIcon(estado) {
+    if (estado === 'segura') return <MdVerifiedUser size={28} className='text-green-600'/>
+    if (estado === 'alerta') return <TbAlertTriangleFilled size={28} className='text-yellow-400' />
+    return <TbAlertOctagonFilled size={25} className='text-red-600' />
+  }
+
+  function getBgColor(estado) {
+    if (estado === 'segura') return 'bg-green-200'
+    if (estado === 'alerta') return 'bg-yellow-200'
+    return 'bg-red-200'
+  }
 
   return (
     <div className="p-6">
@@ -44,7 +77,6 @@ export default function HivesList() {
             onClick={() => navigate('/home')}>
             <FaArrowLeft size={25} />
           </button>
-
           MINHAS COLMEIAS
         </div>
         <button className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-3"
@@ -54,87 +86,76 @@ export default function HivesList() {
         </button>
       </div>
 
-      {/* Lista de colmeias */}
+      {/* Lista */}
       <div className='max-h-[calc(100vh-340px)] overflow-y-auto pr-2'>
         <div className="grid gap-6">
-          {colmeias.map((colmeia) => (
-            <div className='flex items-center w-full'>
-              <div key={colmeia.id} className="flex h-full w-full shadow-lg rounded-xl">
+          {hives.map((hive) => {
+            const analysis = hive.hive_analyses?.[0]
+            const estado = getEstado(analysis)
 
-                {/* Card da Colmeia */}
-                <div className="flex items-center h-full justify-between w-full flex gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden">
-                  {/* Imagem */}
-                  <img
-                    src={Image}
-                    alt={`Imagem da Colmeia ${colmeia.nome}`}
-                    className="w-32 h-full object-cover"
-                  />
+            return (
+              <div key={hive.id} className='flex items-center w-full'>
+                <div className="flex h-full w-full shadow-lg rounded-xl">
 
-                  {/* Informações */}
-                  <div className="flex flex-col gap-3 py-6 text-start font-bold text-sm w-full">
-                    <div className="flex items-center gap-2">
-                      <MdHexagon size={19} />
-                      {colmeia.nome}
+                  <div className="flex items-center h-full justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden">
+                    {/* Imagem */}
+                    <img src={Image} alt={`Colmeia ${hive.name}`} className="w-32 h-full object-cover" />
+
+                    {/* Info */}
+                    <div className="flex flex-col gap-3 py-6 text-start font-bold text-sm w-full">
+                      <div className="flex items-center gap-2">
+                        <MdHexagon size={19} />
+                        {hive.name}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img src={Bee} className='w-4' />
+                        {hive.species}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaMapMarkerAlt size={18} />
+                        {hive.location}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <TbWorldLatitude size={18} />
+                        {`${hive.latitude}, ${hive.longitude}`}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <img src={Bee} className='w-4' />
-                      {colmeia.abelha}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt size={18} />
-                      {colmeia.localizacao}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <TbWorldLatitude size={18} />
-                      {colmeia.coordenadas}
-                    </div>
-                  </div>
-                  <div className='h-25 w-0.5 bg-gray-600 mx-3 rounded-xl'></div>
 
-                  <div className="pr-6">
-                    <div className="flex gap-1 mb-5">
-                      <FaThermometerHalf size={22} color={colmeia.temperatura > 28 ? "red" : "green"} />
-                      {colmeia.temperatura}°C
+                    {/* Medidas */}
+                    <div className='h-25 w-0.5 bg-gray-600 mx-3 rounded-xl'></div>
+                    <div className="pr-6">
+                      <div className="flex gap-1 mb-5">
+                        <FaThermometerHalf size={22} color={analysis?.temperature > 28 ? "red" : "green"} />
+                        {analysis?.temperature ?? "--"}°C
+                      </div>
+                      <div className="flex gap-1">
+                        <MdOutlineWaterDrop size={22} color={analysis?.humidity < 30 ? "red" : "green"} />
+                        {analysis?.humidity ?? "--"}%
+                      </div>
                     </div>
-                    <div className="flex gap-1">
-                      <MdOutlineWaterDrop size={22} color={colmeia.umidade < 30 ? "red" : "green"} />
-                      {colmeia.umidade}%
 
+                    {/* Estado */}
+                    <div className={`flex flex-col items-center justify-center p-3 w-28 h-full ${getBgColor(estado)}`}>
+                      {getIcon(estado)}
+                      <span className="font-bold uppercase">{estado}</span>
                     </div>
-                  </div>
-
-
-
-                  {/* Estado */}
-                  <div className={`flex flex-col items-center justify-center p-3 w-28 h-full
-                  ${colmeia.estado === "segura" ? "bg-green-200" : "bg-red-200"}
-              `}>
-                    <img
-                      src={colmeia.estado === "segura" ? Seguro : Perigo}
-                      alt="Ícone estado"
-                      className="w-8 mb-1"
-                    />
-                    <span className="font-bold">
-                      {colmeia.estado.toUpperCase()}
-                    </span>
                   </div>
                 </div>
-              </div>{/* Botões de ação*/}
-              <div className="flex flex-col gap-6 ml-3 items-center">
-                <button onClick={() => navigate('/edit-hive')}>
-                  <MdEdit size={25} />
-                </button>
-                <button onClick={() => navigate('/delete-hive')}>
-                  <FaTrash size={20} />
-                </button>
+
+                {/* Ações */}
+                <div className="flex flex-col gap-6 ml-3 items-center">
+                  <button onClick={() => navigate(`/edit-hive/${hive.id}`)}>
+                    <MdEdit size={25} />
+                  </button>
+                  <button onClick={() => navigate(`/delete-hive/${hive.id}`)}>
+                    <FaTrash size={20} />
+                  </button>
+                </div>
               </div>
-
-
-
-            </div>
-          ))}
-        </div></div>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
-
