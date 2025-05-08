@@ -1,45 +1,49 @@
 import { useState } from "react";
-import BeeIcon from '../../assets/images/bee-icon.png'
+import BeeIcon from '../../assets/images/bee-icon.png';
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
-  const navigate = useNavigate()
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault()
-
-    // Validação simples
-    if (email === '' || senha === '') {
-      setErro('Preencha todos os campos.')
-      return
-    }
-
-    // Simulação de login
-    if (email === 'abelha@teste.com' && senha === '123456') {
-      setErro('')
-      navigate('/home') // redireciona
-    } else {
-      setErro('Credenciais inválidas.')
-    }
-  }
-
-
-  // conexão com o back
-  {/*
-  const [senha, setSenha] = useState("");
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("/host?", { email, senha });
-      console.log("Login bem-sucedido:", response.data);
-    } catch (error) {
-      console.error("Erro no login:", error.response?.data || error.message);
+
+    if (!email || !senha) {
+      setErro('Preencha todos os campos.');
+      return;
     }
-  }; */}
+
+    try {
+      const formData = new URLSearchParams();
+      formData.append("username", email); // OAuth2 padrão
+      formData.append("password", senha);
+
+      const response =  await axios.post("http://host.docker.internal:8000/users/login", formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      });
+
+      const { access_token, user } = response.data;
+
+      localStorage.setItem("token", access_token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      setErro('');
+      navigate('/home');
+
+    } catch (error) {
+      if (error.response) {
+        setErro(error.response.data.detail || "Erro ao fazer login.");
+      } else {
+        setErro("Erro de conexão com o servidor.");
+      }
+    }
+  };
 
   return (
     <div className="w-full px-[13vw] bg-gray-100 rounded-xl p-6 shadow-lg flex flex-col items-center">
@@ -47,7 +51,7 @@ export default function LoginForm() {
         <img src={BeeIcon} alt="Ícone" className="w-30" />
       </div>
       <h2 className="text-xl text-gray-600 font-bold mb-4">Login</h2>
-      <form onSubmit={handleLogin} className="w-full flex  text-gray-600 flex-col gap-2">
+      <form onSubmit={handleLogin} className="w-full flex text-gray-600 flex-col gap-2">
         <label className="text-md">Login:</label>
         <input
           type="text"
@@ -55,7 +59,7 @@ export default function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           className="bg-gray-200 rounded p-2 w-full"
         />
-        <label className="textmd">Senha:</label>
+        <label className="text-md">Senha:</label>
         <input
           type="password"
           value={senha}
@@ -66,6 +70,7 @@ export default function LoginForm() {
           ENTRAR
         </button>
       </form>
+      {erro && <p className="text-red-600 mt-2 font-semibold">{erro}</p>}
       <p className="text-md text-gray-600 mt-4">
         Não possui conta? <a href="/registration" className="font-bold">Cadastre-se!</a>
       </p>
