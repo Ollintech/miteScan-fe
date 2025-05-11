@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import BeeIcon from '../../assets/images/bee-icon.png';
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function RegistrationForm() {
@@ -7,23 +8,27 @@ export default function RegistrationForm() {
     nome: "",
     email: "",
     senha: "",
-    acesso: "",
-    company_id: 1,  // Ajuste conforme a lógica do seu sistema
+    access_id: "",
+    company_id: 1,  // Aqui você pode modificar para pegar dinamicamente o ID da empresa
   });
 
   const [accessLevels, setAccessLevels] = useState([]);
+  const [erro, setErro] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Função para buscar os níveis de acesso do backend
     const fetchAccessLevels = async () => {
       try {
-        const response = await axios.get("http://host.docker.internal:8000/access/all");
+        const response = await axios.get("http://host.docker.internal:8000/access/all"); // Ajuste a URL para corresponder ao seu ambiente
+        console.log("Níveis de acesso recebidos:", response.data);
         setAccessLevels(response.data);
       } catch (error) {
         console.error("Erro ao carregar os níveis de acesso:", error.response?.data || error.message);
       }
     };
-    
+
+    fetchAccessLevels();
     
   }, []);
 
@@ -31,20 +36,53 @@ export default function RegistrationForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    const { nome, email, senha, access_id } = form;
+    if (!nome || !email || !senha || !access_id) {
+      setErro("Preencha todos os campos.");
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setErro("Por favor, insira um email válido.");
+      return false;
+    }
+    if (senha.length < 6) {
+      setErro("A senha deve ter no mínimo 6 caracteres.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErro(''); // Resetar erros
+
+    if (!validateForm()) {
+      return; // Se a validação falhar, não envia os dados
+    }
+
     try {
-      // Altere a URL para a sua API
+      // Enviar os dados de cadastro para a API
       const response = await axios.post("http://host.docker.internal:8000/users/register", {
         name: form.nome,
         email: form.email,
         password: form.senha,
-        access_id: form.acesso,
+        access_id: form.access_id,
         company_id: form.company_id,
       });
+
       console.log("Cadastro realizado:", response.data);
+
+      // Redireciona para a tela de login após cadastro bem-sucedido
+      navigate("/login");
+
     } catch (error) {
       console.error("Erro no cadastro:", error.response?.data || error.message);
+      if (error.response) {
+        setErro(error.response.data.detail || "Erro ao cadastrar usuário.");
+      } else {
+        setErro("Erro de conexão com o servidor.");
+      }
     }
   };
 
@@ -78,25 +116,26 @@ export default function RegistrationForm() {
           className="bg-gray-200 p-2"
         />
 
-          <select
-            name="acesso"
-            value={form.acesso}
-            onChange={handleChange}
-            className="bg-gray-200 rounded p-2"
-          >
-            <option value="">Selecione o Acesso</option>
-            {accessLevels.length > 0 ? (
-              accessLevels.map((level) => (
-                <option key={level.id} value={level.id}>
-                  {level.name}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>Carregando níveis de acesso...</option>
-            )}
-          </select>
+        <select
+          name="access_id"
+          value={form.access_id}
+          onChange={handleChange}
+          className="bg-gray-200 rounded p-2"
+        >
+          <option value="">Selecione o Acesso</option>
+          {accessLevels.length > 0 ? (
+            accessLevels.map((level) => (
+              <option key={level.id} value={level.id}>
+                {level.name}
+              </option>
+            ))
+          ) : (
+            <option value="" disabled>Carregando níveis de acesso...</option>
+          )}
+        </select>
 
-          
+        {erro && <p className="text-red-600 mt-2 font-semibold">{erro}</p>}
+
         <button
           type="submit"
           className="bg-yellow-400 text-black font-bold py-2 rounded shadow-md mx-auto w-2/3 mt-2"
@@ -105,7 +144,7 @@ export default function RegistrationForm() {
         </button>
       </form>
       <p className="text-sm mt-4">
-        Já possui conta? <a href="/" className="font-bold">Voltar ao login!</a>
+        Já possui conta? <a href="/login" className="font-bold">Voltar ao login!</a>
       </p>
     </div>
   );
