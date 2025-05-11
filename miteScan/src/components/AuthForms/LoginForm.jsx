@@ -12,31 +12,43 @@ export default function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Validação dos campos
     if (!email || !senha) {
       setErro('Preencha todos os campos.');
       return;
     }
 
+    // Verificando o formato do email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      setErro('Formato de e-mail inválido.');
+      return;
+    }
+
     try {
+      // Criando os dados do formulário
       const formData = new URLSearchParams();
-      formData.append("username", email); // OAuth2 padrão
+      formData.append("username", email);
       formData.append("password", senha);
 
-      const response =  await axios.post("http://host.docker.internal:8000/users/login", formData, {
+      // Requisição POST para o backend
+      const response = await axios.post("http://localhost:8000/users/login", formData, {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+          "Content-Type": "application/x-www-form-urlencoded",  "Authorization": "Bearer tokenAqui"
         }
       });
 
+      // Se login for bem-sucedido, salva o token
       const { access_token, user } = response.data;
+      localStorage.setItem("token", access_token);  // Armazena o token
+      localStorage.setItem("user", JSON.stringify(user));  // Armazena dados do usuário
 
-      localStorage.setItem("token", access_token);
-      localStorage.setItem("user", JSON.stringify(user));
-
+      // Limpa erro e redireciona para a página inicial
       setErro('');
-      navigate('/home');
+      navigate('/home');  // Certifique-se de que essa rota está configurada corretamente
 
     } catch (error) {
+      console.error("Erro ao fazer login:", error);  // Adicionando para depuração
       if (error.response) {
         setErro(error.response.data.detail || "Erro ao fazer login.");
       } else {

@@ -9,7 +9,7 @@ export default function RegistrationForm() {
     email: "",
     senha: "",
     access_id: "",
-    company_id: 1,  // Aqui você pode modificar para pegar dinamicamente o ID da empresa
+    company_id: 1,  
   });
 
   const [accessLevels, setAccessLevels] = useState([]);
