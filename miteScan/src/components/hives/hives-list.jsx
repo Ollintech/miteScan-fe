@@ -11,23 +11,48 @@ import axios from 'axios';
 export default function HivesList() {
   const [hives, setHives] = useState([])
   const navigate = useNavigate()
-useEffect(() => {
-  const fetchHives = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://host.docker.internal:8000/hives/all', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setHives(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar colmeias:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchHives = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://host.docker.internal:8000/hives/all', {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ5YXNAZmF0ZWMuY29tIiwidXNlcl9pZCI6MiwiYWNjZXNzX2lkIjoxLCJleHAiOjE3NDcwNjEzMjN9.eFy0gSyqNc_EKvwohcBWswJfMtAUFrBz3NVmcm1ZUUU`,
+          },
+        });
+        setHives(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar colmeias:", error);
+      }
+    };
 
-  fetchHives();
-}, []);
+    fetchHives();
+  }, []);
+
+  const [beeTypes, setBeeTypes] = useState([]);
+
+  useEffect(() => {
+    const fetchBeeTypes = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://host.docker.internal:8000/bee_types/all', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setBeeTypes(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar tipos de abelha:", error);
+      }
+    };
+
+    fetchBeeTypes();
+  }, []);
+
+  function getBeeTypeName(id) {
+    const beeType = beeTypes.find(bt => bt.id === id);
+    return beeType ? beeType.name : 'Tipo desconhecido';
+  }
 
 
   function getEstado(analysis) {
@@ -38,7 +63,7 @@ useEffect(() => {
   }
 
   function getIcon(estado) {
-    if (estado === 'segura') return <MdVerifiedUser size={28} className='text-green-600'/>
+    if (estado === 'segura') return <MdVerifiedUser size={28} className='text-green-600' />
     if (estado === 'alerta') return <TbAlertTriangleFilled size={28} className='text-yellow-400' />
     return <TbAlertOctagonFilled size={25} className='text-red-600' />
   }
@@ -90,7 +115,7 @@ useEffect(() => {
                       </div>
                       <div className="flex items-center gap-2">
                         <img src={Bee} className='w-4' />
-                        {hive.bee_type_id}
+                        {getBeeTypeName(hive.bee_type_id)}
                       </div>
                       <div className="flex items-center gap-2">
                         <FaMapMarkerAlt size={18} />
@@ -110,7 +135,7 @@ useEffect(() => {
                         {hive.temperature ?? "--"}°C
                       </div>
                       <div className="flex gap-1">
-                        <MdOutlineWaterDrop size={22} color={analysis?.humidity < 30 ? "red" : "green"} />
+                        <MdOutlineWaterDrop size={22} color={analysis?.humidity < 40 ? "red" : "green"} />
                         {hive.humidity ?? "--"}%
                       </div>
                     </div>

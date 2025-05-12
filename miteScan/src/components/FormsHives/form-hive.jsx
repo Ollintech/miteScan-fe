@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import yellowBee from '../../assets/images/yellowBee.png'
 
-export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir }) {
+export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, beeTypes = [] }) {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -21,7 +21,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
         size: colmeia.size || '',
         beeType: colmeia.beeType || '',
         location: colmeia.location || null,
-        cameraConnected: true, 
+        cameraConnected: true,
       })
     }
   }, [modo, colmeia])
@@ -70,34 +70,20 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
       </div>
 
       <div className="space-y-4">
-        {/* Nome */}
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-600 font-medium">Nome:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            readOnly={isLeitura}
-            className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none shadow-sm"
-          />
-        </div>
 
         {/* Tamanho */}
         <div className="flex items-center gap-4">
           <label className="min-w-[90px] text-gray-600 font-medium">Tamanho:</label>
-          <select
+          <input
+            type="number"
             name="size"
             value={formData.size}
             onChange={handleChange}
-            disabled={isLeitura}
-            className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
-          >
-            <option value="">Selecione o tamanho:</option>
-            <option value="Small">Pequena</option>
-            <option value="Medium">Média</option>
-            <option value="Large">Grande</option>
-          </select>
+            readOnly={isLeitura}
+            min={0}
+            className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none shadow-sm"
+            placeholder="insira a medida em cm"
+          />
         </div>
 
         {/* Tipo */}
@@ -111,9 +97,9 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
             className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
           >
             <option value="">Selecione o tipo de abelha:</option>
-            <option value="Bee 1">Bee 1</option>
-            <option value="Bee 2">Bee 2</option>
-            <option value="Bee 3">Bee 3</option>
+            {beeTypes.map((bee) => (
+              <option key={bee.id} value={bee.id}>{bee.name}</option>
+            ))}
           </select>
         </div>
 
