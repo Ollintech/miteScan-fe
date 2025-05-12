@@ -17,7 +17,7 @@ export default function HivesList() {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://host.docker.internal:8000/hives/all', {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ5YXNAZmF0ZWMuY29tIiwidXNlcl9pZCI6MiwiYWNjZXNzX2lkIjoxLCJleHAiOjE3NDcwNjEzMjN9.eFy0gSyqNc_EKvwohcBWswJfMtAUFrBz3NVmcm1ZUUU`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2FvQHRlc3RlLmNvbSIsInVzZXJfaWQiOjUsImFjY2Vzc19pZCI6MSwiZXhwIjoxNzQ3MDkxNjQxfQ.LZKAyoHTjB-MkndaGvMxJUBtaqfDlIwvvJPV0dWCXWY`,
           },
         });
         setHives(response.data);
@@ -119,7 +119,7 @@ export default function HivesList() {
                       </div>
                       <div className="flex items-center gap-2">
                         <FaMapMarkerAlt size={18} />
-                        {hive.location}
+                        {hive.size} cm
                       </div>
                       <div className="flex items-center gap-2">
                         <TbWorldLatitude size={18} />

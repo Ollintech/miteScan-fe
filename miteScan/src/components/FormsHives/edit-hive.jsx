@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import FormHive from './form-hive'
+import axios from 'axios'
 
 export default function EditHiveCard() {
   const { id } = useParams()
@@ -27,10 +28,11 @@ export default function EditHiveCard() {
 
   const handleEditar = async (dadosAtualizados) => {
     try {
-      const response = await fetch(`/api/hives/${id}`, {
-        method: 'PUT', 
+      const response = await axios.put(`http://host.docker.internal:8000/hives/create/${id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2FvQHRlc3RlLmNvbSIsInVzZXJfaWQiOjUsImFjY2Vzc19pZCI6MSwiZXhwIjoxNzQ3MDkxNjQxfQ.LZKAyoHTjB-MkndaGvMxJUBtaqfDlIwvvJPV0dWCXWY`
         },
         body: JSON.stringify(dadosAtualizados),
       })
