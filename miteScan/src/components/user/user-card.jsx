@@ -6,38 +6,34 @@ export default function UserCard() {
     name: '',
     email: '',
     login: '',
-    access: '', // ex: "Administrador"
+    access: '',  // Exemplo: 'Ativo' ou 'Inativo'
   });
-
+  
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);  // Estado de carregamento
+  const [error, setError] = useState(null);      // Estado para erros
 
-  // Simula carregamento inicial
   useEffect(() => {
-    // MOCK de usuário (substitua com fetch real depois)
-    const mockUser = {
-      name: 'José Abelha',
-      email: 'jose.abelha@gmail.com',
-      login: 'jose.abelha',
-      access: 'Administrador',
-    };
+    // Tentando recuperar os dados armazenados no localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
 
-    setUserData(mockUser);
+    if (!token || !user) {
+      setError('Você precisa estar logado.');
+      setLoading(false);
+      return;
+    }
 
-    // Quando for usar o back-end:
-    /*
-    fetch('/api/users/me') // ou `/api/users/${id}`
-      .then((res) => res.json())
-      .then((data) => {
-        setUserData({
-          name: data.name,
-          email: data.email,
-          login: data.login, // certifique-se que o campo esteja no back
-          access: data.access_type || 'Funcionário',
-        });
-      })
-      .catch((err) => console.error('Erro ao carregar usuário', err));
-    */
-  }, []);
+    // Se encontrar os dados no localStorage, define no estado do componente
+    setUserData({
+      name: user.name,
+      email: user.email,
+      login: user.email,  // Exemplo, você pode usar outro campo se necessário
+      access: user.status ? 'Ativo' : 'Inativo'  // Ou outro campo que represente o status
+    });
+
+    setLoading(false);
+  }, []);  // Executa apenas uma vez após o componente ser montado
 
   const handleChange = (field, value) => {
     setUserData((prev) => ({ ...prev, [field]: value }));
@@ -46,7 +42,7 @@ export default function UserCard() {
   const handleSave = () => {
     setIsEditing(false);
 
-    // Salvar alterações no back (comentado por enquanto)
+    // Aqui você pode salvar as alterações no backend, se necessário
     /*
     fetch('/api/users/me', {
       method: 'PUT',
@@ -127,14 +123,18 @@ export default function UserCard() {
               onChange={(e) => handleChange('access', e.target.value)}
               className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             >
-              <option value="Administrador">Administrador</option>
-              <option value="Funcionário">Funcionário</option>
+              <option value="Ativo">Ativo</option>
+              <option value="Inativo">Inativo</option>
             </select>
           ) : (
             <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{userData.access}</div>
           )}
         </div>
       </div>
+
+      {/* Erro e Loading */}
+      {loading && <div>Carregando...</div>}
+      {error && <div className="text-red-500 mt-3">{error}</div>}
 
       {/* Botão */}
       <div className="flex justify-center mt-6">
