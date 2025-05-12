@@ -1,9 +1,14 @@
 .background {
     background-image: url(../../assets/images/LoadingBackground.png);
     background-repeat: no-repeat;
-    background-size: auto;
+    background-size: cover;
+    background-color: #eeeeeec4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
     min-width: 100vw;
+    animation: fadeOut 1s ease-in-out 2s forwards;
 }
 
 @keyframes fadeZoomIn {

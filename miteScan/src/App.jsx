@@ -41,6 +41,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
+        <Route path="/loading" element={<LoadingScreen/>} />
 
         <Route element={<DefaultLayout />}>
           <Route path="/home" element={<Home />} />

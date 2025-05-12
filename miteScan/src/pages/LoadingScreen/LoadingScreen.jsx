@@ -1,9 +1,9 @@
-import React from "react";
 import LogoScreen from "../../components/ScreenLogo";
+import "./LoadingScreen.css"
 
 const LoadingScreen = () => {
     return (
-        <div className="splash-container">
+        <div className="background">
             <LogoScreen showText />
         </div>
     );

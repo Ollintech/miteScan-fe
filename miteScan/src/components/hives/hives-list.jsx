@@ -6,48 +6,29 @@ import { TbAlertTriangleFilled, TbAlertOctagonFilled } from "react-icons/tb";
 import { TbWorldLatitude } from "react-icons/tb"
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import axios from 'axios';
 
 export default function HivesList() {
   const [hives, setHives] = useState([])
   const navigate = useNavigate()
+useEffect(() => {
+  const fetchHives = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://host.docker.internal:8000/hives/all', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setHives(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar colmeias:", error);
+    }
+  };
 
-  useEffect(() => {
-    // Simulação de API com base nas entidades reais
-    const mockData = [
-      {
-        id: 1,
-        name: "COLMEIA 1",
-        species: "Bombus Temarius",
-        location: "Jacupiranga",
-        latitude: -24.708450,
-        longitude: -48.002531,
-        hive_analyses: [
-          {
-            temperature: 25,
-            humidity: 45,
-            has_varroa: false,
-          }
-        ]
-      },
-      {
-        id: 2,
-        name: "COLMEIA 2",
-        species: "Bombus Affinis",
-        location: "Jacupiranga",
-        latitude: -24.708450,
-        longitude: -48.002531,
-        hive_analyses: [
-          {
-            temperature: 31,
-            humidity: 72,
-            has_varroa: true,
-          }
-        ]
-      },
-    ]
+  fetchHives();
+}, []);
 
-    setHives(mockData)
-  }, [])
 
   function getEstado(analysis) {
     if (!analysis) return 'segura'
@@ -105,11 +86,11 @@ export default function HivesList() {
                     <div className="flex flex-col gap-3 py-6 text-start font-bold text-sm w-full">
                       <div className="flex items-center gap-2">
                         <MdHexagon size={19} />
-                        {hive.name}
+                        COLMEIA {hive.id}
                       </div>
                       <div className="flex items-center gap-2">
                         <img src={Bee} className='w-4' />
-                        {hive.species}
+                        {hive.bee_type_id}
                       </div>
                       <div className="flex items-center gap-2">
                         <FaMapMarkerAlt size={18} />
@@ -117,7 +98,7 @@ export default function HivesList() {
                       </div>
                       <div className="flex items-center gap-2">
                         <TbWorldLatitude size={18} />
-                        {`${hive.latitude}, ${hive.longitude}`}
+                        {`${hive.location_lat}, ${hive.location_lng}`}
                       </div>
                     </div>
 
@@ -126,11 +107,11 @@ export default function HivesList() {
                     <div className="pr-6">
                       <div className="flex gap-1 mb-5">
                         <FaThermometerHalf size={22} color={analysis?.temperature > 28 ? "red" : "green"} />
-                        {analysis?.temperature ?? "--"}°C
+                        {hive.temperature ?? "--"}°C
                       </div>
                       <div className="flex gap-1">
                         <MdOutlineWaterDrop size={22} color={analysis?.humidity < 30 ? "red" : "green"} />
-                        {analysis?.humidity ?? "--"}%
+                        {hive.humidity ?? "--"}%
                       </div>
                     </div>
 
