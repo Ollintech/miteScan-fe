@@ -1,69 +1,103 @@
 import { useEffect, useState } from 'react';
 import defaultAvatar from '../../assets/images/default-avatar.png';
+import axios from 'axios';
 
 export default function UserCard() {
   const [userData, setUserData] = useState({
     name: '',
     email: '',
     login: '',
-    access: '', // ex: "Administrador"
+    access: '',  // Exemplo: 'Ativo' ou 'Inativo'
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);  // Estado de carregamento
+  const [error, setError] = useState(null);      // Estado para erros
 
-  // Simula carregamento inicial
   useEffect(() => {
-    // MOCK de usuário (substitua com fetch real depois)
-    const mockUser = {
-      name: 'José Abelha',
-      email: 'jose.abelha@gmail.com',
-      login: 'jose.abelha',
-      access: 'Administrador',
-    };
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
 
-    setUserData(mockUser);
+    if (!token || !user) {
+      setError('Você precisa estar logado.');
+      setLoading(false);
+      return;
+    }
 
-    // Quando for usar o back-end:
-    /*
-    fetch('/api/users/me') // ou `/api/users/${id}`
-      .then((res) => res.json())
-      .then((data) => {
-        setUserData({
-          name: data.name,
-          email: data.email,
-          login: data.login, // certifique-se que o campo esteja no back
-          access: data.access_type || 'Funcionário',
-        });
-      })
-      .catch((err) => console.error('Erro ao carregar usuário', err));
-    */
-  }, []);
+    setUserData({
+      name: user.name,
+      email: user.email,
+      login: user.email,  // Exemplo, você pode usar outro campo se necessário
+      access: user.status ? 'Ativo' : 'Inativo',  // Ou outro campo que represente o status
+    });
+
+    setLoading(false);
+  }, []);  // Executa apenas uma vez após o componente ser montado
 
   const handleChange = (field, value) => {
     setUserData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
+  const handleSave = async () => {
+  setLoading(true);
+  setError(null);
 
-    // Salvar alterações no back (comentado por enquanto)
-    /*
-    fetch('/api/users/me', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Erro ao atualizar usuário');
-        return res.json();
-      })
-      .then((updatedUser) => {
-        setUserData(updatedUser);
-      })
-      .catch((err) => console.error('Erro ao salvar alterações', err));
-    */
+  const user = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
+
+  if (!user || !token) {
+    setError('Você precisa estar logado.');
+    setLoading(false);
+    return;
+  }
+
+  const userId = user.id; // Garantir que o ID do usuário seja um número válido
+
+  // Aqui estamos garantindo que o status seja passado como true, caso não tenha sido modificado
+  const formData = {
+    name: userData.name, // nome do usuário
+    email: userData.email, // email do usuário
+    password: userData.password, // nova senha (se houver alteração)
+    status: userData.status !== undefined ? userData.status : true, // Garantindo que status seja true se não enviado
+    access_id: Number(userData.access_id), // access_id deve ser um número inteiro
+    company_id: Number(userData.company_id), // company_id deve ser um número inteiro
   };
 
+  try {
+    const response = await axios.put(
+      `http://localhost:8000/users/${userId}`, // Endpoint para atualizar o usuário
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Atualizar localStorage com os novos dados
+    localStorage.setItem('user', JSON.stringify(response.data));
+
+    // Atualiza o estado local (pode ser o estado do seu componente)
+    setUserData({
+      name: response.data.name,
+      email: response.data.email,
+      login: response.data.login,
+      access: response.data.access,
+      status: response.data.status, // Atualiza o status também
+    });
+
+    setLoading(false);
+    alert('Usuário atualizado com sucesso!');
+  } catch (error) {
+    setLoading(false);
+    console.error("Erro ao salvar os dados:", error.response ? error.response.data : error);
+    setError(error.response ? error.response.data.detail : 'Erro ao salvar os dados.');
+  }
+};
+
+
+
+  
   return (
     <div className="bg-gray-100 rounded-xl shadow-xl p-6 w-full mx-auto text-left">
       {/* Avatar */}
@@ -103,21 +137,6 @@ export default function UserCard() {
           )}
         </div>
 
-        {/* Login */}
-        <div className="flex items-center space-x-2">
-          <label className="w-20 font-medium">Login:</label>
-          {isEditing ? (
-            <input
-              type="text"
-              value={userData.login}
-              onChange={(e) => handleChange('login', e.target.value)}
-              className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
-            />
-          ) : (
-            <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{userData.login}</div>
-          )}
-        </div>
-
         {/* Acesso */}
         <div className="flex items-center space-x-2">
           <label className="w-20 font-medium">Acesso:</label>
@@ -127,14 +146,18 @@ export default function UserCard() {
               onChange={(e) => handleChange('access', e.target.value)}
               className="flex-1 px-3 py-1 rounded-md bg-white shadow-inner"
             >
-              <option value="Administrador">Administrador</option>
-              <option value="Funcionário">Funcionário</option>
+              <option value="Ativo">Ativo</option>
+              <option value="Inativo">Inativo</option>
             </select>
           ) : (
             <div className="flex-1 px-3 py-1 rounded-md bg-gray-200 shadow-inner">{userData.access}</div>
           )}
         </div>
       </div>
+
+      {/* Erro e Loading */}
+      {loading && <div>Carregando...</div>}
+      {error && <div className="text-red-500 mt-3">{error}</div>}
 
       {/* Botão */}
       <div className="flex justify-center mt-6">
