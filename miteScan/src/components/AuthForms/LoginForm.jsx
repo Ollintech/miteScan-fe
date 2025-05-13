@@ -34,7 +34,7 @@ export default function LoginForm() {
       // Requisição POST para o backend
       const response = await axios.post("http://localhost:8000/users/login", formData, {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",  "Authorization": "Bearer tokenAqui"
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       });
 

@@ -41,7 +41,7 @@ export default function CreateHiveCard() {
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2FvQHRlc3RlLmNvbSIsInVzZXJfaWQiOjUsImFjY2Vzc19pZCI6MSwiZXhwIjoxNzQ3MDkxNjQxfQ.LZKAyoHTjB-MkndaGvMxJUBtaqfDlIwvvJPV0dWCXWY`
+            "Authorization": `Bearer ${token}`
           }
         }
       )

@@ -17,7 +17,7 @@ export default function HivesList() {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://host.docker.internal:8000/hives/all', {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2FvQHRlc3RlLmNvbSIsInVzZXJfaWQiOjUsImFjY2Vzc19pZCI6MSwiZXhwIjoxNzQ3MDkxNjQxfQ.LZKAyoHTjB-MkndaGvMxJUBtaqfDlIwvvJPV0dWCXWY`,
+            Authorization: `Bearer ${token}`,
           },
         });
         setHives(response.data);
