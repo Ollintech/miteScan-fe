@@ -10,7 +10,7 @@ export default function RegistrationForm() {
     email: "",
     senha: "",
     access_id: "",
-    company_id: 1,  
+    company_id: 1,
   });
 
   const [accessLevels, setAccessLevels] = useState([]);
@@ -21,7 +21,7 @@ export default function RegistrationForm() {
     // Função para buscar os níveis de acesso do backend
     const fetchAccessLevels = async () => {
       try {
-        const response = await axios.get("http://host.docker.internal:8000/access/all"); // Ajuste a URL para corresponder ao seu ambiente
+        const response = await axios.get("http://localhost:8000/access/all");
         console.log("Níveis de acesso recebidos:", response.data);
         setAccessLevels(response.data);
       } catch (error) {
@@ -30,11 +30,14 @@ export default function RegistrationForm() {
     };
 
     fetchAccessLevels();
-    
   }, []);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: name === "access_id" || name === "company_id" ? parseInt(value) : value,
+    });
   };
 
   const validateForm = () => {
@@ -56,27 +59,26 @@ export default function RegistrationForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro(''); // Resetar erros
+    setErro('');
 
     if (!validateForm()) {
-      return; // Se a validação falhar, não envia os dados
+      return;
     }
 
+    const payload = {
+      name: form.nome,
+      email: form.email,
+      password: form.senha,
+      access_id: form.access_id,
+      company_id: form.company_id,
+    };
+
+    console.log("Dados enviados para cadastro:", payload);
+
     try {
-      // Enviar os dados de cadastro para a API
-      const response = await axios.post("http://host.docker.internal:8000/users/register", {
-        name: form.nome,
-        email: form.email,
-        password: form.senha,
-        access_id: form.access_id,
-        company_id: form.company_id,
-      });
-
+      const response = await axios.post("http://localhost:8000/users/register", payload);
       console.log("Cadastro realizado:", response.data);
-
-      // Redireciona para a tela de login após cadastro bem-sucedido
       navigate("/login");
-
     } catch (error) {
       console.error("Erro no cadastro:", error.response?.data || error.message);
       if (error.response) {
