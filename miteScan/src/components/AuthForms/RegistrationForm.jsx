@@ -21,7 +21,7 @@ export default function RegistrationForm() {
     // Função para buscar os níveis de acesso do backend
     const fetchAccessLevels = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/access/all");
+        const response = await axios.get("http://localhost:8000/accesses/all");
         console.log("Níveis de acesso recebidos:", response.data);
         setAccessLevels(response.data);
       } catch (error) {
