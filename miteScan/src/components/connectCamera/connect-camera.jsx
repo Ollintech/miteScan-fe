@@ -30,13 +30,18 @@ export default function CameraCard() {
     }, [])
 
     const handleBackToForm = () => {
-        const origem = location.state?.origem || 'criar'
-        const rotaDestino = origem === 'editar' ? '/edit-hive' : '/create-hive'
+        const origem = location.state?.origem
+        const hiveId = location.state?.hiveId
+
+        let rotaDestino = '/create-hive'
+        if (origem === 'editar' && hiveId) {
+            rotaDestino = `/edit-hive/${hiveId}`
+        }
 
         navigate(rotaDestino, {
             state: {
                 ...location.state,
-                cameraConnected: true
+                cameraConnected: true,
             }
         })
     }

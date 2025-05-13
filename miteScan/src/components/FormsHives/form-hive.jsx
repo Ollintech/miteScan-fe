@@ -16,16 +16,37 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
   })
 
   useEffect(() => {
-    if ((modo === 'editar' || modo === 'excluir') && colmeia) {
-      setFormData({
-        name: colmeia.name || '',
-        size: colmeia.size || '',
-        beeType: colmeia.beeType || '',
-        location: colmeia.location || null,
-        cameraConnected: true,
-      })
+    if (modo === 'editar' || modo === 'excluir') {
+      if (colmeia) {
+        setFormData({
+          name: colmeia.name || '',
+          size: colmeia.size || '',
+          beeType: colmeia.beeType || '',
+          beeTypeName: beeTypes.find(bee => bee.id.toString() === colmeia.beeType)?.name || '',
+          location: colmeia.location || null,
+          cameraConnected: colmeia.cameraConnected ?? true,
+        });
+      }
+    } else if (modo === 'criar') {
+      const draft = location.state?.fromForm || JSON.parse(localStorage.getItem('draftHiveForm'));
+      if (draft) {
+        setFormData(draft);
+      }
     }
-  }, [modo, colmeia])
+
+  }, [modo, colmeia?.id, location.state]);
+
+
+  useEffect(() => {
+    if ((modo === 'editar' || modo === 'excluir') && colmeia) {
+      setFormData(prev => ({
+        ...prev,
+        location: colmeia.location || prev.location,
+        cameraConnected: colmeia.cameraConnected ?? prev.cameraConnected,
+      }))
+    }
+  }, [colmeia?.location?.lat, colmeia?.location?.lng, colmeia?.cameraConnected])
+
 
   useEffect(() => {
     if (location.state?.location) {
@@ -34,7 +55,14 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
     if (location.state?.cameraConnected) {
       setFormData(prev => ({ ...prev, cameraConnected: true }))
     }
-  }, [location.state])
+  }, [location.state]) // Atualize quando location.state mudar
+
+  useEffect(() => {
+    if (modo === 'criar') {
+      localStorage.setItem('draftHiveForm', JSON.stringify(formData));
+    }
+  }, [formData, modo]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -42,26 +70,34 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
   }
 
   const handleLocationClick = () => {
-const hiveIdSeguro = colmeia?.id || formData.id
 
-navigate('/select-location', {
-  state: {
-    fromForm: formData,
-    origem: modo,
-    hiveId: colmeia?.id
-  }
-})
+    navigate('/select-location', {
+      state: {
+        fromForm: formData,
+        origem: modo,
+        hiveId: colmeia?.id
+      }
+    })
 
 
   }
 
   const handleConnectCamera = () => {
-    navigate('/connect-camera', { state: { ...formData, origem: modo } })
+    navigate('/connect-camera', {
+      state: {
+        fromForm: formData,
+        origem: modo
+      }
+    })
   }
+
 
 
   const isLeitura = modo === 'excluir'
 
+  useEffect(() => {
+    console.log("🟨 Novo colmeia recebido:", colmeia)
+  }, [colmeia])
 
   return (
     <div className="bg-gray-100 rounded-xl shadow-xl py-10 px-4 w-full mx-auto">
@@ -93,19 +129,30 @@ navigate('/select-location', {
 
         {/* Tipo */}
         <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-600 font-medium">Tipo:</label>
-          <select
-            name="beeType"
-            value={formData.beeType}
-            onChange={handleChange}
-            disabled={isLeitura}
-            className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
-          >
-            <option value="">Selecione o tipo de abelha:</option>
-            {beeTypes.map((bee) => (
-              <option key={bee.id} value={bee.id}>{bee.name}</option>
-            ))}
-          </select>
+          <label className="min-w-[90px] text-gray-600 font-medium">Espécie:</label>
+
+          {modo === 'excluir' ? (
+            // Exibe o nome da espécie no modo de exclusão (somente leitura)
+            <input
+              type="text"
+              value={formData.beeTypeName || 'Desconhecida'}
+              readOnly
+              className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none shadow-sm"
+            />
+          ) : (
+            // Exibe o select nos modos de editar e criar
+            <select
+              name="beeType"
+              value={formData.beeType}
+              onChange={handleChange}
+              className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
+            >
+              <option value="">Selecione o tipo de abelha:</option>
+              {beeTypes.map((bee) => (
+                <option key={bee.id} value={bee.id}>{bee.name}</option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Localização */}

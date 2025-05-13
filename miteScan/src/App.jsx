@@ -7,7 +7,7 @@ import LoadingScreen from './pages/LoadingScreen/LoadingScreen';
 import './styles/globals.css'
 
 import Login from '../src/pages/Login/Login'
-import Home from './pages/Home/Home' 
+import Home from './pages/Home/Home'
 import Registration from '../src/pages/Registration/Registration'
 import Hives from '../src/pages/Hives/Hives'
 import Historical from '../src/pages/Historical/Historical'
@@ -41,7 +41,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
-        <Route path="/loading" element={<LoadingScreen/>} />
+        <Route path="/loading" element={<LoadingScreen />} />
 
         <Route element={<DefaultLayout />}>
           <Route path="/home" element={<Home />} />
@@ -53,8 +53,8 @@ function App() {
           <Route path="/create-hive" element={<CreateHive />} />
           <Route path="/select-location" element={<MapSelect />} />
           <Route path="/connect-camera" element={<ConnectCamera />} />
-          <Route path="/edit-hive/:id" element={<EditHive/>}/>
-          <Route path="/delete-hive" element={<DeleteHive/>}/>
+          <Route path="/edit-hive/:id" element={<EditHive />} />
+          <Route path="/delete-hive/:id" element={<DeleteHive />} />
         </Route>
       </Routes>
     </Router>

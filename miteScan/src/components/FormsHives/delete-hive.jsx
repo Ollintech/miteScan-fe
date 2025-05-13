@@ -1,44 +1,64 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import FormHive from './form-hive'
+import axios from 'axios'
 
 export default function DeleteHiveCard() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [colmeia, setColmeia] = useState(null)
+  const [beeTypeName, setBeeTypeName] = useState('')
   const [loading, setLoading] = useState(true)
 
+  const token = localStorage.getItem("token")
+
   useEffect(() => {
-    const fetchColmeia = async () => {
+    const fetchDados = async () => {
       try {
-        const res = await fetch(`url-back`)
-        if (!res.ok) throw new Error('Erro ao buscar colmeia')
-        const data = await res.json()
-        setColmeia(data)
+        const colmeiaRes = await axios.get(`http://host.docker.internal:8000/hives/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+
+        const hiveData = colmeiaRes.data
+
+        const beeTypeRes = await axios.get(`http://host.docker.internal:8000/bee_types/${hiveData.bee_type_id}`)
+
+        setColmeia({
+          id: hiveData.id,
+          name: hiveData.name || '',
+          size: hiveData.size || '',
+          beeType: hiveData.bee_type_id?.toString() || '',
+          location: {
+            lat: hiveData.location_lat,
+            lng: hiveData.location_lng
+          },
+          cameraConnected: true
+        })
+
+        setBeeTypeName(beeTypeRes.data.name || 'Desconhecida')
       } catch (err) {
-        console.error('❌ Erro ao buscar colmeia:', err)
+        console.error('❌ Erro ao buscar colmeia ou espécie:', err)
         alert('Erro ao carregar colmeia.')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchColmeia()
-  }, [id])
+    fetchDados()
+  }, [id, token])
 
   const handleExcluir = async () => {
     try {
-      const response = await fetch(`/api/hives/${id}`, {
-        method: 'DELETE',
+      await axios.delete(`http://host.docker.internal:8000/hives/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       })
 
-      if (!response.ok) throw new Error('Erro ao excluir colmeia')
-
-      console.log(`Colmeia ${id} excluída com sucesso`)
       alert('Colmeia excluída com sucesso.')
       navigate('/hives')
     } catch (error) {
-      console.error('❌ Erro ao excluir colmeia:', error)
+      console.error('❌ Erro ao excluir colmeia:', error.response?.data || error.message)
       alert('Erro ao excluir colmeia.')
     }
   }
@@ -48,8 +68,9 @@ export default function DeleteHiveCard() {
 
   return (
     <FormHive
+      key={colmeia.id}
       modo="excluir"
-      colmeia={colmeia}
+      colmeia={{ ...colmeia, beeTypeName }}
       onExcluir={handleExcluir}
     />
   )

@@ -49,22 +49,20 @@ export default function MapCard() {
   const [mapData, setMapData] = useState({ lat: null, lng: null, city: '' })
 
   const handleBackToForm = () => {
-const origem = location.state?.origem
-const hiveId = location.state?.hiveId
+    const origem = location.state?.origem
+    const hiveId = location.state?.hiveId
 
-let rotaDestino = '/create-hive'
-if (origem === 'editar' && hiveId) {
-  rotaDestino = `/edit-hive/${hiveId}`
-}
+    let rotaDestino = '/create-hive'
+    if (origem === 'editar' && hiveId) {
+      rotaDestino = `/edit-hive/${hiveId}`
+    }
 
-navigate(rotaDestino, {
-  state: {
-    ...location.state,
-    location: mapData
-  }
-})
-
-
+    navigate(rotaDestino, {
+      state: {
+        ...location.state,
+        location: mapData
+      }
+    })
   }
 
   return (

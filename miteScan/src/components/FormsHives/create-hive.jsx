@@ -4,7 +4,8 @@ import axios from 'axios'
 
 export default function CreateHiveCard() {
   const [beeTypes, setBeeTypes] = useState([])
-  const userId = 5 // <- você pode puxar isso do contexto do usuário autenticado
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.id;
 
   useEffect(() => {
     const fetchBeeTypes = async () => {
@@ -45,6 +46,7 @@ export default function CreateHiveCard() {
           }
         }
       )
+      localStorage.removeItem('draftHiveForm');
       console.log('Colmeia criada com sucesso:', response.data)
     } catch (error) {
       console.error('Erro ao criar colmeia:', error.response?.data || error.message)
