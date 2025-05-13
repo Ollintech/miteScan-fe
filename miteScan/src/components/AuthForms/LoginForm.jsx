@@ -3,6 +3,7 @@ import BeeIcon from '../../assets/images/bee-icon.png';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// Função de login
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');

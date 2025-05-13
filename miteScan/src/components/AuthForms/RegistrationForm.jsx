@@ -3,6 +3,7 @@ import BeeIcon from '../../assets/images/bee-icon.png';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// Função de cadastro
 export default function RegistrationForm() {
   const [form, setForm] = useState({
     nome: "",
