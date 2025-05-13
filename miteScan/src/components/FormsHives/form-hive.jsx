@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import yellowBee from '../../assets/images/yellowBee.png'
 
 export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, beeTypes = [] }) {
+  console.log("colmeia recebida:", colmeia)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -41,19 +42,23 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
   }
 
   const handleLocationClick = () => {
-    navigate('/select-location', { state: { ...formData, origem: modo } })
+const hiveIdSeguro = colmeia?.id || formData.id
+
+navigate('/select-location', {
+  state: {
+    fromForm: formData,
+    origem: modo,
+    hiveId: colmeia?.id
+  }
+})
+
+
   }
 
   const handleConnectCamera = () => {
     navigate('/connect-camera', { state: { ...formData, origem: modo } })
   }
 
-  const handleFinish = () => {
-    navigate('/hives')
-  }
-  const handleAnalysis = () => {
-    navigate('/analysis')
-  }
 
   const isLeitura = modo === 'excluir'
 
@@ -158,7 +163,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
             <button
               onClick={() => {
                 onConfirmar(formData)
-                navigate('/hives')
               }}
               className="bg-yellow-400 hover:bg-yellow-300 font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
             >

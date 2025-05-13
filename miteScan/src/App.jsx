@@ -53,7 +53,7 @@ function App() {
           <Route path="/create-hive" element={<CreateHive />} />
           <Route path="/select-location" element={<MapSelect />} />
           <Route path="/connect-camera" element={<ConnectCamera />} />
-          <Route path="/edit-hive" element={<EditHive/>}/>
+          <Route path="/edit-hive/:id" element={<EditHive/>}/>
           <Route path="/delete-hive" element={<DeleteHive/>}/>
         </Route>
       </Routes>

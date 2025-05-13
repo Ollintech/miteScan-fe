@@ -49,15 +49,22 @@ export default function MapCard() {
   const [mapData, setMapData] = useState({ lat: null, lng: null, city: '' })
 
   const handleBackToForm = () => {
-    const origem = location.state?.origem || 'criar' // fallback
-    const rotaDestino = origem === 'editar' ? '/edit-hive' : '/create-hive'
+const origem = location.state?.origem
+const hiveId = location.state?.hiveId
 
-    navigate(rotaDestino, {
-      state: {
-        ...location.state, // inclui formData, cameraConnected etc.
-        location: mapData // nova localização selecionada
-      }
-    })
+let rotaDestino = '/create-hive'
+if (origem === 'editar' && hiveId) {
+  rotaDestino = `/edit-hive/${hiveId}`
+}
+
+navigate(rotaDestino, {
+  state: {
+    ...location.state,
+    location: mapData
+  }
+})
+
+
   }
 
   return (
