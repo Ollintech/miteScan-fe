@@ -20,7 +20,7 @@ export default function RegistrationForm() {
     // Função para buscar os níveis de acesso do backend
     const fetchAccessLevels = async () => {
       try {
-        const response = await axios.get("http://host.docker.internal:8000/access/all"); // Ajuste a URL para corresponder ao seu ambiente
+        const response = await axios.get("http://localhost:8000/accesses/all"); // Ajuste a URL para corresponder ao seu ambiente
         console.log("Níveis de acesso recebidos:", response.data);
         setAccessLevels(response.data);
       } catch (error) {
@@ -63,7 +63,7 @@ export default function RegistrationForm() {
 
     try {
       // Enviar os dados de cadastro para a API
-      const response = await axios.post("http://host.docker.internal:8000/users/register", {
+      const response = await axios.post("http://localhost:8000/users/register", {
         name: form.nome,
         email: form.email,
         password: form.senha,
