@@ -6,7 +6,7 @@ import axios from 'axios'
 export default function DeleteHiveCard() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [colmeia, setColmeia] = useState(null)
+  const [hive, sethive] = useState(null)
   const [beeTypeName, setBeeTypeName] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -15,19 +15,19 @@ export default function DeleteHiveCard() {
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const colmeiaRes = await axios.get(`http://host.docker.internal:8000/hives/${id}`, {
+        const hiveRes = await axios.get(`http://host.docker.internal:8000/hives/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
-
-        const hiveData = colmeiaRes.data
+ 
+        const hiveData = hiveRes.data
 
         const beeTypeRes = await axios.get(`http://host.docker.internal:8000/bee_types/${hiveData.bee_type_id}`)
 
-        setColmeia({
+        sethive({
           id: hiveData.id,
           name: hiveData.name || '',
           size: hiveData.size || '',
-          beeType: hiveData.bee_type_id?.toString() || '',
+          beeTypeName: beeTypeRes.data.name || 'Desconhecida',
           location: {
             lat: hiveData.location_lat,
             lng: hiveData.location_lng
@@ -47,12 +47,12 @@ export default function DeleteHiveCard() {
     fetchDados()
   }, [id, token])
 
-  const handleExcluir = async () => {
+  const handleDelete = async () => {
     try {
-      await axios.delete(`http://host.docker.internal:8000/hives/${id}`, {
+      await axios.delete(`http://host.docker.internal:8000/hives/${id}?confirm=true`, {
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
       })
 
       alert('Colmeia excluída com sucesso.')
@@ -64,14 +64,14 @@ export default function DeleteHiveCard() {
   }
 
   if (loading) return <p className="text-center">Carregando...</p>
-  if (!colmeia) return <p className="text-center text-red-500">Colmeia não encontrada.</p>
+  if (!hive) return <p className="text-center text-red-500">Colmeia não encontrada.</p>
 
   return (
     <FormHive
-      key={colmeia.id}
+      key={hive.id}
       modo="excluir"
-      colmeia={{ ...colmeia, beeTypeName }}
-      onExcluir={handleExcluir}
+      colmeia={{ ...hive, beeTypeName }}
+      onExcluir={handleDelete}
     />
   )
 }

@@ -7,16 +7,15 @@ export default function EditHiveCard() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const [colmeia, setColmeia] = useState(null)
+  const [hive, setHive] = useState(null)
   const [beeTypes, setBeeTypes] = useState([])
   const [loading, setLoading] = useState(true)
-
   const token = localStorage.getItem("token")
 
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const [colmeiaRes, beeTypesRes] = await Promise.all([
+        const [hiveRes, beeTypesRes] = await Promise.all([
           axios.get(`http://host.docker.internal:8000/hives/${id}`, {
             headers: {
               "Authorization": `Bearer ${token}`
@@ -25,14 +24,14 @@ export default function EditHiveCard() {
           axios.get('http://host.docker.internal:8000/bee_types/all')
         ])
 
-        setColmeia({
-          id: colmeiaRes.data.id,
-          name: colmeiaRes.data.name || '',
-          size: colmeiaRes.data.size || '',
-          beeType: colmeiaRes.data.bee_type_id?.toString() || '',
+        setHive({
+          id: hiveRes.data.id,
+          name: hiveRes.data.name || '',
+          size: hiveRes.data.size || '',
+          beeType: hiveRes.data.bee_type_id?.toString() || '',
           location: {
-            lat: colmeiaRes.data.location_lat,
-            lng: colmeiaRes.data.location_lng
+            lat: hiveRes.data.location_lat,
+            lng: hiveRes.data.location_lng
           },
           cameraConnected: true
         })
@@ -51,8 +50,8 @@ export default function EditHiveCard() {
 
   useEffect(() => {
     if (location.state?.location || location.state?.cameraConnected) {
-      setColmeia(prev => {
-        if (!prev) return prev // Evita erro se colmeia ainda não tiver carregado
+      setHive(prev => {
+        if (!prev) return prev 
         return {
           ...prev,
           location: location.state.location || prev.location,
@@ -64,7 +63,7 @@ export default function EditHiveCard() {
 
 
 
-  const handleEditar = async (dadosAtualizados) => {
+  const handleEdit = async (dadosAtualizados) => {
     const payload = {
       bee_type_id: parseInt(dadosAtualizados.beeType),
       location_lat: parseFloat(dadosAtualizados.location?.lat) || 0,
@@ -96,17 +95,17 @@ export default function EditHiveCard() {
   }
 
   if (loading) return <p className="text-center">Carregando...</p>
-  if (!colmeia) return <p className="text-center text-red-500">Colmeia não encontrada.</p>
+  if (!hive) return <p className="text-center text-red-500">Colmeia não encontrada.</p>
 
   console.log(location.state)
 
   return (
     <FormHive
-      key={colmeia.id + '-' + colmeia.location?.lat + '-' + colmeia.location?.lng + '-' + colmeia.cameraConnected}
+      key={hive.id + '-' + hive.location?.lat + '-' + hive.location?.lng + '-' + hive.cameraConnected}
       modo="editar"
-      colmeia={colmeia}
+      colmeia={hive}
       beeTypes={beeTypes}
-      onConfirmar={handleEditar}
+      onConfirmar={handleEdit}
     />
   )
 }

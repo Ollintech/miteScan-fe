@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import resultImage from '../../assets/images/colmeia1.png';
 import { FaThermometerHalf } from 'react-icons/fa';
 import { MdOutlineWaterDrop } from "react-icons/md";
@@ -6,18 +8,56 @@ import { TbAlertTriangleFilled, TbAlertOctagonFilled } from "react-icons/tb";
 import { MdVerifiedUser } from "react-icons/md";
 
 export default function Result() {
-  const analysis = {
-    data: '28/09/2024',
-    temperatura: 24,
-    umidade: 40,
-    varroaDetectada: false,
-  };
+  const location = useLocation();
+  const { hiveAnalysisId } = location.state || {};
 
-  const isTempOk = analysis.temperatura >= 20 && analysis.temperatura <= 35;
-  const isHumidityOk = analysis.umidade >= 40 && analysis.umidade <= 80;
+  const [analysis, setAnalysis] = useState(null);
+  const [hive, setHive] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    const fetchAnalysisAndHive = async () => {
+      try {
+        const analysisResponse = await axios.get(
+          `http://host.docker.internal:8000/hive_analyses/${hiveAnalysisId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        const analysisData = analysisResponse.data;
+        setAnalysis(analysisData);
+
+        const hiveResponse = await axios.get(
+          `http://host.docker.internal:8000/hives/${analysisData.hive_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        setHive(hiveResponse.data);
+      } catch (error) {
+        console.error('Erro ao buscar análise ou colmeia:', error);
+      }
+    };
+
+    if (hiveAnalysisId) {
+      fetchAnalysisAndHive();
+    }
+  }, [hiveAnalysisId]);
+
+  if (!analysis || !hive) {
+    return <p className="text-center font-semibold">Carregando análise...</p>;
+  }
+
+  const isTempOk = hive.temperature >= 20 && hive.temperature <= 35;
+  const isHumidityOk = hive.humidity >= 40 && hive.humidity <= 80;
 
   let status = 'segura';
-  if (analysis.varroaDetectada) {
+  if (analysis.varroa_detected) {
     status = 'perigo';
   } else if (!isTempOk || !isHumidityOk) {
     status = 'alerta';
@@ -59,17 +99,18 @@ export default function Result() {
 
         <div className="flex justify-between text-sm text-gray-700 py-5 px-5">
           <div className='w-1/3'>
-            <span className="font-semibold">DATA:</span> {analysis.data}
+            <span className="font-semibold">DATA:</span>{' '}
+            {new Date(analysis.created_at).toLocaleDateString()}
           </div>
           <div className='bg-gray-600 h-auto w-0.5 rounded-xl'></div>
           <div className="flex items-center gap-1 w-1/3 justify-center">
             <FaThermometerHalf size={20} />
-            <span>{analysis.temperatura} °C</span>
+            <span>{hive.temperature} °C</span>
           </div>
           <div className='bg-gray-600 h-auto w-0.5 rounded-xl'></div>
           <div className="flex items-center gap-1 w-1/3 justify-center">
             <MdOutlineWaterDrop size={20} />
-            <span>{analysis.umidade}%</span>
+            <span>{hive.humidity}%</span>
           </div>
         </div>
       </div>

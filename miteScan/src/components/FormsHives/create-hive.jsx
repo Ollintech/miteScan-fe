@@ -20,7 +20,7 @@ export default function CreateHiveCard() {
     fetchBeeTypes()
   }, [])
 
-  const handleCriar = async (dados) => {
+  const handleCreate = async (dados) => {
     console.log('Criar colmeia com dados:', dados)
 
     const payload = {
@@ -59,7 +59,7 @@ export default function CreateHiveCard() {
     <FormHive
       modo="criar"
       beeTypes={beeTypes}
-      onConfirmar={handleCriar}
+      onConfirmar={handleCreate}
     />
   )
 }

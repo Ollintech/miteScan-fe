@@ -22,7 +22,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
           name: colmeia.name || '',
           size: colmeia.size || '',
           beeType: colmeia.beeType || '',
-          beeTypeName: beeTypes.find(bee => bee.id.toString() === colmeia.beeType)?.name || '',
+          beeTypeName: colmeia.beeTypeName || beeTypes.find(bee => bee.id.toString() === colmeia.beeType?.toString())?.name || 'Desconhecida',
           location: colmeia.location || null,
           cameraConnected: colmeia.cameraConnected ?? true,
         });
@@ -55,7 +55,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
     if (location.state?.cameraConnected) {
       setFormData(prev => ({ ...prev, cameraConnected: true }))
     }
-  }, [location.state]) // Atualize quando location.state mudar
+  }, [location.state])
 
   useEffect(() => {
     if (modo === 'criar') {
@@ -94,10 +94,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
 
 
   const isLeitura = modo === 'excluir'
-
-  useEffect(() => {
-    console.log("🟨 Novo colmeia recebido:", colmeia)
-  }, [colmeia])
 
   return (
     <div className="bg-gray-100 rounded-xl shadow-xl py-10 px-4 w-full mx-auto">
@@ -197,7 +193,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
           {modo === 'criar' && formData.location && formData.cameraConnected && (
             <button
               onClick={() => {
-                onConfirmar(formData) // envia os dados pro back
+                onConfirmar(formData)
                 navigate('/analysis')
               }}
               className="bg-yellow-400 hover:bg-yellow-300 font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
