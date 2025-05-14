@@ -10,7 +10,7 @@ export default function CreateHiveCard() {
   useEffect(() => {
     const fetchBeeTypes = async () => {
       try {
-        const response = await axios.get('http://host.docker.internal:8000/bee_types/all')
+        const response = await axios.get('http://localhost:8000/bee_types/all')
         setBeeTypes(response.data)
       } catch (error) {
         console.error('Erro ao buscar tipos de abelha:', error)
@@ -37,7 +37,7 @@ export default function CreateHiveCard() {
 
     try {
       const response = await axios.post(
-        'http://host.docker.internal:8000/hives/create',
+        'http://localhost:8000/hives/create',
         payload,
         {
           headers: {

@@ -21,7 +21,7 @@ export default function AnalysisCard() {
   useEffect(() => {
     const fetchHives = async () => {
       try {
-        const response = await axios.get('http://host.docker.internal:8000/hives/all', {
+        const response = await axios.get('http://localhost:8000/hives/all', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -57,7 +57,7 @@ export default function AnalysisCard() {
     try {
       // 1. Atualiza temperatura e umidade
       await axios.put(
-        `http://host.docker.internal:8000/hives/${selectedHiveId}`,
+        `http://localhost:8000/hives/${selectedHiveId}`,
         hiveUpdatePayload,
         {
           headers: {
@@ -76,7 +76,7 @@ export default function AnalysisCard() {
       };
 
       const analysisResponse = await axios.post(
-        'http://host.docker.internal:8000/hive_analyses/create',
+        'http://localhost:8000/hive_analyses/create',
         analysisPayload,
         {
           headers: {

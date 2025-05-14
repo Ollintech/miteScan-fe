@@ -16,12 +16,12 @@ export default function EditHiveCard() {
     const fetchDados = async () => {
       try {
         const [hiveRes, beeTypesRes] = await Promise.all([
-          axios.get(`http://host.docker.internal:8000/hives/${id}`, {
+          axios.get(`http://localhost:8000/hives/${id}`, {
             headers: {
               "Authorization": `Bearer ${token}`
             }
           }),
-          axios.get('http://host.docker.internal:8000/bee_types/all')
+          axios.get('http://localhost:8000/bee_types/all')
         ])
 
         setHive({
@@ -75,7 +75,7 @@ export default function EditHiveCard() {
 
     try {
       const response = await axios.put(
-        `http://host.docker.internal:8000/hives/${id}`,
+        `http://localhost:8000/hives/${id}`,
         payload,
         {
           headers: {

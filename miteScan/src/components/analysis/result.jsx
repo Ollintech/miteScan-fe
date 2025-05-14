@@ -20,7 +20,7 @@ export default function Result() {
     const fetchAnalysisAndHive = async () => {
       try {
         const analysisResponse = await axios.get(
-          `http://host.docker.internal:8000/hive_analyses/${hiveAnalysisId}`,
+          `http://localhost:8000/hive_analyses/${hiveAnalysisId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -31,7 +31,7 @@ export default function Result() {
         setAnalysis(analysisData);
 
         const hiveResponse = await axios.get(
-          `http://host.docker.internal:8000/hives/${analysisData.hive_id}`,
+          `http://localhost:8000/hives/${analysisData.hive_id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`

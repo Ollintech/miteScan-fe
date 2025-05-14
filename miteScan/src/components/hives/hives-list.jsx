@@ -15,7 +15,7 @@ export default function HivesList() {
     const fetchHives = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://host.docker.internal:8000/hives/all', {
+        const response = await axios.get('http://localhost:8000/hives/all', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -35,7 +35,7 @@ export default function HivesList() {
     const fetchBeeTypes = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://host.docker.internal:8000/bee_types/all', {
+        const response = await axios.get('http://localhost:8000/bee_types/all', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

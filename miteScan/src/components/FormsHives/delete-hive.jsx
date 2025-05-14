@@ -15,13 +15,13 @@ export default function DeleteHiveCard() {
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const hiveRes = await axios.get(`http://host.docker.internal:8000/hives/${id}`, {
+        const hiveRes = await axios.get(`http://localhost:8000/hives/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
  
         const hiveData = hiveRes.data
 
-        const beeTypeRes = await axios.get(`http://host.docker.internal:8000/bee_types/${hiveData.bee_type_id}`)
+        const beeTypeRes = await axios.get(`http://localhost:8000/bee_types/${hiveData.bee_type_id}`)
 
         sethive({
           id: hiveData.id,
@@ -49,7 +49,7 @@ export default function DeleteHiveCard() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://host.docker.internal:8000/hives/${id}?confirm=true`, {
+      await axios.delete(`http://localhost:8000/hives/${id}?confirm=true`, {
         headers: {
           Authorization: `Bearer ${token}`
         },
