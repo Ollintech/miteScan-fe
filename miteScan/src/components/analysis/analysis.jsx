@@ -88,7 +88,7 @@ export default function AnalysisCard() {
       const hiveAnalysisId = analysisResponse.data.id;
 
       // Redireciona para a tela de resultado, passando o ID da análise
-      navigate('/result-analysis', {
+      navigate('/loading-analysis', {
         state: { hiveAnalysisId }
       });
 
