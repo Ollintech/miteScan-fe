@@ -10,7 +10,7 @@ export default function LoadingAnalysis() {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate('/result-analysis', { state: { hiveAnalysisId } });
-    }, 3000); // aguarda 3 segundos
+    }, 3000);
     return () => clearTimeout(timer);
   }, [navigate, hiveAnalysisId]);
 
@@ -19,10 +19,8 @@ export default function LoadingAnalysis() {
       className="relative flex items-center justify-center h-screen w-screen"
       style={{ backgroundColor: '#FFE26D' }} 
     >
-      {/* Conteúdo acima do overlay */}
       <div className="z-10 flex flex-col items-center justify-center text-center bg-white bg-opacity-80 p-6 rounded-xl shadow-lg">
         
-        {/* Logo do topo */}
         <img src={Logo} alt="Logo" className="w-2/5 mb-4" />
 
         <div className="text-xl font-bold text-gray-700 mb-4">
