@@ -1,44 +1,69 @@
-import Image from '../../assets/images/colmeia2.jpg'
-import Bee from '../../assets/images/miniBee.png'
-import { FaMapMarkerAlt, FaTrash, FaThermometerHalf, FaArrowLeft } from 'react-icons/fa'
-import { MdAdd, MdEdit, MdHexagon, MdOutlineWaterDrop, MdVerifiedUser } from "react-icons/md"
+import Image from "../../assets/images/colmeia2.jpg";
+import Bee from "../../assets/images/miniBee.png";
+import {
+  FaMapMarkerAlt,
+  FaTrash,
+  FaThermometerHalf,
+  FaArrowLeft,
+} from "react-icons/fa";
+import {
+  MdAdd,
+  MdEdit,
+  MdHexagon,
+  MdOutlineWaterDrop,
+  MdVerifiedUser,
+} from "react-icons/md";
 import { TbAlertTriangleFilled, TbAlertOctagonFilled } from "react-icons/tb";
-import { TbWorldLatitude } from "react-icons/tb"
-import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import axios from 'axios';
+import { TbWorldLatitude } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function HivesList() {
-  const [hives, setHives] = useState([])
-  const navigate = useNavigate()
+  const [hives, setHives] = useState([]);
+  const [beeTypes, setBeeTypes] = useState([]);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchHives = async () => {
+    const fetchHivesWithAnalysis = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/hives/all', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const token = localStorage.getItem("token");
+
+        // 1. Buscar colmeias
+        const hivesResponse = await axios.get("http://localhost:8000/hives/all", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setHives(response.data);
+        const hivesData = hivesResponse.data;
+
+        // 2. Buscar análises de cada colmeia
+        const hivesWithAnalysis = await Promise.all(
+          hivesData.map(async (hive) => {
+            try {
+              const analysisResponse = await axios.get(
+                `http://localhost:8000/hive_analyses/${hive.id}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              return { ...hive, analysis: analysisResponse.data };
+            } catch (error) {
+              console.warn(`Sem análise para colmeia ${hive.id}`);
+              return { ...hive, analysis: null };
+            }
+          })
+        );
+
+        setHives(hivesWithAnalysis);
       } catch (error) {
         console.error("Erro ao buscar colmeias:", error);
       }
     };
 
-    fetchHives();
-  }, []);
-
-  const [beeTypes, setBeeTypes] = useState([]);
-
-  useEffect(() => {
     const fetchBeeTypes = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/bee_types/all', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8000/bee_types/all", {
+          headers: { Authorization: `Bearer ${token}` },
         });
         setBeeTypes(response.data);
       } catch (error) {
@@ -46,66 +71,91 @@ export default function HivesList() {
       }
     };
 
+    fetchHivesWithAnalysis();
     fetchBeeTypes();
   }, []);
 
   function getBeeTypeName(id) {
-    const beeType = beeTypes.find(bt => bt.id === id);
-    return beeType ? beeType.name : 'Tipo desconhecido';
+    const beeType = beeTypes.find((bt) => bt.id === id);
+    return beeType ? beeType.name : "Tipo desconhecido";
   }
 
-
-  function getEstado(analysis) {
-    if (!analysis) return 'segura'
-    if (analysis.has_varroa) return 'perigo'
-    if (analysis.temperature > 28 || analysis.humidity < 30) return 'alerta'
-    return 'segura'
+  function getTemperatureColor(temp) {
+    if (temp == null) return "gray";
+    if (temp > 28) return "red";
+    if (temp >= 18) return "green";
+    return "gray";
   }
+
+  function getHumidityColor(hum) {
+    if (hum == null) return "gray";
+    if (hum < 30) return "red";
+    if (hum < 60) return "green";
+    return "gray";
+  }
+
+  function getEstado(analysis, hives) {
+    if (!analysis) return "segura";
+    if (analysis.varroa_detected) return "perigo";
+    if (hives.temperature > 28 || hives.humidity < 30) return "alerta";
+    return "segura";
+  }
+  
+  
 
   function getIcon(estado) {
-    if (estado === 'segura') return <MdVerifiedUser size={28} className='text-green-600' />
-    if (estado === 'alerta') return <TbAlertTriangleFilled size={28} className='text-yellow-400' />
-    return <TbAlertOctagonFilled size={25} className='text-red-600' />
+    if (estado === "segura")
+      return <MdVerifiedUser size={28} className="text-green-600" />;
+    if (estado === "alerta")
+      return <TbAlertTriangleFilled size={28} className="text-yellow-400" />;
+    return <TbAlertOctagonFilled size={25} className="text-red-600" />;
   }
 
   function getBgColor(estado) {
-    if (estado === 'segura') return 'bg-green-200'
-    if (estado === 'alerta') return 'bg-yellow-200'
-    return 'bg-red-200'
+    if (estado === "segura") return "bg-green-200";
+    if (estado === "alerta") return "bg-yellow-200";
+    return "bg-red-200";
   }
 
   return (
     <div className="p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 mr-10">
-        <div className='flex items-center gap-4 text-2xl font-bold'>
-          <button className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
-            onClick={() => navigate('/home')}>
+        <div className="flex items-center gap-4 text-2xl font-bold">
+          <button
+            className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
+            onClick={() => navigate("/home")}
+          >
             <FaArrowLeft size={25} />
           </button>
           MINHAS COLMEIAS
         </div>
-        <button className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-3"
-          onClick={() => navigate('/create-hive')}>
-          <p className='ml-2'>ADICIONAR</p>
+        <button
+          className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-3"
+          onClick={() => navigate("/create-hive")}
+        >
+          <p className="ml-2">ADICIONAR</p>
           <MdAdd size={25} />
         </button>
       </div>
 
       {/* Lista */}
-      <div className='max-h-[calc(100vh-340px)] overflow-y-auto pr-2'>
+      <div className="max-h-[calc(100vh-340px)] overflow-y-auto pr-2">
         <div className="grid gap-6">
           {hives.map((hive) => {
-            const analysis = hive.hive_analyses?.[0]
-            const estado = getEstado(analysis)
+            const analysis = hive.analysis;
+            const estado = getEstado(analysis, hives);
 
             return (
-              <div key={hive.id} className='flex items-center w-full'>
+              <div key={hive.id} className="flex items-center w-full">
                 <div className="flex h-full w-full shadow-lg rounded-xl">
-
                   <div className="flex items-center h-full justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden">
                     {/* Imagem */}
-                    <img src={Image} alt={`Colmeia ${hive.name}`} className="w-32 h-full object-cover" />
+                    <img
+                      src={Image}
+                      alt={`Colmeia ${hive.name}`}
+                      className="w-32 h-full object-cover"
+                    />
 
                     {/* Info */}
                     <div className="flex flex-col gap-3 py-6 text-start font-bold text-sm w-full">
@@ -114,7 +164,7 @@ export default function HivesList() {
                         COLMEIA {hive.id}
                       </div>
                       <div className="flex items-center gap-2">
-                        <img src={Bee} className='w-4' />
+                        <img src={Bee} className="w-4" />
                         {getBeeTypeName(hive.bee_type_id)}
                       </div>
                       <div className="flex items-center gap-2">
@@ -128,20 +178,30 @@ export default function HivesList() {
                     </div>
 
                     {/* Medidas */}
-                    <div className='h-25 w-0.5 bg-gray-600 mx-3 rounded-xl'></div>
-                    <div className="pr-6">
-                      <div className="flex gap-1 mb-5">
-                        <FaThermometerHalf size={22} color={analysis?.temperature > 28 ? "red" : "green"} />
+                    <div className="h-25 w-0.5 bg-gray-600 mx-2 rounded-xl"></div>
+                    <div className="pr-3 space-y-8">
+                      <div className="flex gap-1">
+                        <FaThermometerHalf
+                          size={22}
+                          color={getTemperatureColor(hive.temperature)}
+                        />
                         {hive.temperature ?? "--"}°C
                       </div>
                       <div className="flex gap-1">
-                        <MdOutlineWaterDrop size={22} color={analysis?.humidity < 40 ? "red" : "green"} />
+                        <MdOutlineWaterDrop
+                          size={22}
+                          color={getHumidityColor(hive.humidity)}
+                        />
                         {hive.humidity ?? "--"}%
                       </div>
                     </div>
 
                     {/* Estado */}
-                    <div className={`flex flex-col items-center justify-center p-3 w-28 h-full ${getBgColor(estado)}`}>
+                    <div
+                      className={`flex flex-col items-center justify-center p-3 w-28 h-full ${getBgColor(
+                        estado
+                      )}`}
+                    >
                       {getIcon(estado)}
                       <span className="font-bold uppercase">{estado}</span>
                     </div>
@@ -158,10 +218,10 @@ export default function HivesList() {
                   </button>
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       </div>
     </div>
-  )
+  );
 }

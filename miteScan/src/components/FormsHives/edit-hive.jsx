@@ -69,8 +69,6 @@ export default function EditHiveCard() {
       location_lat: parseFloat(dadosAtualizados.location?.lat) || 0,
       location_lng: parseFloat(dadosAtualizados.location?.lng) || 0,
       size: parseInt(dadosAtualizados.size),
-      humidity: null,
-      temperature: null
     }
 
     try {
