@@ -37,8 +37,9 @@ export default function AnalysisCard() {
   }, [token]);
 
   const handleAnalysis = async () => {
-    const temperature = Math.floor(Math.random() * (40 - 15 + 1)) + 15;
-    const humidity = Math.floor(Math.random() * (80 - 20 + 1)) + 20;
+    const temperature = Math.floor(Math.random() * (38 - 30 + 1)) + 30;
+    const humidity = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
+
 
     const selectedHive = hives.find(h => h.id === selectedHiveId);
 

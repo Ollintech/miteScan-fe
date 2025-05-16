@@ -53,8 +53,8 @@ export default function Result() {
     return <p className="text-center font-semibold">Carregando análise...</p>;
   }
 
-  const isTempOk = hive.temperature >= 20 && hive.temperature <= 35;
-  const isHumidityOk = hive.humidity >= 40 && hive.humidity <= 80;
+  const isTempOk = hive.temperature >= 34 && hive.temperature <= 36;
+  const isHumidityOk = hive.humidity >= 33 && hive.humidity <= 47;
 
   let status = 'segura';
   if (analysis.varroa_detected) {

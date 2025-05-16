@@ -82,32 +82,33 @@ export default function HivesList() {
 
   function getTemperatureColor(temp) {
     if (temp == null) return "gray";
-    if (temp > 28) return "red";
-    if (temp >= 18) return "green";
-    return "gray";
+    if (temp >= 34 && temp <= 36) return "green";
+    return "red";
   }
 
   function getHumidityColor(hum) {
     if (hum == null) return "gray";
-    if (hum < 30) return "red";
-    if (hum < 60) return "green";
-    return "gray";
+    if (hum >= 33 && hum <= 47) return "green";
+    return "red";
   }
-
-  function getEstado(analysis, hives) {
+  function getEstado(analysis, hive) {
     if (!analysis) return "segura";
     if (analysis.varroa_detected) return "perigo";
-    if (hives.temperature > 28 || hives.humidity < 30) return "alerta";
+
+    const tempOk = hive.temperature > 33 && hive.temperature < 37;
+    const humOk = hive.humidity >= 33 && hive.humidity <= 47;
+
+    if (!tempOk || !humOk) return "alerta";
+
     return "segura";
   }
-  
-  
+
 
   function getIcon(estado) {
     if (estado === "segura")
       return <MdVerifiedUser size={28} className="text-green-600" />;
     if (estado === "alerta")
-      return <TbAlertTriangleFilled size={28} className="text-yellow-400" />;
+      return <TbAlertTriangleFilled size={28} className="text-yellow-500" />;
     return <TbAlertOctagonFilled size={25} className="text-red-600" />;
   }
 
@@ -144,7 +145,8 @@ export default function HivesList() {
         <div className="grid gap-6">
           {hives.map((hive) => {
             const analysis = hive.analysis;
-            const estado = getEstado(analysis, hives);
+            console.log(`Colmeia ${hive.id}: Temp = ${hive.temperature}, Hum = ${hive.humidity}, Varroa = ${analysis?.varroa_detected}`);
+            const estado = getEstado(analysis, hive);
 
             return (
               <div key={hive.id} className="flex items-center w-full">
