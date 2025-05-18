@@ -1,5 +1,5 @@
 // src/pages/Analysis.jsx
-import AnalysisHist from '../../components/Historical/analysis-card'
+import AnalysisHist from '../../components/historical/analysis-card'
 import ButtonBack from '../../components/buttonBack'
 
 function Historical() {
