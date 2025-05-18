@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import favIcon from "../../assets/images/icon-hive-home.png";
 import { MdHexagon } from "react-icons/md";
+import axios from "axios";
 
 export default function InfoHome() {
   const [dashboard, setDashboard] = useState([
@@ -10,32 +10,42 @@ export default function InfoHome() {
   ]);
 
   useEffect(() => {
-    // 🐝 MOCKADOS — os mesmos do componente HomeHives
-    const mockData = [
-      { id: 1, temperature: 23, humidity: 42, latest_analysis: { varroa_detected: false } },
-      { id: 2, temperature: 30, humidity: 20, latest_analysis: { varroa_detected: false } },
-      { id: 3, temperature: 23, humidity: 42, latest_analysis: { varroa_detected: false } },
-      { id: 4, temperature: 40, humidity: 10, latest_analysis: { varroa_detected: true } },
-      { id: 5, temperature: 23, humidity: 42, latest_analysis: { varroa_detected: true } },
-    ];
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-    const total = mockData.length;
-    const comVarroa = mockData.filter(h => h.latest_analysis?.varroa_detected).length;
-    const taxaVarroa = total > 0 ? `${((comVarroa / total) * 100).toFixed(0)}%` : "0%";
+        const hivesResponse = await axios.get("http://localhost:8000/hives/all", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const hives = hivesResponse.data;
 
-    setDashboard([
-      { id: 1, label: "COLMEIAS", value: total },
-      { id: 2, label: "TAXA DE VARROA", value: taxaVarroa },
-      { id: 3, label: "COLMEIAS + VARROA", value: comVarroa },
-    ]);
+        const hivesWithAnalysis = await Promise.all(
+          hives.map(async (hive) => {
+            try {
+              const analysisResponse = await axios.get(
+                `http://localhost:8000/hive_analyses/hive:${hive.id}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              return { ...hive, analysis: analysisResponse.data };
+            } catch (err) {
+              console.warn(`Colmeia ${hive.id} sem análise.`);
+              return { ...hive, analysis: null };
+            }
+          })
+        );
 
-    // Quando for usar dados reais:
-    /*
-    fetch("/api/hives")
-      .then((res) => res.json())
-      .then((data) => {
-        const total = data.length;
-        const comVarroa = data.filter(h => h.latest_analysis?.varroa_detected).length;
+        console.log("🔍 Análises recebidas:", hivesWithAnalysis.map(h => ({
+          id: h.id,
+          varroa: h.analysis?.varroa_detected,
+        })));
+
+        const total = hivesWithAnalysis.length;
+        const comVarroa = hivesWithAnalysis.filter(
+          (h) => h.analysis?.varroa_detected === true
+        ).length;
+
         const taxaVarroa = total > 0 ? `${((comVarroa / total) * 100).toFixed(0)}%` : "0%";
 
         setDashboard([
@@ -43,8 +53,17 @@ export default function InfoHome() {
           { id: 2, label: "TAXA DE VARROA", value: taxaVarroa },
           { id: 3, label: "COLMEIAS + VARROA", value: comVarroa },
         ]);
-      });
-    */
+      } catch (error) {
+        console.error("❌ Erro ao carregar dados do dashboard:", error);
+        setDashboard([
+          { id: 1, label: "COLMEIAS", value: 0 },
+          { id: 2, label: "TAXA DE VARROA", value: "0%" },
+          { id: 3, label: "COLMEIAS + VARROA", value: 0 },
+        ]);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   return (
