@@ -20,13 +20,21 @@ import EditHive from './pages/EditHive/EditHive';
 import DeleteHive from './pages/DeleteHive/DeleteHive';
 import ResultAnalysis from './pages/ResultAnalysis/ResultAnalysis';
 
+import PrivateRoute from '../src/components/AuthForms/PrivateRoute.jsx';
+
+// Rota pública: redireciona para /home se o usuário já estiver logado
+function PublicRoute({ children }) {
+  const token = localStorage.getItem('token');
+  return token ? <Navigate to="/home" replace /> : children;
+}
+
 function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 3000); // 3 segundos
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -38,26 +46,30 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Páginas sem layout */}
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/registration" element={<Registration />} />
-        <Route path="/loading" element={<LoadingScreen />} />
-        <Route path="/loading-analysis" element={<LoadingAnalysis />} /> {/* <- sem navbar aqui */}
+        {/* Redirecionamento padrão */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Páginas com Navbar */}
+        {/* Rotas públicas (acessíveis só se não estiver logado) */}
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/registration" element={<PublicRoute><Registration /></PublicRoute>} />
+
+        {/* Rotas protegidas SEM layout */}
+        <Route path="/loading" element={<PrivateRoute><LoadingScreen /></PrivateRoute>} />
+        <Route path="/loading-analysis" element={<PrivateRoute><LoadingAnalysis /></PrivateRoute>} />
+
+        {/* Rotas protegidas COM layout padrão */}
         <Route element={<DefaultLayout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/hives" element={<Hives />} />
-          <Route path="/historical" element={<Historical />} />
-          <Route path="/analysis" element={<Analysis />} />
-          <Route path="/result-analysis" element={<ResultAnalysis />} />
-          <Route path="/user" element={<User />} />
-          <Route path="/create-hive" element={<CreateHive />} />
-          <Route path="/select-location" element={<MapSelect />} />
-          <Route path="/connect-camera" element={<ConnectCamera />} />
-          <Route path="/edit-hive/:id" element={<EditHive />} />
-          <Route path="/delete-hive/:id" element={<DeleteHive />} />
+          <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+          <Route path="/hives" element={<PrivateRoute><Hives /></PrivateRoute>} />
+          <Route path="/historical" element={<PrivateRoute><Historical /></PrivateRoute>} />
+          <Route path="/analysis" element={<PrivateRoute><Analysis /></PrivateRoute>} />
+          <Route path="/result-analysis" element={<PrivateRoute><ResultAnalysis /></PrivateRoute>} />
+          <Route path="/user" element={<PrivateRoute><User /></PrivateRoute>} />
+          <Route path="/create-hive" element={<PrivateRoute><CreateHive /></PrivateRoute>} />
+          <Route path="/select-location" element={<PrivateRoute><MapSelect /></PrivateRoute>} />
+          <Route path="/connect-camera" element={<PrivateRoute><ConnectCamera /></PrivateRoute>} />
+          <Route path="/edit-hive/:id" element={<PrivateRoute><EditHive /></PrivateRoute>} />
+          <Route path="/delete-hive/:id" element={<PrivateRoute><DeleteHive /></PrivateRoute>} />
         </Route>
       </Routes>
     </Router>

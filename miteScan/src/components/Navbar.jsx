@@ -1,9 +1,10 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './Navbar.css';
 
 function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();  // para navegar programaticamente
   const [menuOpen, setMenuOpen] = useState(false);
 
   //Função para menu
@@ -14,6 +15,14 @@ function Navbar() {
   // Função para fechar o menu quando um item for clicado
   const closeMenu = () => {
     setMenuOpen(false);
+  };
+
+  // Função para logout: limpa token e redireciona
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    closeMenu();
+    navigate('/login');
   };
 
   return (
@@ -51,9 +60,15 @@ function Navbar() {
             </Link>
           </li>
           <li className={location.pathname === '/login' ? 'active' : ''}>
-            <Link to="/login" onClick={closeMenu}>
+            <a
+              href="#logout"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+            >
               <img src="../../src/assets/images/logout.png" alt="Logout" style={{ width: '50px' }} />
-            </Link>
+            </a>
           </li>
         </ul>
       </div>
