@@ -5,7 +5,7 @@ function Hives() {
 
   return (
     <div className="container-all">
-      <div className='w-full max-w-4xl px-4 sm:px-8 mb-10'>
+      <div className='w-full max-w-4xl px-4 mb-5'>
         <HivesList />
       </div>
     </div>

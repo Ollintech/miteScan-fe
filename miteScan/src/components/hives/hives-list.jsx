@@ -13,8 +13,7 @@ import {
   MdOutlineWaterDrop,
   MdVerifiedUser,
 } from "react-icons/md";
-import { TbAlertTriangleFilled, TbAlertOctagonFilled } from "react-icons/tb";
-import { TbWorldLatitude } from "react-icons/tb";
+import { TbAlertTriangleFilled, TbAlertOctagonFilled, TbWorldLatitude } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -28,14 +27,11 @@ export default function HivesList() {
     const fetchHivesWithAnalysis = async () => {
       try {
         const token = localStorage.getItem("token");
-
-        // 1. Buscar colmeias
         const hivesResponse = await axios.get("http://localhost:8000/hives/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hivesData = hivesResponse.data;
 
-        // 2. Buscar análises de cada colmeia
         const hivesWithAnalysis = await Promise.all(
           hivesData.map(async (hive) => {
             try {
@@ -46,8 +42,7 @@ export default function HivesList() {
                 }
               );
               return { ...hive, analysis: analysisResponse.data };
-            } catch (error) {
-              console.warn(`Sem análise para colmeia ${hive.id}`);
+            } catch {
               return { ...hive, analysis: null };
             }
           })
@@ -91,6 +86,7 @@ export default function HivesList() {
     if (hum >= 33 && hum <= 47) return "green";
     return "red";
   }
+
   function getEstado(analysis, hive) {
     if (!analysis) return "segura";
     if (analysis.varroa_detected) return "perigo";
@@ -99,10 +95,8 @@ export default function HivesList() {
     const humOk = hive.humidity >= 33 && hive.humidity <= 47;
 
     if (!tempOk || !humOk) return "alerta";
-
     return "segura";
   }
-
 
   function getIcon(estado) {
     if (estado === "segura")
@@ -121,8 +115,8 @@ export default function HivesList() {
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 mr-10">
-        <div className="flex items-center gap-4 text-2xl font-bold">
+      <div className="<div className=w-full max-w-[90%] mx-auto flex items-center justify-between mb-6 sm:max-w-full">
+        <div className="flex items-center gap-4 sm:text-xl font-bold">
           <button
             className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
             onClick={() => navigate("/home")}
@@ -132,35 +126,38 @@ export default function HivesList() {
           MINHAS COLMEIAS
         </div>
         <button
-          className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-3"
+          className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-3 sm:ml-0 ml-auto sm:self-end"
           onClick={() => navigate("/create-hive")}
         >
-          <p className="ml-2">ADICIONAR</p>
           <MdAdd size={25} />
+          <span className="hidden sm:inline ml-1">ADICIONAR</span>
         </button>
+
+
+
       </div>
 
       {/* Lista */}
       <div className="max-h-[calc(100vh-340px)] overflow-y-auto pr-2">
-        <div className="grid gap-6">
+        <div className="grid gap-6 sm:mx-0 mx-auto max-w-[95%]">
           {hives.map((hive) => {
             const analysis = hive.analysis;
-            console.log(`Colmeia ${hive.id}: Temp = ${hive.temperature}, Hum = ${hive.humidity}, Varroa = ${analysis?.varroa_detected}`);
             const estado = getEstado(analysis, hive);
 
             return (
-              <div key={hive.id} className="flex items-center w-full">
-                <div className="flex h-full w-full shadow-lg rounded-xl">
-                  <div className="flex items-center h-full justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden">
+              <div key={hive.id} className="flex flex-col sm:flex-row items-center w-full gap-4">
+                <div className="flex flex-col sm:flex-row h-full w-full shadow-lg rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden sm:p-0">
                     {/* Imagem */}
                     <img
                       src={Image}
                       alt={`Colmeia ${hive.name}`}
-                      className="w-32 h-full object-cover"
+                      className="w-full sm:w-32 h-32 sm:h-full object-cover rounded-t-xl sm:rounded-t-none sm:rounded-l-xl"
                     />
 
+
                     {/* Info */}
-                    <div className="flex flex-col gap-3 py-6 text-start font-bold text-sm w-full">
+                    <div className="flex flex-col gap-3 text-start font-bold text-sm p-4 w-full">
                       <div className="flex items-center gap-2">
                         <MdHexagon size={19} />
                         COLMEIA {hive.id}
@@ -180,16 +177,16 @@ export default function HivesList() {
                     </div>
 
                     {/* Medidas */}
-                    <div className="h-25 w-0.5 bg-gray-600 mx-2 rounded-xl"></div>
-                    <div className="pr-3 space-y-8">
-                      <div className="flex gap-1">
+                    <div className="h-25 w-0.5 bg-gray-600 mx-2 rounded-xl hidden sm:block"></div>
+                    <div className="flex gap-2 sm:flex-col sm:pr-3 sm:space-y-8 text-sm">
+                      <div className="flex gap-2 items-center">
                         <FaThermometerHalf
                           size={22}
                           color={getTemperatureColor(hive.temperature)}
                         />
                         {hive.temperature ?? "--"}°C
                       </div>
-                      <div className="flex gap-1">
+                      <div className="flex gap-2 items-center">
                         <MdOutlineWaterDrop
                           size={22}
                           color={getHumidityColor(hive.humidity)}
@@ -200,18 +197,18 @@ export default function HivesList() {
 
                     {/* Estado */}
                     <div
-                      className={`flex flex-col items-center justify-center p-3 w-28 h-full ${getBgColor(
+                      className={`flex flex-row sm:flex-col items-center justify-center p-3 w-full sm:w-28 h-20 sm:h-full ${getBgColor(
                         estado
-                      )}`}
+                      )} gap-2`}
                     >
                       {getIcon(estado)}
-                      <span className="font-bold uppercase">{estado}</span>
+                      <span className="font-bold uppercase text-sm">{estado}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Ações */}
-                <div className="flex flex-col gap-6 ml-3 items-center">
+                <div className="flex sm:flex-col flex-row gap-4 sm:ml-3 items-center mt-4 sm:mt-0">
                   <button onClick={() => navigate(`/edit-hive/${hive.id}`)}>
                     <MdEdit size={25} />
                   </button>

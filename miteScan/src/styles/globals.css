@@ -38,3 +38,12 @@ body {
     padding: 1rem; 
     box-sizing: border-box; 
   }
+
+  @media (max-width: 640px) {
+  .container-all {
+    margin-top: 8vh;
+    padding: 3rem 0.5rem;
+    background-position: left -80px top, right -150px bottom;
+    background-size: 200px, 200px;
+  }
+}
