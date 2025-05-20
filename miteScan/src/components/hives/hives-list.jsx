@@ -137,9 +137,9 @@ export default function HivesList() {
             return (
               <div key={hive.id}
                 className="flex flex-col sm:flex-row items-center w-full gap-4 cursor-pointer"
-                onClick={() => navigate("/analysis", { state: { selectedHiveId: hive.id } })}
               >
-                <div className="flex flex-col sm:flex-row h-full w-full shadow-lg rounded-xl">
+                <div className="flex flex-col sm:flex-row h-full w-full shadow-lg rounded-xl"
+                onClick={() => navigate("/analysis", { state: { selectedHiveId: hive.id } })}>
                   <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden sm:p-0">
                     {/* Imagem */}
                     <img
