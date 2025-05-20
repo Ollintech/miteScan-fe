@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import resultImage from '../../assets/images/colmeia1.png';
@@ -10,14 +10,13 @@ import { MdVerifiedUser } from "react-icons/md";
 export default function Result() {
   const location = useLocation();
   const { hiveAnalysisId } = location.state || {};
-
   const [analysis, setAnalysis] = useState(null);
   const [hive, setHive] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const fetchAnalysisAndHive = async () => {
+    const fetch = async () => {
       try {
         const analysisResponse = await axios.get(
           `http://localhost:8000/hive_analyses/${hiveAnalysisId}`,
@@ -45,7 +44,7 @@ export default function Result() {
     };
 
     if (hiveAnalysisId) {
-      fetchAnalysisAndHive();
+      fetch();
     }
   }, [hiveAnalysisId]);
 

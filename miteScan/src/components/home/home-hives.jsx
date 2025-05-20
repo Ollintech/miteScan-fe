@@ -1,19 +1,8 @@
 import { useEffect, useState } from "react";
 import HivesImg from "../../assets/images/colmeia1.png";
-import {
-  FaThermometerHalf,
-  FaMapMarkerAlt,
-} from 'react-icons/fa';
-import {
-  MdHexagon,
-  MdOutlineWaterDrop,
-  MdVerifiedUser,
-  MdAdd
-} from "react-icons/md";
-import {
-  TbAlertTriangleFilled,
-  TbAlertOctagonFilled
-} from "react-icons/tb";
+import { FaThermometerHalf } from 'react-icons/fa';
+import { MdHexagon, MdOutlineWaterDrop, MdVerifiedUser, MdAdd } from "react-icons/md";
+import { TbAlertTriangleFilled, TbAlertOctagonFilled } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -112,7 +101,7 @@ export default function HomeHives() {
               <div
                 key={colmeia.id}
                 className="text-sm flex flex-col items-start bg-gray-200 rounded-xl shadow-md hover:scale-105 transition-transform max-w-50 min-w-35 mx-auto cursor-pointer"
-                onClick={() => navigate(`/hives/${colmeia.id}`)}
+                onClick={() => navigate(`/hives`)}
               >
                 <img
                   src={colmeia.imagem}

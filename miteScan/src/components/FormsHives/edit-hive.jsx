@@ -13,7 +13,7 @@ export default function EditHiveCard() {
   const token = localStorage.getItem("token")
 
   useEffect(() => {
-    const fetchDados = async () => {
+    const fetch = async () => {
       try {
         const [hiveRes, beeTypesRes] = await Promise.all([
           axios.get(`http://localhost:8000/hives/${id}`, {
@@ -45,13 +45,13 @@ export default function EditHiveCard() {
       }
     }
 
-    fetchDados()
+    fetch()
   }, [id])
 
   useEffect(() => {
     if (location.state?.location || location.state?.cameraConnected) {
       setHive(prev => {
-        if (!prev) return prev 
+        if (!prev) return prev
         return {
           ...prev,
           location: location.state.location || prev.location,

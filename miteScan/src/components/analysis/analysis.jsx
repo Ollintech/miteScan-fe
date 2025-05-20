@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import colmeia1 from '../../assets/images/colmeia1.png';
 import colmeia2 from '../../assets/images/colmeia2.jpg';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function AnalysisCard() {
   const [hives, setHives] = useState([]);
   const [selectedHiveId, setSelectedHiveId] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const hiveImages = {
     1: colmeia1,
@@ -19,22 +20,25 @@ export default function AnalysisCard() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchHives = async () => {
+    const fetch = async () => {
       try {
         const response = await axios.get('http://localhost:8000/hives/all', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
+
+        const initialHiveId = location.state?.selectedHiveId;
+
         setHives(response.data);
-        setSelectedHiveId(response.data[0]?.id || '');
+        setSelectedHiveId(initialHiveId || response.data[0]?.id || '');
       } catch (error) {
         console.error('Erro ao buscar colmeias:', error.response?.data || error.message);
       }
     };
 
-    fetchHives();
-  }, [token]);
+    fetch();
+  }, [token, location.state]);
 
   const handleAnalysis = async () => {
     const temperature = Math.floor(Math.random() * (38 - 30 + 1)) + 30;
@@ -56,7 +60,7 @@ export default function AnalysisCard() {
     };
 
     try {
-      // 1. Atualiza temperatura e umidade
+      // Atualiza temperatura e umidade
       await axios.put(
         `http://localhost:8000/hives/${selectedHiveId}`,
         hiveUpdatePayload,
@@ -67,7 +71,7 @@ export default function AnalysisCard() {
         }
       );
 
-      // 2. Cria nova análise
+      // Cria nova análise
       const analysisPayload = {
         hive_id: selectedHiveId,
         user_id: userId,

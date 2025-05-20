@@ -9,25 +9,27 @@ export default function DeleteHiveCard() {
   const [hive, sethive] = useState(null)
   const [beeTypeName, setBeeTypeName] = useState('')
   const [loading, setLoading] = useState(true)
+  const [deleteError, setDeleteError] = useState('')
+
 
   const token = localStorage.getItem("token")
 
   useEffect(() => {
-    const fetchDados = async () => {
+    const fetch = async () => {
       try {
-        const hiveRes = await axios.get(`http://localhost:8000/hives/${id}`, {
+        const response = await axios.get(`http://localhost:8000/hives/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
- 
-        const hiveData = hiveRes.data
 
-        const beeTypeRes = await axios.get(`http://localhost:8000/bee_types/${hiveData.bee_type_id}`)
+        const hiveData = response.data
+
+        const beeTypeResponse = await axios.get(`http://localhost:8000/bee_types/${hiveData.bee_type_id}`)
 
         sethive({
           id: hiveData.id,
           name: hiveData.name || '',
           size: hiveData.size || '',
-          beeTypeName: beeTypeRes.data.name || 'Desconhecida',
+          beeTypeName: beeTypeResponse.data.name || 'Desconhecida',
           location: {
             lat: hiveData.location_lat,
             lng: hiveData.location_lng
@@ -35,16 +37,15 @@ export default function DeleteHiveCard() {
           cameraConnected: true
         })
 
-        setBeeTypeName(beeTypeRes.data.name || 'Desconhecida')
+        setBeeTypeName(beeTypeResponse.data.name || 'Desconhecida')
       } catch (err) {
         console.error('❌ Erro ao buscar colmeia ou espécie:', err)
-        alert('Erro ao carregar colmeia.')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchDados()
+    fetch()
   }, [id, token])
 
   const handleDelete = async () => {
@@ -55,11 +56,12 @@ export default function DeleteHiveCard() {
         },
       })
 
-      alert('Colmeia excluída com sucesso.')
+      setDeleteError('')
       navigate('/hives')
+
     } catch (error) {
       console.error('❌ Erro ao excluir colmeia:', error.response?.data || error.message)
-      alert('Erro ao excluir colmeia.')
+      setDeleteError('Não foi possível excluir essa colmeia.')
     }
   }
 
@@ -72,6 +74,7 @@ export default function DeleteHiveCard() {
       modo="excluir"
       colmeia={{ ...hive, beeTypeName }}
       onExcluir={handleDelete}
+      deleteError={deleteError}
     />
   )
 }

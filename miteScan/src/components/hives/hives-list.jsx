@@ -1,19 +1,9 @@
 import Image from "../../assets/images/colmeia2.jpg";
 import Bee from "../../assets/images/miniBee.png";
-import {
-  FaMapMarkerAlt,
-  FaTrash,
-  FaThermometerHalf,
-  FaArrowLeft,
-} from "react-icons/fa";
-import {
-  MdAdd,
-  MdEdit,
-  MdHexagon,
-  MdOutlineWaterDrop,
-  MdVerifiedUser,
-} from "react-icons/md";
+import { FaTrash, FaThermometerHalf, FaArrowLeft } from "react-icons/fa";
+import { MdAdd, MdEdit, MdHexagon, MdOutlineWaterDrop, MdVerifiedUser } from "react-icons/md";
 import { TbAlertTriangleFilled, TbAlertOctagonFilled, TbWorldLatitude } from "react-icons/tb";
+import { RiCustomSize } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -24,7 +14,7 @@ export default function HivesList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchHivesWithAnalysis = async () => {
+    const fetch = async () => {
       try {
         const token = localStorage.getItem("token");
         const hivesResponse = await axios.get("http://localhost:8000/hives/all", {
@@ -66,7 +56,7 @@ export default function HivesList() {
       }
     };
 
-    fetchHivesWithAnalysis();
+    fetch();
     fetchBeeTypes();
   }, []);
 
@@ -145,7 +135,10 @@ export default function HivesList() {
             const estado = getEstado(analysis, hive);
 
             return (
-              <div key={hive.id} className="flex flex-col sm:flex-row items-center w-full gap-4">
+              <div key={hive.id}
+                className="flex flex-col sm:flex-row items-center w-full gap-4 cursor-pointer"
+                onClick={() => navigate("/analysis", { state: { selectedHiveId: hive.id } })}
+              >
                 <div className="flex flex-col sm:flex-row h-full w-full shadow-lg rounded-xl">
                   <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden sm:p-0">
                     {/* Imagem */}
@@ -167,7 +160,7 @@ export default function HivesList() {
                         {getBeeTypeName(hive.bee_type_id)}
                       </div>
                       <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt size={18} />
+                        <RiCustomSize size={18} />
                         {hive.size} cm
                       </div>
                       <div className="flex items-center gap-2">

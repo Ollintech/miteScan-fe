@@ -88,7 +88,6 @@ export default function AnalysisHist() {
                 <p><strong>Tamanho:</strong> {analysis.hive?.size} cm</p>
                 <p><strong>Temperatura:</strong> {analysis.hive?.temperature}°C</p>
                 <p><strong>Umidade:</strong> {analysis.hive?.humidity}%</p>
-                <p><strong>Varroa:</strong> {analysis.has_varroa ? 'Detectada' : 'Não detectada'}</p>
               </div>
             </div>
 

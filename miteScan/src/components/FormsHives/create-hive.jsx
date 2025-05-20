@@ -4,11 +4,12 @@ import axios from 'axios'
 
 export default function CreateHiveCard() {
   const [beeTypes, setBeeTypes] = useState([])
+  const [formError, setFormError] = useState('')
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
 
   useEffect(() => {
-    const fetchBeeTypes = async () => {
+    const fetch = async () => {
       try {
         const response = await axios.get('http://localhost:8000/bee_types/all')
         setBeeTypes(response.data)
@@ -17,11 +18,15 @@ export default function CreateHiveCard() {
       }
     }
 
-    fetchBeeTypes()
+    fetch()
   }, [])
 
   const handleCreate = async (dados) => {
-    console.log('Criar colmeia com dados:', dados)
+    // Verificação de campos obrigatórios
+    if (!dados.size || !dados.beeType || !dados.location || !dados.cameraConnected) {
+      setFormError("Preencha todos os campos")
+      return
+    }
 
     const payload = {
       user_id: userId,
@@ -46,20 +51,22 @@ export default function CreateHiveCard() {
           }
         }
       )
-      localStorage.removeItem('draftHiveForm');
-      console.log('Colmeia criada com sucesso:', response.data)
+      localStorage.removeItem('draftHiveForm')
+      setFormError('')
+      // Redirecionamento deve ser feito apenas no sucesso. Pode ser aqui ou no FormHive
+      window.location.href = '/analysis'
     } catch (error) {
       console.error('Erro ao criar colmeia:', error.response?.data || error.message)
-      alert('Erro ao cadastrar colmeia. Verifique os dados ou tente novamente.')
+      setFormError("Erro ao cadastrar colmeia. Verifique os dados ou tente novamente.")
     }
   }
-
 
   return (
     <FormHive
       modo="criar"
       beeTypes={beeTypes}
       onConfirmar={handleCreate}
+      dataError={formError}
     />
   )
 }

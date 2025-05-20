@@ -17,10 +17,10 @@ export default function LoadingAnalysis() {
   return (
     <div
       className="relative flex items-center justify-center h-screen w-screen"
-      style={{ backgroundColor: '#FFE26D' }} 
+      style={{ backgroundColor: '#FFE26D' }}
     >
       <div className="z-10 flex flex-col items-center justify-center text-center bg-white bg-opacity-80 p-6 rounded-xl shadow-lg">
-        
+
         <img src={Logo} alt="Logo" className="w-2/5 mb-4" />
 
         <div className="text-xl font-bold text-gray-700 mb-4">

@@ -9,7 +9,7 @@ export default function RegistrationForm() {
     email: "",
     senha: "",
     access_id: "",
-    company_id: 1,  
+    company_id: 1,
   });
 
   const [accessLevels, setAccessLevels] = useState([]);
@@ -29,7 +29,7 @@ export default function RegistrationForm() {
     };
 
     fetchAccessLevels();
-    
+
   }, []);
 
   const handleChange = (e) => {

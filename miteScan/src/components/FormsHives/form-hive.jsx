@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import yellowBee from '../../assets/images/yellowBee.png'
 
-export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, beeTypes = [] }) {
+export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, beeTypes, deleteError, dataError = [] }) {
   console.log("colmeia recebida:", colmeia)
   const navigate = useNavigate()
   const location = useLocation()
@@ -188,14 +188,19 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
           </div>
         )}
 
+        {modo === 'criar' && dataError && (
+          <p className="mt-2 text-md font-bold text-red-500">{dataError}</p>
+        )}
+
+        {modo === 'excluir' && deleteError && (
+          <p className="mt-2 text-sm text-red-500">{deleteError}</p>
+        )}
+
         {/* Botões finais */}
         <div className="flex justify-center mt-6">
           {modo === 'criar' && formData.location && formData.cameraConnected && (
             <button
-              onClick={() => {
-                onConfirmar(formData)
-                navigate('/analysis')
-              }}
+              onClick={() => onConfirmar(formData)}
               className="bg-yellow-400 hover:bg-yellow-300 font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
             >
               Confirmar
@@ -221,6 +226,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
               Excluir
             </button>
           )}
+
         </div>
       </div>
     </div>
