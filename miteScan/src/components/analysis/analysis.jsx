@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function AnalysisCard() {
   const [hives, setHives] = useState([]);
-  const [selectedHiveId, setSelectedHiveId] = useState('');
+  const [selectedHiveId, setSelectedHiveId] = useState(null); // Inicializa como null
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,8 +19,9 @@ export default function AnalysisCard() {
   const userId = user?.id;
   const token = localStorage.getItem("token");
 
+  // Fazendo o fetch das colmeias
   useEffect(() => {
-    const fetch = async () => {
+    const fetchHives = async () => {
       try {
         const response = await axios.get('http://localhost:8000/hives/all', {
           headers: {
@@ -28,58 +29,36 @@ export default function AnalysisCard() {
           }
         });
 
-        const initialHiveId = location.state?.selectedHiveId;
+        // Pega o ID da colmeia a partir do estado de navegação, se existir
+        const initialHiveId = location.state?.selectedHiveId || response.data[0]?.id;
 
         setHives(response.data);
-        setSelectedHiveId(initialHiveId || response.data[0]?.id || '');
+        setSelectedHiveId(initialHiveId);  // Atualiza o ID da colmeia selecionada
       } catch (error) {
         console.error('Erro ao buscar colmeias:', error.response?.data || error.message);
       }
     };
 
-    fetch();
+    fetchHives();
   }, [token, location.state]);
 
+  // Função para criar a análise da colmeia
   const handleAnalysis = async () => {
-    const temperature = Math.floor(Math.random() * (38 - 30 + 1)) + 30;
-    const humidity = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
-
-
-    const selectedHive = hives.find(h => h.id === selectedHiveId);
+    const selectedHive = hives.find(hive => hive.id === selectedHiveId);
 
     if (!selectedHive) return;
 
-    const hiveUpdatePayload = {
+    const analysisPayload = {
+      hive_id: selectedHiveId,
       user_id: userId,
-      bee_type_id: selectedHive.bee_type_id,
-      location_lat: selectedHive.location_lat,
-      location_lng: selectedHive.location_lng,
-      size: selectedHive.size,
-      temperature,
-      humidity
+      image_path: "string", 
+      varroa_detected: Math.random() < 0.5, 
+      detection_confidence: (Math.random()).toFixed(2), 
+      temperature: selectedHive.temperature,
+      humidity: selectedHive.humidity
     };
 
     try {
-      // Atualiza temperatura e umidade
-      await axios.put(
-        `http://localhost:8000/hives/${selectedHiveId}`,
-        hiveUpdatePayload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      // Cria nova análise
-      const analysisPayload = {
-        hive_id: selectedHiveId,
-        user_id: userId,
-        image_path: "string",
-        varroa_detected: Math.random() < 0.5,
-        detection_confidence: Math.random().toFixed(2)
-      };
-
       const analysisResponse = await axios.post(
         'http://localhost:8000/hive_analyses/create',
         analysisPayload,
@@ -92,11 +71,10 @@ export default function AnalysisCard() {
 
       const hiveAnalysisId = analysisResponse.data.id;
 
-      // Redireciona para a tela de resultado, passando o ID da análise
+      // Navega para a página de loading da análise
       navigate('/loading-analysis', {
         state: { hiveAnalysisId }
       });
-
     } catch (error) {
       console.error('Erro ao criar análise:', error.response?.data || error.message);
       alert('Erro ao criar análise. Tente novamente.');
@@ -109,7 +87,7 @@ export default function AnalysisCard() {
         <label className="font-bold" htmlFor="hive-select">SELECIONE A COLMEIA:</label>
         <select
           id="hive-select"
-          value={selectedHiveId}
+          value={selectedHiveId || ''}
           onChange={(e) => setSelectedHiveId(Number(e.target.value))}
           className='bg-gray-200 py-1 px-6 rounded-lg'
         >
