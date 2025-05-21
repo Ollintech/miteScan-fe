@@ -26,7 +26,7 @@ export default function HivesList() {
           hivesData.map(async (hive) => {
             try {
               const analysisResponse = await axios.get(
-                `http://localhost:8000/hive_analyses/hive:${hive.id}`,
+                `http://localhost:8000/hive_analyses/hive/${hive.id}`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
