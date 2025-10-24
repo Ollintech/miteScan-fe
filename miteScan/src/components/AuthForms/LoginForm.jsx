@@ -7,50 +7,55 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
+  // NOVO ESTADO: para controlar o tipo de usuário que está tentando logar
+  const [userType, setUserType] = useState('root'); // 'root' ou 'associated'
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    // Validação dos campos
     if (!email || !senha) {
       setErro('Preencha todos os campos.');
       return;
     }
 
-    // Verificando o formato do email
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      setErro('Formato de e-mail inválido.');
-      return;
-    }
-
     try {
-      // Criando os dados do formulário
       const formData = new URLSearchParams();
       formData.append("username", email);
       formData.append("password", senha);
 
-      // Requisição POST para o backend
-      const response = await axios.post("http://localhost:8000/users/login", formData, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
+      // LÓGICA ATUALIZADA: Escolhe a URL com base no tipo de usuário
+      let loginUrl = '';
+      if (userType === 'root') {
+        loginUrl = "http://localhost:8000/users_root/login";
+      } else {
+        loginUrl = "http://localhost:8000/UsersAssociated/login";
+      }
+
+      console.log(`Tentando fazer login como '${userType}' na URL: ${loginUrl}`);
+
+      const response = await axios.post(loginUrl, formData, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
       });
 
-      // Se login for bem-sucedido, salva o token
-      const { access_token, user } = response.data;
-      localStorage.setItem("token", access_token);  // Armazena o token
-      localStorage.setItem("user", JSON.stringify(user));  // Armazena dados do usuário
+      // LÓGICA ATUALIZADA: Salva os dados corretos no localStorage
+      const { access_token } = response.data;
+      // O backend retorna 'user_root' ou 'user_associated' dependendo da rota
+      const userData = response.data.user_root || response.data.user_associated;
 
-      // Limpa erro e redireciona para a página inicial
+      localStorage.setItem("token", access_token);
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      if (userData && userData.access_id) {
+        localStorage.setItem("access_id", userData.access_id);
+      }
+
       setErro('');
-      navigate('/home');  // Certifique-se de que essa rota está configurada corretamente
+      navigate('/home');
 
     } catch (error) {
-      console.error("Erro ao fazer login:", error);  // Adicionando para depuração
+      console.error("Erro ao fazer login:", error);
       if (error.response) {
-        setErro(error.response.data.detail || "Erro ao fazer login.");
+        setErro(error.response.data.detail || "Credenciais inválidas.");
       } else {
         setErro("Erro de conexão com o servidor.");
       }
@@ -63,7 +68,31 @@ export default function LoginForm() {
         <img src={BeeIcon} alt="Ícone" className="w-30" />
       </div>
       <h2 className="text-xl text-gray-600 font-bold mb-4">Login</h2>
+      
       <form onSubmit={handleLogin} className="w-full flex text-gray-600 flex-col gap-2">
+        
+        {/* NOVO SELETOR DE TIPO DE CONTA */}
+        <div className="flex justify-center gap-4 mb-4 text-sm">
+          <label>
+            <input 
+              type="radio" 
+              name="userType" 
+              value="root" 
+              checked={userType === 'root'} 
+              onChange={() => setUserType('root')} 
+            /> Administrador
+          </label>
+          <label>
+            <input 
+              type="radio" 
+              name="userType" 
+              value="associated" 
+              checked={userType === 'associated'} 
+              onChange={() => setUserType('associated')} 
+            /> Funcionário
+          </label>
+        </div>
+
         <label className="text-md">Login:</label>
         <input
           type="text"

@@ -8,35 +8,28 @@ export default function EditHiveCard() {
   const navigate = useNavigate()
   const location = useLocation()
   const [hive, setHive] = useState(null)
-  const [beeTypes, setBeeTypes] = useState([])
   const [loading, setLoading] = useState(true)
   const token = localStorage.getItem("token")
 
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const [hiveRes, beeTypesRes] = await Promise.all([
-          axios.get(`http://localhost:8000/hives/${id}`, {
-            headers: {
-              "Authorization": `Bearer ${token}`
-            }
-          }),
-          axios.get('http://localhost:8000/bee_types/all')
-        ])
+        const hiveRes = await axios.get(`http://localhost:8000/hives/${id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        })
 
         setHive({
           id: hiveRes.data.id,
           name: hiveRes.data.name || '',
           size: hiveRes.data.size || '',
-          beeType: hiveRes.data.bee_type_id?.toString() || '',
           location: {
             lat: hiveRes.data.location_lat,
             lng: hiveRes.data.location_lng
           },
           cameraConnected: true
         })
-
-        setBeeTypes(beeTypesRes.data)
       } catch (error) {
         console.error('Erro ao carregar dados da colmeia:', error)
         alert('Erro ao carregar colmeia.')
@@ -65,7 +58,7 @@ export default function EditHiveCard() {
 
   const handleEdit = async (dadosAtualizados) => {
     const payload = {
-      bee_type_id: parseInt(dadosAtualizados.beeType),
+      bee_type_id: null,
       location_lat: parseFloat(dadosAtualizados.location?.lat) || 0,
       location_lng: parseFloat(dadosAtualizados.location?.lng) || 0,
       size: parseInt(dadosAtualizados.size),
@@ -102,7 +95,6 @@ export default function EditHiveCard() {
       key={hive.id + '-' + hive.location?.lat + '-' + hive.location?.lng + '-' + hive.cameraConnected}
       modo="editar"
       colmeia={hive}
-      beeTypes={beeTypes}
       onConfirmar={handleEdit}
     />
   )

@@ -1,5 +1,5 @@
 // src/pages/Registration.jsx
-import RegistrationForm from '../../components/AuthForms/RegistrationForm'
+import RegistrationForm from '../../../components/AuthForms/RegistrationForm'
 
 function Registration() {
 

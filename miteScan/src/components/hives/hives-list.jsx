@@ -20,7 +20,6 @@ import axios from "axios";
 
 export default function HivesList() {
   const [hives, setHives] = useState([]);
-  const [beeTypes, setBeeTypes] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,26 +53,10 @@ export default function HivesList() {
       }
     };
 
-    const fetchBeeTypes = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:8000/bee_types/all", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setBeeTypes(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar tipos de abelha:", error);
-      }
-    };
 
     fetchHivesWithAnalysis();
-    fetchBeeTypes();
   }, []);
 
-  function getBeeTypeName(id) {
-    const beeType = beeTypes.find((bt) => bt.id === id);
-    return beeType ? beeType.name : "Tipo desconhecido";
-  }
 
   function getTemperatureColor(temp) {
     if (temp == null) return "gray";
@@ -161,10 +144,6 @@ export default function HivesList() {
                       <div className="flex items-center gap-2">
                         <MdHexagon size={19} />
                         COLMEIA {hive.id}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <img src={Bee} className="w-4" />
-                        {getBeeTypeName(hive.bee_type_id)}
                       </div>
                       <div className="flex items-center gap-2">
                         <FaMapMarkerAlt size={18} />

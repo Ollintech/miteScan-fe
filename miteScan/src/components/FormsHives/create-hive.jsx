@@ -3,29 +3,15 @@ import FormHive from './form-hive'
 import axios from 'axios'
 
 export default function CreateHiveCard() {
-  const [beeTypes, setBeeTypes] = useState([])
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-
-  useEffect(() => {
-    const fetchBeeTypes = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/bee_types/all')
-        setBeeTypes(response.data)
-      } catch (error) {
-        console.error('Erro ao buscar tipos de abelha:', error)
-      }
-    }
-
-    fetchBeeTypes()
-  }, [])
 
   const handleCreate = async (dados) => {
     console.log('Criar colmeia com dados:', dados)
 
     const payload = {
       user_id: userId,
-      bee_type_id: parseInt(dados.beeType),
+      bee_type_id: null,
       location_lat: parseFloat(dados.location?.lat) || 0,
       location_lng: parseFloat(dados.location?.lng) || 0,
       size: parseInt(dados.size),
@@ -58,7 +44,6 @@ export default function CreateHiveCard() {
   return (
     <FormHive
       modo="criar"
-      beeTypes={beeTypes}
       onConfirmar={handleCreate}
     />
   )

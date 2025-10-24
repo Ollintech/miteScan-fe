@@ -7,6 +7,31 @@ function Navbar() {
   const navigate = useNavigate();  // para navegar programaticamente
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Verificar se o usuário é admin/owner
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  
+  // Função para verificar se é admin (mesma lógica do AdminRoute)
+  const isAdminUser = (user) => {
+    if (!user) return false;
+    
+    const checks = [
+      user.access_id === 1 || user.access_id === '1',
+      user.access?.id === 1 || user.access?.id === '1',
+      user.nivel === 'administrador' || user.nivel === 'owner',
+      user.access?.name?.toLowerCase() === 'owner' || 
+      user.access?.name?.toLowerCase() === 'administrador',
+      user.access_name?.toLowerCase() === 'owner' ||
+      user.access_name?.toLowerCase() === 'administrador',
+      user.role?.toLowerCase() === 'owner' ||
+      user.role?.toLowerCase() === 'administrador'
+    ];
+    
+    return checks.some(check => check === true);
+  };
+  
+  const isAdmin = isAdminUser(user);
+
   //Função para menu
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -54,11 +79,13 @@ function Navbar() {
               <img src="../../src/assets/images/analisar.png" alt="Analisar" style={{ width: '50px' }} />
             </Link>
           </li>
-          <li className={location.pathname === '/user' ? 'active' : ''}>
-            <Link to="/user" onClick={closeMenu}>
-              <img src="../../src/assets/images/usuario.png" alt="Usuário" style={{ width: '50px' }} />
-            </Link>
-          </li>
+          {isAdmin && (
+            <li className={location.pathname === '/users' ? 'active' : ''}>
+              <Link to="/users" onClick={closeMenu}>
+                <img src="../../src/assets/images/usuario.png" alt="Usuário" style={{ width: '50px' }} />
+              </Link>
+            </li>
+          )}
           <li className={location.pathname === '/login' ? 'active' : ''}>
             <a
               href="#logout"

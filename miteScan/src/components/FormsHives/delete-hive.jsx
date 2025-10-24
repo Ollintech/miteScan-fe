@@ -7,7 +7,6 @@ export default function DeleteHiveCard() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [hive, sethive] = useState(null)
-  const [beeTypeName, setBeeTypeName] = useState('')
   const [loading, setLoading] = useState(true)
 
   const token = localStorage.getItem("token")
@@ -21,23 +20,18 @@ export default function DeleteHiveCard() {
  
         const hiveData = hiveRes.data
 
-        const beeTypeRes = await axios.get(`http://localhost:8000/bee_types/${hiveData.bee_type_id}`)
-
         sethive({
           id: hiveData.id,
           name: hiveData.name || '',
           size: hiveData.size || '',
-          beeTypeName: beeTypeRes.data.name || 'Desconhecida',
           location: {
             lat: hiveData.location_lat,
             lng: hiveData.location_lng
           },
           cameraConnected: true
         })
-
-        setBeeTypeName(beeTypeRes.data.name || 'Desconhecida')
       } catch (err) {
-        console.error('❌ Erro ao buscar colmeia ou espécie:', err)
+        console.error('❌ Erro ao buscar colmeia:', err)
         alert('Erro ao carregar colmeia.')
       } finally {
         setLoading(false)
@@ -70,7 +64,7 @@ export default function DeleteHiveCard() {
     <FormHive
       key={hive.id}
       modo="excluir"
-      colmeia={{ ...hive, beeTypeName }}
+      colmeia={hive}
       onExcluir={handleDelete}
     />
   )

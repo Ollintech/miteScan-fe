@@ -2,15 +2,14 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import yellowBee from '../../assets/images/yellowBee.png'
 
-export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, beeTypes = [] }) {
+export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir }) {
   console.log("colmeia recebida:", colmeia)
   const navigate = useNavigate()
   const location = useLocation()
 
   const [formData, setFormData] = useState({
-    name: '',
+    name: 'COLMEIA 1',
     size: '',
-    beeType: '',
     location: null,
     cameraConnected: false,
   })
@@ -21,8 +20,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         setFormData({
           name: colmeia.name || '',
           size: colmeia.size || '',
-          beeType: colmeia.beeType || '',
-          beeTypeName: colmeia.beeTypeName || beeTypes.find(bee => bee.id.toString() === colmeia.beeType?.toString())?.name || 'Desconhecida',
           location: colmeia.location || null,
           cameraConnected: colmeia.cameraConnected ?? true,
         });
@@ -96,71 +93,66 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
   const isLeitura = modo === 'excluir'
 
   return (
-    <div className="bg-gray-100 rounded-xl shadow-xl py-10 px-4 w-full mx-auto">
-      <div className='flex items-center gap-4 mx-auto mb-6'>
-        <img src={yellowBee} alt="Abelha" className='w-8' />
-        <h3 className="text-gray-700 font-semibold text-center">
+    <div className="w-full max-w-2xl mx-auto bg-gray-100 rounded-xl shadow-lg p-6">
+      {/* Header */}
+      <div className='flex items-center gap-3 mb-6 pb-4 border-b border-gray-200'>
+        <img src={yellowBee} alt="Abelha" className='w-8 h-8' />
+        <h3 className="text-gray-800 font-bold text-lg">
           {modo === 'criar' && 'PREENCHA AS INFORMAÇÕES ABAIXO'}
           {modo === 'editar' && 'EDITE AS INFORMAÇÕES'}
           {modo === 'excluir' && 'DESEJA MESMO EXCLUIR ESSA COLMEIA?'}
         </h3>
       </div>
 
-      <div className="space-y-4">
-
-        {/* Tamanho */}
+      <div className="space-y-5">
+        {/* Nome */}
         <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-600 font-medium">Tamanho:</label>
+          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Nome:</label>
           <input
-            type="number"
-            name="size"
-            value={formData.size}
+            type="text"
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             readOnly={isLeitura}
-            min={0}
-            className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none shadow-sm"
-            placeholder="insira a medida em cm"
+            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="Nome da colmeia"
           />
         </div>
 
-        {/* Tipo */}
+        {/* Tamanho */}
         <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-600 font-medium">Espécie:</label>
-
-          {modo === 'excluir' ? (
-            // Exibe o nome da espécie no modo de exclusão (somente leitura)
-            <input
-              type="text"
-              value={formData.beeTypeName || 'Desconhecida'}
-              readOnly
-              className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none shadow-sm"
-            />
-          ) : (
-            // Exibe o select nos modos de editar e criar
-            <select
-              name="beeType"
-              value={formData.beeType}
-              onChange={handleChange}
-              className="flex-1 px-2 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm focus:outline-none"
-            >
-              <option value="">Selecione o tipo de abelha:</option>
-              {beeTypes.map((bee) => (
-                <option key={bee.id} value={bee.id}>{bee.name}</option>
-              ))}
-            </select>
-          )}
+          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tamanho (cm):</label>
+          <div className="flex-1 relative">
+            {modo === 'excluir' ? (
+              <input
+                type="number"
+                value={formData.size}
+                readOnly
+                className="w-full px-3 py-2 rounded-md bg-gray-100 text-gray-800"
+              />
+            ) : (
+              <input
+                type="number"
+                name="size"
+                value={formData.size}
+                onChange={(e) => handleChange({ target: { name: 'size', value: e.target.value.replace(/[^0-9]/g, '') } })}
+                className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                placeholder="Ex.: 50"
+              />
+            )}
+          </div>
         </div>
+
 
         {/* Localização */}
         <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-600 font-medium">Localização:</label>
+          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Localização:</label>
           {!isLeitura ? (
             <button
               onClick={handleLocationClick}
-              className="flex-1 hover:bg-yellow-400 text-gray-800 font-semibold py-2 px-4 rounded-md shadow-sm transition-colors"
-              style={{ backgroundColor: '#ffd452' }}
+              className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
             >
-              {formData.location ? 'Editar localização' : 'Clique aqui para definir a localização'}
+              {formData.location ? 'Editar localização' : 'Clique aqui para definir localização'}
             </button>
           ) : (
             <span className="text-gray-700">{formData.location?.lat}, {formData.location?.lng}</span>
@@ -168,7 +160,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         </div>
 
         {formData.location && !isLeitura && (
-          <div className="text-sm text-gray-600 pl-[90px]">
+          <div className="text-sm text-gray-600 pl-[124px]">
             {formData.location.lat}, {formData.location.lng}
           </div>
         )}
@@ -176,27 +168,26 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         {/* Câmera */}
         {!isLeitura && formData.location && (
           <div className="flex items-center gap-4">
-            <label className="min-w-[90px] text-gray-600 font-medium">Câmera:</label>
+            <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Câmera:</label>
             <button
               onClick={handleConnectCamera}
-              className="flex-1 style={{ backgroundColor: '#ffd452' }}hover:bg-yellow-400 text-gray-800 font-semibold py-2 px-4 rounded-md shadow-sm transition-colors"
-              style={{ backgroundColor: '#ffd452' }}
+              className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
             >
-              {formData.cameraConnected ?
-                'Câmera Conectada' : 'Conectar Câmera'}
+              {formData.cameraConnected ? 'Câmera Conectada' : 'Conectar Câmera'}
             </button>
           </div>
-        )}
+        )} 
+
 
         {/* Botões finais */}
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center mt-8 pt-4 border-t border-gray-200">
           {modo === 'criar' && formData.location && formData.cameraConnected && (
             <button
               onClick={() => {
                 onConfirmar(formData)
                 navigate('/analysis')
               }}
-              className="bg-yellow-400 hover:bg-yellow-300 font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
+              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-3 px-8 rounded-xl shadow-md transition-colors"
             >
               Confirmar
             </button>
@@ -207,7 +198,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
               onClick={() => {
                 onConfirmar(formData)
               }}
-              className="bg-yellow-400 hover:bg-yellow-300 font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
+              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-3 px-8 rounded-xl shadow-md transition-colors"
             >
               Confirmar
             </button>
@@ -216,7 +207,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
           {modo === 'excluir' && (
             <button
               onClick={onExcluir}
-              className="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-8 mt-3 rounded-xl shadow-md"
+              className="bg-red-500 hover:bg-red-400 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-colors"
             >
               Excluir
             </button>

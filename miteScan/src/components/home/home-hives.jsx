@@ -19,23 +19,27 @@ import axios from "axios";
 
 export default function HomeHives() {
   const [hives, setHives] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHivesWithAnalysis = async () => {
       try {
         const token = localStorage.getItem("token");
+        console.log("🏠 HomeHives - Token encontrado:", token ? "Sim" : "Não");
 
         const hivesResponse = await axios.get("http://localhost:8000/hives/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hivesData = hivesResponse.data;
+        console.log("🏠 HomeHives - Colmeias recebidas:", hivesData.length);
+        console.log("🏠 HomeHives - Dados das colmeias:", hivesData);
 
         const hivesWithAnalysis = await Promise.all(
           hivesData.map(async (hive) => {
             try {
               const analysisResponse = await axios.get(
-                `http://localhost:8000/hive_analyses/hive:${hive.id}`,
+                `http://localhost:8000/hive_analyses/hive/${hive.id}`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
@@ -73,7 +77,16 @@ export default function HomeHives() {
 
         setHives(parsed);
       } catch (error) {
-        console.error("Erro ao buscar colmeias:", error);
+        console.error("❌ Erro ao buscar colmeias:", error);
+        console.error("❌ Detalhes do erro:", error.response?.data || error.message);
+        
+        // Se for erro 404, significa que não há colmeias ainda
+        if (error.response?.status === 404) {
+          console.log("ℹ️ Nenhuma colmeia encontrada (404)");
+          setHives([]); // Lista vazia
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -93,7 +106,11 @@ export default function HomeHives() {
       </div>
 
       <div className="bg-gray-100 py-4 px-10 rounded-b-xl shadow-md w-full mx-auto">
-        {hives.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="text-lg font-semibold text-gray-600">Carregando colmeias...</div>
+          </div>
+        ) : hives.length === 0 ? (
           <div className="text-center py-20 flex flex-col items-center gap-4">
             <p className="text-lg font-semibold text-gray-700">
               Não há colmeias cadastradas no momento.

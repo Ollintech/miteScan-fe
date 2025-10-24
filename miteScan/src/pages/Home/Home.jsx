@@ -1,6 +1,5 @@
 // src/pages/Home.jsx
 
-import '../Home/Home.css'
 import HomeHives from '../../components/home/home-hives'
 import InfoHome from '../../components/home/dashboard-home'
 
