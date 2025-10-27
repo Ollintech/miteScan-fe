@@ -14,7 +14,7 @@ export default function DeleteHiveCard() {
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const hiveRes = await axios.get(`http://localhost:8000/hives/${id}`, {
+  const hiveRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
  
@@ -43,7 +43,7 @@ export default function DeleteHiveCard() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8000/hives/${id}?confirm=true`, {
+  await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${id}?confirm=true`, {
         headers: {
           Authorization: `Bearer ${token}`
         },

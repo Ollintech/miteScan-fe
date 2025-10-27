@@ -18,7 +18,7 @@ export default function AnalysisHist() {
           return
         }
 
-        const response = await axios.get('http://localhost:8000/hive_analyses/all', {
+  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/all`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -30,7 +30,7 @@ export default function AnalysisHist() {
         const getHive = await Promise.all(
           analyses.map(async (analysis) => {
             try {
-              const hiveRes = await axios.get(`http://localhost:8000/hives/${analysis.hive_id}`, {
+              const hiveRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${analysis.hive_id}`, {
                 headers: {
                   Authorization: `Bearer ${token}`
                 }

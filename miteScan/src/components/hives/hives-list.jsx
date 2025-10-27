@@ -26,7 +26,7 @@ export default function HivesList() {
     const fetchHivesWithAnalysis = async () => {
       try {
         const token = localStorage.getItem("token");
-        const hivesResponse = await axios.get("http://localhost:8000/hives/all", {
+  const hivesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hivesData = hivesResponse.data;
@@ -35,7 +35,7 @@ export default function HivesList() {
           hivesData.map(async (hive) => {
             try {
               const analysisResponse = await axios.get(
-                `http://localhost:8000/hive_analyses/hive:${hive.id}`,
+                `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/hive:${hive.id}`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }

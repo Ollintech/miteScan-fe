@@ -14,7 +14,7 @@ export default function EditHiveCard() {
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const hiveRes = await axios.get(`http://localhost:8000/hives/${id}`, {
+  const hiveRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${id}`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -66,7 +66,7 @@ export default function EditHiveCard() {
 
     try {
       const response = await axios.put(
-        `http://localhost:8000/hives/${id}`,
+  `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${id}`,
         payload,
         {
           headers: {

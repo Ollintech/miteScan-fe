@@ -21,6 +21,8 @@ import EditHive from './pages/EditHive/EditHive';
 import DeleteHive from './pages/DeleteHive/DeleteHive';
 import ResultAnalysis from './pages/ResultAnalysis/ResultAnalysis';
 import Users from './pages/admin/users/users';
+import EditUserPage from './pages/admin/EditUser/EditUser';
+import DeleteUserPage from './pages/admin/DeleteUser/DeleteUser';
 
 import PrivateRoute from '../src/components/AuthForms/PrivateRoute.jsx';
 
@@ -76,6 +78,8 @@ function App() {
           {/* Admin */}
           <Route path="/new-user" element={<AdminRoute><User /></AdminRoute>} />
           <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
+          <Route path="/edit-user/:id" element={<AdminRoute><EditUserPage /></AdminRoute>} />
+          <Route path="/delete-user/:id" element={<AdminRoute><DeleteUserPage /></AdminRoute>} />
         </Route>
       </Routes>
     </Router>

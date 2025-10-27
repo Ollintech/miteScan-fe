@@ -21,7 +21,7 @@ export default function AnalysisCard() {
   useEffect(() => {
     const fetchHives = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/hives/all', {
+  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/all`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -58,7 +58,7 @@ export default function AnalysisCard() {
     try {
       // 1. Atualiza temperatura e umidade
       await axios.put(
-        `http://localhost:8000/hives/${selectedHiveId}`,
+  `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${selectedHiveId}`,
         hiveUpdatePayload,
         {
           headers: {
@@ -77,7 +77,7 @@ export default function AnalysisCard() {
       };
 
       const analysisResponse = await axios.post(
-        'http://localhost:8000/hive_analyses/create',
+  `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/create`,
         analysisPayload,
         {
           headers: {

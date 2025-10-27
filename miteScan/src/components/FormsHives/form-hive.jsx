@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import yellowBee from '../../assets/images/yellowBee.png'
 
-export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir }) {
+// 1. Receber beeTypes como prop
+export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, beeTypes = [] }) {
   console.log("colmeia recebida:", colmeia)
   const navigate = useNavigate()
   const location = useLocation()
 
+  // 2. Adicionar bee_type_id ao estado inicial
   const [formData, setFormData] = useState({
     name: 'COLMEIA 1',
     size: '',
+    bee_type_id: '', // Campo novo
     location: null,
     cameraConnected: false,
   })
@@ -20,6 +23,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
         setFormData({
           name: colmeia.name || '',
           size: colmeia.size || '',
+          bee_type_id: colmeia.bee_type_id || '', // 3. Carregar bee_type_id para edição/exclusão
           location: colmeia.location || null,
           cameraConnected: colmeia.cameraConnected ?? true,
         });
@@ -67,7 +71,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
   }
 
   const handleLocationClick = () => {
-
     navigate('/select-location', {
       state: {
         fromForm: formData,
@@ -75,8 +78,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
         hiveId: colmeia?.id
       }
     })
-
-
   }
 
   const handleConnectCamera = () => {
@@ -88,9 +89,12 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
     })
   }
 
-
-
   const isLeitura = modo === 'excluir'
+
+  // Para exibir o nome do tipo de abelha no modo de exclusão
+  const beeTypeName = isLeitura 
+    ? beeTypes.find(b => b.id === parseInt(formData.bee_type_id))?.name || 'Não informado'
+    : '';
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-gray-100 rounded-xl shadow-lg p-6">
@@ -123,24 +127,40 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
         <div className="flex items-center gap-4">
           <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tamanho (cm):</label>
           <div className="flex-1 relative">
-            {modo === 'excluir' ? (
-              <input
-                type="number"
-                value={formData.size}
-                readOnly
-                className="w-full px-3 py-2 rounded-md bg-gray-100 text-gray-800"
-              />
-            ) : (
-              <input
-                type="number"
-                name="size"
-                value={formData.size}
-                onChange={(e) => handleChange({ target: { name: 'size', value: e.target.value.replace(/[^0-9]/g, '') } })}
-                className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                placeholder="Ex.: 50"
-              />
-            )}
+            <input
+              type="number"
+              name="size"
+              value={formData.size}
+              onChange={(e) => handleChange({ target: { name: 'size', value: e.target.value.replace(/[^0-9]/g, '') } })}
+              readOnly={isLeitura}
+              className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="Ex.: 50"
+            />
           </div>
+        </div>
+
+        {/* 4. Campo de Tipo de Abelha adicionado aqui */}
+        <div className="flex items-center gap-4">
+            <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
+            <div className="flex-1 relative">
+                {isLeitura ? (
+                    <span className="text-gray-700 px-3 py-2">{beeTypeName}</span>
+                ) : (
+                    <select
+                        name="bee_type_id"
+                        value={formData.bee_type_id}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    >
+                        <option value="" disabled>Selecione um tipo</option>
+                        {beeTypes.map(type => (
+                            <option key={type.id} value={type.id}>
+                                {type.name}
+                            </option>
+                        ))}
+                    </select>
+                )}
+            </div>
         </div>
 
 
@@ -176,7 +196,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir })
               {formData.cameraConnected ? 'Câmera Conectada' : 'Conectar Câmera'}
             </button>
           </div>
-        )} 
+        )}
 
 
         {/* Botões finais */}

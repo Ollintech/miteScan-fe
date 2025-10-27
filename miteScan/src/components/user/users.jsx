@@ -1,60 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import axios from "axios";
+import axios from "axios";
 import { FaArrowLeft, FaTrash } from "react-icons/fa";
 import { MdAdd, MdEdit } from "react-icons/md";
 
 export default function UsersList() {
-  // Mock data - comentar quando integrar com API
-  const [users] = useState([
-    {
-      id: 1,
-      name: "Gustavo Lanna",
-      email: "gustavo@gmail.com",
-      nivel: "administrador"
-    },
-    {
-      id: 2,
-      name: "Maria Silva",
-      email: "maria.silva@email.com",
-      nivel: "operador"
-    },
-    {
-      id: 3,
-      name: "João Santos",
-      email: "joao.santos@email.com",
-      nivel: "visualizador"
-    },
-    {
-      id: 4,
-      name: "Ana Costa",
-      email: "ana.costa@email.com",
-      nivel: "operador"
-    }
-  ]);
-
-  const [loading] = useState(false);
-  const [error] = useState("");
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       const response = await axios.get("http://localhost:8000/users/all", {
-  //         headers: token ? { Authorization: `Bearer ${token}` } : {},
-  //       });
-  //       setUsers(response.data || []);
-  //     } catch (err) {
-  //       setError("Erro ao carregar usuários.");
-  //       console.error(err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      setError("");
 
-  //   fetchUsers();
-  // }, []);
+      const token = localStorage.getItem("token");
+      const userString = localStorage.getItem("user");
+
+      if (!token || !userString) {
+        // No credentials -> redirect to login
+        setError("Sessão inválida. Faça login novamente.");
+        navigate('/login');
+        return;
+      }
+
+      let userRootId;
+      try {
+        const userObj = JSON.parse(userString);
+        userRootId = userObj?.id;
+      } catch (e) {
+        console.error('Erro ao ler usuário da sessão:', e);
+      }
+
+      if (!userRootId) {
+        setError('ID do usuário raiz inválido. Faça login novamente.');
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+        const url = `${base}/${userRootId}/users_associated`;
+        const response = await axios.get(url, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+
+        setUsers(response.data || []);
+      } catch (err) {
+        console.error('Erro ao carregar usuários:', err);
+        if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+          setError('Sua sessão expirou ou você não tem permissão.');
+          navigate('/login');
+        } else {
+          setError('Erro ao carregar usuários.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [navigate]);
 
   return (
     <div className="p-6">

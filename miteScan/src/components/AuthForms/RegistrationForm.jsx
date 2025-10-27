@@ -9,7 +9,6 @@ export default function RegistrationForm() {
     email: "",
     senha: "",
     access_id: "",
-    company_id: 1,  
   });
 
   const [accessLevels, setAccessLevels] = useState([]);
@@ -19,12 +18,10 @@ export default function RegistrationForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Função para buscar os níveis de acesso do backend
     const fetchAccessLevels = async () => {
       try {
         setLoadingAccess(true);
-        const response = await axios.get("http://localhost:8000/accesses/all");
-        console.log("Níveis de acesso recebidos:", response.data);
+  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/accesses/all`);
         setAccessLevels(response.data);
       } catch (error) {
         console.error("Erro ao carregar os níveis de acesso:", error.response?.data || error.message);
@@ -60,37 +57,33 @@ export default function RegistrationForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro(''); // Resetar erros
+    setErro('');
 
     if (!validateForm()) {
-      return; // Se a validação falhar, não envia os dados
+      return;
     }
 
     try {
       setLoading(true);
       
-      // Enviar os dados de cadastro para a API
-      const response = await axios.post("http://localhost:8000/users_root/register", {
+      const payload = {
         name: form.nome,
         email: form.email,
         password: form.senha,
-        access_id: parseInt(form.access_id), // Garantir que seja um número
-        company_id: form.company_id,
-      });
+        access_id: parseInt(form.access_id),
+        // O campo 'company_id' foi removido daqui
+      };
+
+  const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/users_root/register`, payload);
 
       console.log("Cadastro realizado:", response.data);
-
-      // Mostrar mensagem de sucesso
       alert("Usuário cadastrado com sucesso!");
-      
-      // Redireciona para a tela de login após cadastro bem-sucedido
       navigate("/login");
 
     } catch (error) {
       console.error("Erro no cadastro:", error.response?.data || error.message);
       
       if (error.response) {
-        // Tratar diferentes tipos de erro do backend
         const errorData = error.response.data;
         if (errorData.detail) {
           setErro(errorData.detail);
@@ -123,7 +116,7 @@ export default function RegistrationForm() {
               <label className="text-sm font-semibold">Nome:</label>
               <input
                 name="nome"
-                placeholder="Gustavo Lanna"
+                placeholder="Insira seu nome"
                 value={form.nome}
                 onChange={handleChange}
                 className="bg-gray-100 rounded-md p-2"
@@ -134,7 +127,7 @@ export default function RegistrationForm() {
               <label className="text-sm font-semibold">Email:</label>
               <input
                 name="email"
-                placeholder="gustavo@gmail.com"
+                placeholder="nome@email.com"
                 value={form.email}
                 onChange={handleChange}
                 className="bg-gray-100 rounded-md p-2"
@@ -146,7 +139,7 @@ export default function RegistrationForm() {
               <input
                 name="senha"
                 type="password"
-                placeholder="**********"
+                placeholder="Insira sua senha"
                 value={form.senha}
                 onChange={handleChange}
                 className="bg-gray-100 rounded-md p-2"

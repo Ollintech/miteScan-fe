@@ -7,7 +7,6 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-  // NOVO ESTADO: para controlar o tipo de usuário que está tentando logar
   const [userType, setUserType] = useState('root'); // 'root' ou 'associated'
   const navigate = useNavigate();
 
@@ -23,30 +22,36 @@ export default function LoginForm() {
       formData.append("username", email);
       formData.append("password", senha);
 
-      // LÓGICA ATUALIZADA: Escolhe a URL com base no tipo de usuário
       let loginUrl = '';
-      if (userType === 'root') {
-        loginUrl = "http://localhost:8000/users_root/login";
-      } else {
-        loginUrl = "http://localhost:8000/UsersAssociated/login";
-      }
+      let responseKey = '';
 
-      console.log(`Tentando fazer login como '${userType}' na URL: ${loginUrl}`);
+      if (userType === 'root') {
+  loginUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/users_root/login`;
+        responseKey = 'user_root';
+      } else {
+        loginUrl = "http://localhost:8000/UsersAssociated/login"; // Esta rota pode estar quebrada no backend
+        responseKey = 'user_associated';
+      }
 
       const response = await axios.post(loginUrl, formData, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" }
       });
 
-      // LÓGICA ATUALIZADA: Salva os dados corretos no localStorage
       const { access_token } = response.data;
-      // O backend retorna 'user_root' ou 'user_associated' dependendo da rota
-      const userData = response.data.user_root || response.data.user_associated;
+      const userData = response.data[responseKey];
 
+      if (!userData) {
+        throw new Error("Resposta do servidor não continha dados do usuário.");
+      }
+
+      // Limpa dados antigos e salva os novos
+      localStorage.clear();
       localStorage.setItem("token", access_token);
       localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("user_type", userType); // Salva o tipo de usuário
 
-      if (userData && userData.access_id) {
-        localStorage.setItem("access_id", userData.access_id);
+      if (userData.access_id) {
+        localStorage.setItem("access_id", userData.access_id.toString());
       }
 
       setErro('');
@@ -71,7 +76,6 @@ export default function LoginForm() {
       
       <form onSubmit={handleLogin} className="w-full flex text-gray-600 flex-col gap-2">
         
-        {/* NOVO SELETOR DE TIPO DE CONTA */}
         <div className="flex justify-center gap-4 mb-4 text-sm">
           <label>
             <input 
