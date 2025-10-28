@@ -13,7 +13,6 @@ export default function UserForm({ mode = 'create', userId = null }) {
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
   useEffect(() => {
-    // load access levels
     const fetchAccess = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -21,8 +20,9 @@ export default function UserForm({ mode = 'create', userId = null }) {
         return;
       }
       try {
-        const res = await axios.get(`${base}/accesses/all`, { headers: { Authorization: `Bearer ${token}` } });
-        setAccessLevels(res.data || []);
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  const res = await axios.get(`${base}/accesses/all`, { headers: { Authorization: `Bearer ${token}` } });
+  setAccessLevels(res.data || []);
       } catch (err) {
         console.error('Erro ao carregar níveis de acesso', err);
       }
@@ -31,7 +31,6 @@ export default function UserForm({ mode = 'create', userId = null }) {
   }, [base, navigate]);
 
   useEffect(() => {
-    // if edit or delete, fetch existing user data
     const fetchUser = async () => {
       if (mode === 'create') return;
 
@@ -62,9 +61,9 @@ export default function UserForm({ mode = 'create', userId = null }) {
 
       try {
         setLoading(true);
-        const url = `${base}/${userRootId}/users_associated/${userId}`;
-        const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
-        // assume API returns user object directly in res.data
+
+  const url = `${base}/${userRootId}/users_associated/${userId}`;
+  const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
         const data = res.data || {};
         setForm({
           name: data.name || '',
@@ -118,8 +117,8 @@ export default function UserForm({ mode = 'create', userId = null }) {
           access_id: Number(form.access_id),
           user_id: Number(userRootId),
         };
-        const url = `${base}/${userRootId}/users_associated/register`;
-        await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}` } });
+  const url = `${base}/${userRootId}/users_associated/register`;
+  await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}` } });
         alert('Usuário associado cadastrado com sucesso!');
         navigate('/home');
       } else if (mode === 'edit') {
@@ -134,10 +133,9 @@ export default function UserForm({ mode = 'create', userId = null }) {
           access_id: Number(form.access_id),
           user_id: Number(userRootId),
         };
-        // include password only if filled
         if (form.password) payload.password = form.password;
   const url = `${base}/${userRootId}/users_associated/${userId}`;
-        await axios.put(url, payload, { headers: { Authorization: `Bearer ${token}` } });
+  await axios.put(url, payload, { headers: { Authorization: `Bearer ${token}` } });
         alert('Usuário atualizado com sucesso!');
         navigate('/users');
       } else if (mode === 'delete') {
@@ -146,8 +144,9 @@ export default function UserForm({ mode = 'create', userId = null }) {
           setLoading(false);
           return;
         }
+        // Perform backend deletion
   const url = `${base}/${userRootId}/users_associated/${userId}?confirm=true`;
-        await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
+  await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
         alert('Usuário excluído com sucesso!');
         navigate('/users');
       }
@@ -162,13 +161,13 @@ export default function UserForm({ mode = 'create', userId = null }) {
 
   const readonly = mode === 'delete';
   const submitLabel = mode === 'create' ? 'CADASTRAR' : mode === 'edit' ? 'EDITAR' : 'EXCLUIR';
-  const submitClass = mode === 'delete' ? 'bg-red-600 hover:bg-red-500' : 'bg-yellow-400 hover:bg-yellow-300';
+  const submitClass = mode === 'delete' ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-yellow-400 hover:bg-yellow-300';
 
   return (
     <div className="bg-gray-100 rounded-xl shadow-xl p-6 w-full mx-auto text-left">
-      <div className="flex items-center gap-3 mb-4">
-        <img src={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFMEUyRTciLz48cGF0aCBkPSJNMjAgMjJDMjMuMzI4NCAyMiAyNiAxOS4zMjg0IDI2IDE2QzI2IDEyLjY3MTYgMjMuMzI4NCAxMCAyMCAxMEMxNi42NzE2IDEwIDE0IDEyLjY3MTYgMTQgMTZDMTQgMTkuMzI4NCAxNi42NzE2IDIyIDIwIDIyWk0yMCAyNUMxNC40NzcyIDI1IDEwIDI5LjQ3NzIgMTAgMzVDMTAgMzUuNTUyMyAxMC40NDc3IDM2IDExIDM2SDI5QzI5LjU1MmEgMzYgMzAgMzUuNTUyMyAzMCAzNUMzMCAyOS40NzcyIDI1LjUyMjggMjUgMjAgMjVaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=="} alt="Avatar" className="w-10 h-10" />
-        <span className="text-gray-700 text-sm">{mode === 'create' ? 'PREENCHA AS INFORMAÇÕES DO NOVO USUÁRIO' : mode === 'edit' ? 'EDITAR USUÁRIO' : 'EXCLUIR USUÁRIO'}</span>
+      <div className="flex items-center justify-center gap-3 mb-7">
+  <img src={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFMEUyRTciLz48cGF0aCBkPSJNMjAgMjJDMjMuMzI4NCAyMiAyNiAxOS4zMjg0IDI2IDE2QzI2IDEyLjY3MTYgMjMuMzI4NCAxMCAyMCAxMEMxNi42NzE2IDEwIDE0IDEyLjY3MTYgMTQgMTZDMTQgMTkuMzI4NCAxNi42NzE2IDIyIDIwIDIyWk0yMCAyNUMxNC40NzcyIDI1IDEwIDI5LjQ3NzIgMTAgMzVDMTAgMzUuNTUyMyAxMC40NDc3IDM2IDExIDM2SDI5QzI5LjU1MmEgMzYgMzAgMzUuNTUyMyAzMCAzNUMzMCAyOS40NzcyIDI1LjUyMjggMjUgMjAgMjVaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=="} alt="Avatar" className="w-10 h-10" />
+  <span className="text-gray-700 text-md font-bold">{mode === 'create' ? 'PREENCHA AS INFORMAÇÕES DO NOVO USUÁRIO' : mode === 'edit' ? 'EDITAR USUÁRIO' : 'Deseja mesmo excluir este usuário?'}</span>
       </div>
 
       <div className="space-y-4">
@@ -228,9 +227,11 @@ export default function UserForm({ mode = 'create', userId = null }) {
 
       <div className="flex justify-center mt-6">
         <button
-          className={`${submitClass} transition-colors px-8 py-2 font-bold rounded-lg shadow-md ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+          className={`${submitClass} transition-colors font-bold shadow-md ${loading ? 'opacity-70 cursor-not-allowed' : ''} ${mode === 'delete' ? 'px-6 py-2 rounded-full' : 'px-8 py-2 rounded-lg'}`}
           onClick={handleSubmit}
           disabled={loading}
+          aria-label={mode === 'delete' ? 'Excluir usuário' : undefined}
+          title={mode === 'delete' ? 'Excluir usuário' : undefined}
         >
           {loading ? (mode === 'delete' ? 'EXCLUINDO...' : 'ENVIANDO...') : submitLabel}
         </button>

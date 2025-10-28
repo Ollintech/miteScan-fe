@@ -22,13 +22,16 @@ export default function HomeHives() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  
+
   useEffect(() => {
     const fetchHivesWithAnalysis = async () => {
       try {
         const token = localStorage.getItem("token");
         console.log("🏠 HomeHives - Token encontrado:", token ? "Sim" : "Não");
 
-  const hivesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/all`, {
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+        const hivesResponse = await axios.get(`${base}/hives/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hivesData = hivesResponse.data;
@@ -38,13 +41,12 @@ export default function HomeHives() {
         const hivesWithAnalysis = await Promise.all(
           hivesData.map(async (hive) => {
             try {
-              const analysisResponse = await axios.get(
-                `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/hive/${hive.id}`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
+              try {
+              const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`);
               return { ...hive, analysis: analysisResponse.data };
+            } catch {
+              return { ...hive, analysis: null };
+            }
             } catch {
               return { ...hive, analysis: null };
             }
@@ -80,11 +82,7 @@ export default function HomeHives() {
         console.error("❌ Erro ao buscar colmeias:", error);
         console.error("❌ Detalhes do erro:", error.response?.data || error.message);
         
-        // Se for erro 404, significa que não há colmeias ainda
-        if (error.response?.status === 404) {
-          console.log("ℹ️ Nenhuma colmeia encontrada (404)");
-          setHives([]); // Lista vazia
-        }
+        setHives([]);
       } finally {
         setLoading(false);
       }

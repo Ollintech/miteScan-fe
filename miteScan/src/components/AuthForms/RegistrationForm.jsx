@@ -56,7 +56,7 @@ export default function RegistrationForm() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setErro('');
 
     if (!validateForm()) {
@@ -71,7 +71,6 @@ export default function RegistrationForm() {
         email: form.email,
         password: form.senha,
         access_id: parseInt(form.access_id),
-        // O campo 'company_id' foi removido daqui
       };
 
   const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/users_root/register`, payload);
@@ -105,96 +104,93 @@ export default function RegistrationForm() {
   return (
     <div className="w-full flex justify-center">
       <div className="relative w-full max-w-3xl bg-white text-gray-700 rounded-xl p-8 shadow-lg">
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-black flex items-center justify-center shadow-lg">
-          <img src={BeeIcon} alt="Ícone" className="w-12" />
+        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-25 h-25 rounded-full bg-black flex items-center justify-center shadow-lg">
+          <img src={BeeIcon} alt="Ícone" className="w-25" />
         </div>
         <h2 className="text-2xl font-extrabold text-center mt-8 mb-6">Cadastrar-se</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <div className="grid grid-cols-[auto,1fr] items-center gap-3">
-              <label className="text-sm font-semibold">Nome:</label>
+            <div className="flex items-center gap-3">
+              <label htmlFor="nome" className="w-28 text-sm font-semibold">Nome:</label>
               <input
+                id="nome"
                 name="nome"
                 placeholder="Insira seu nome"
                 value={form.nome}
                 onChange={handleChange}
-                className="bg-gray-100 rounded-md p-2"
+                className="flex-1 bg-gray-100 rounded-md p-2"
               />
             </div>
 
-            <div className="grid grid-cols-[auto,1fr] items-center gap-3">
-              <label className="text-sm font-semibold">Email:</label>
+            <div className="flex items-center gap-3">
+              <label htmlFor="email" className="w-28 text-sm font-semibold">Email:</label>
               <input
+                id="email"
                 name="email"
                 placeholder="nome@email.com"
                 value={form.email}
                 onChange={handleChange}
-                className="bg-gray-100 rounded-md p-2"
+                className="flex-1 bg-gray-100 rounded-md p-2"
               />
             </div>
 
-            <div className="grid grid-cols-[auto,1fr] items-center gap-3">
-              <label className="text-sm font-semibold">Senha:</label>
+            <div className="flex items-center gap-3">
+              <label htmlFor="senha" className="w-28 text-sm font-semibold">Senha:</label>
               <input
+                id="senha"
                 name="senha"
                 type="password"
                 placeholder="Insira sua senha"
                 value={form.senha}
                 onChange={handleChange}
-                className="bg-gray-100 rounded-md p-2"
+                className="flex-1 bg-gray-100 rounded-md p-2"
               />
             </div>
 
-            <div className="grid grid-cols-[auto,1fr] items-center gap-3">
-              <label className="text-sm font-semibold">Acesso:</label>
-              <select
-                name="access_id"
-                value={form.access_id}
+            <div className="flex items-center gap-3">
+              <label htmlFor="conta" className="w-28 text-sm font-semibold">Conta:</label>
+              <input
+                id="senha"
+                name="senha"
+                type="password"
+                placeholder="Crie um nome único"
+                value={form.senha}
                 onChange={handleChange}
-                className="bg-gray-100 rounded-md p-2"
-                disabled={loadingAccess}
-              >
-                <option value="">Selecione o Acesso</option>
-                {loadingAccess ? (
-                  <option value="" disabled>Carregando níveis de acesso...</option>
-                ) : accessLevels.length > 0 ? (
-                  accessLevels.map((level) => (
-                    <option key={level.id} value={level.id}>
-                      {level.name}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>Nenhum nível de acesso encontrado</option>
-                )}
-              </select>
+                className="flex-1 bg-gray-100 rounded-md p-2"
+              />
             </div>
 
-            {erro && <p className="text-red-600 mt-1 font-semibold">{erro}</p>}
 
-            <button
-              type="submit"
-              disabled={loading || loadingAccess}
-              className={`${
-                loading || loadingAccess 
-                  ? "bg-gray-400 cursor-not-allowed" 
-                  : "bg-yellow-400 hover:bg-yellow-300"
-              } text-black font-bold py-2 rounded-full shadow-md w-48 mx-auto mt-2`}
-            >
-              {loading ? "CADASTRANDO..." : "CADASTRAR"}
-            </button>
+            {erro && <p className="text-red-600 mt-1 font-semibold">{erro}</p>}
           </form>
 
-          <div className="md:border-l md:pl-6 text-sm leading-relaxed">
+          <div className="md:border-l md:pl-6 text-lg leading-relaxed font-medium content-center">
             <p>
               Este será o <span className="font-bold">usuário principal (root)</span> da conta.
             </p>
-            <p className="mt-2">
+            <p className="mt-2 text-lg font-medium">
               Com ele, você poderá acessar o sistema e
               <span className="font-bold"> criar acessos individuais</span> para sua equipe ou
               colaboradores.
             </p>
           </div>
+        </div>
+
+        {/* Button centered under both columns */}
+        <div className="w-full flex justify-center mt-6">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading || loadingAccess}
+            className={`${
+              loading || loadingAccess 
+                ? "bg-gray-400 cursor-not-allowed" 
+                : "bg-yellow-400 hover:bg-yellow-300"
+            } text-black font-bold py-3 px-8 rounded-full shadow-md w-48 transform active:translate-y-0.5`}
+          >
+            {loading ? "CADASTRANDO..." : "CADASTRAR"}
+          </button>
         </div>
 
         <p className="text-sm text-center mt-6">

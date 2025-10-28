@@ -8,6 +8,8 @@ export default function AnalysisHist() {
   const navigate = useNavigate()
   const [analyses, setAnalyses] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedDays, setSelectedDays] = useState('all')
+  const [selectedHive, setSelectedHive] = useState('all')
 
   useEffect(() => {
     const fetchAnalyses = async () => {
@@ -18,28 +20,30 @@ export default function AnalysisHist() {
           return
         }
 
-  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+        const response = await axios.get(`${base}/hive_analyses/all`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
 
-        const analyses = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        const analyses = (response.data || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
 
         const getHive = await Promise.all(
           analyses.map(async (analysis) => {
             try {
-              const hiveRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${analysis.hive_id}`, {
-                headers: {
-                  Authorization: `Bearer ${token}`
-                }
+              try {
+              const hiveRes = await axios.get(`${base}/hives/${analysis.hive_id}`, {
+                headers: { Authorization: `Bearer ${token}` },
               })
 
               return {
                 ...analysis,
-                hive: hiveRes.data
+                hive: hiveRes.data,
               }
+            } catch (err) {
+              console.error(`Erro ao buscar colmeia ${analysis.hive_id}:`, err)
+              return analysis
+            }
             } catch (err) {
               console.error(`Erro ao buscar colmeia ${analysis.hive_id}:`, err)
               return analysis // retorna sem os dados da colmeia se der erro
@@ -51,6 +55,7 @@ export default function AnalysisHist() {
         console.log(getHive)
       } catch (error) {
         console.error('Erro ao buscar análises:', error)
+        setAnalyses([]);
       } finally {
         setLoading(false)
       }
@@ -63,9 +68,51 @@ export default function AnalysisHist() {
 
   if (analyses.length === 0) return <p className="text-center p-6">Nenhuma análise encontrada</p>
 
+  // derive unique hive list for the hive select
+  const hiveOptions = Array.from(new Set(analyses.map(a => a.hive_id))).map(id => ({ id }))
+
+  const now = new Date()
+  const filterByDays = (item) => {
+    if (selectedDays === 'all') return true
+    const days = Number(selectedDays)
+    const created = new Date(item.created_at)
+    const diffDays = (now - created) / (1000 * 60 * 60 * 24)
+    return diffDays <= days
+  }
+
+  const filterByHive = (item) => {
+    if (selectedHive === 'all') return true
+    return String(item.hive_id) === String(selectedHive)
+  }
+
+  const visible = analyses.filter(a => filterByDays(a) && filterByHive(a))
+
   return (
-    <div className='w-full max-h-[calc(100vh-340px)] overflow-y-auto'>
-      {analyses.map((analysis) => (
+    <div className='w-full'>
+      {/* Filters header */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-bold">Filtrar por:</h2>
+        <div className="flex items-center gap-3">
+          <label className="sr-only">Dias</label>
+          <select value={selectedDays} onChange={(e) => setSelectedDays(e.target.value)} className="bg-gray-200 rounded px-2 py-1 text-sm">
+            <option value="all">DIAS</option>
+            <option value="7">Últimos 7 dias</option>
+            <option value="30">Últimos 30 dias</option>
+            <option value="90">Últimos 90 dias</option>
+          </select>
+
+          <label className="sr-only">Colmeia</label>
+          <select value={selectedHive} onChange={(e) => setSelectedHive(e.target.value)} className="bg-gray-200 rounded px-2 py-1 text-sm">
+            <option value="all">COLMEIA</option>
+            {hiveOptions.map(h => (
+              <option key={h.id} value={h.id}>Colmeia {h.id}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className='w-full max-h-[calc(100vh-340px)] overflow-y-auto'>
+      {visible.map((analysis) => (
         <div key={analysis.id} className="p-5">
           <div className="bg-gray-100 rounded-xl shadow-xl w-full">
             {/* Cabeçalho */}
@@ -101,7 +148,7 @@ export default function AnalysisHist() {
           </div>
         </div>
       ))}
-
+      </div>
     </div>
   )
 }

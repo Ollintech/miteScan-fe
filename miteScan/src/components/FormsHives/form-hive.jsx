@@ -138,8 +138,8 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
             />
           </div>
         </div>
-
-        {/* 4. Campo de Tipo de Abelha adicionado aqui */}
+        
+        {/* Tipo de Abelha */}
         <div className="flex items-center gap-4">
             <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
             <div className="flex-1 relative">
@@ -207,7 +207,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                 onConfirmar(formData)
                 navigate('/analysis')
               }}
-              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-3 px-8 rounded-xl shadow-md transition-colors"
+              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-1 px-8 rounded-xl shadow-md transition-colors"
             >
               Confirmar
             </button>
@@ -218,7 +218,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
               onClick={() => {
                 onConfirmar(formData)
               }}
-              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-3 px-8 rounded-xl shadow-md transition-colors"
+              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-1 px-8 rounded-xl shadow-md transition-colors"
             >
               Confirmar
             </button>
@@ -227,7 +227,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
           {modo === 'excluir' && (
             <button
               onClick={onExcluir}
-              className="bg-red-500 hover:bg-red-400 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-colors"
+              className="bg-red-500 hover:bg-red-400 text-white font-bold py-1 px-8 rounded-xl shadow-md transition-colors"
             >
               Excluir
             </button>

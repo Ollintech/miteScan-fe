@@ -21,15 +21,16 @@ export default function AnalysisCard() {
   useEffect(() => {
     const fetchHives = async () => {
       try {
-  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+        const response = await axios.get(`${base}/hives/all`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         setHives(response.data);
         setSelectedHiveId(response.data[0]?.id || '');
       } catch (error) {
         console.error('Erro ao buscar colmeias:', error.response?.data || error.message);
+        setHives([]);
+        setSelectedHiveId('');
       }
     };
 
@@ -57,15 +58,9 @@ export default function AnalysisCard() {
 
     try {
       // 1. Atualiza temperatura e umidade
-      await axios.put(
-  `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${selectedHiveId}`,
-        hiveUpdatePayload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      await axios.put(`${base}/hives/${selectedHiveId}`, hiveUpdatePayload, {
+          headers: { Authorization: `Bearer ${token}` },
+      });
 
       // 2. Cria nova análise
       const analysisPayload = {
@@ -76,15 +71,9 @@ export default function AnalysisCard() {
         detection_confidence: Math.random().toFixed(2)
       };
 
-      const analysisResponse = await axios.post(
-  `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/create`,
-        analysisPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const analysisResponse = await axios.post(`${base}/hive_analyses/create`, analysisPayload, {
+          headers: { Authorization: `Bearer ${token}` },
+      });
 
       const hiveAnalysisId = analysisResponse.data.id;
 

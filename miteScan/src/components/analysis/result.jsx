@@ -19,25 +19,16 @@ export default function Result() {
 
     const fetchAnalysisAndHive = async () => {
       try {
-        const analysisResponse = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/${hiveAnalysisId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+        const analysisResponse = await axios.get(`${base}/hive_analyses/${hiveAnalysisId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const analysisData = analysisResponse.data;
         setAnalysis(analysisData);
 
-        const hiveResponse = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/${analysisData.hive_id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+        const hiveResponse = await axios.get(`${base}/hives/${analysisData.hive_id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setHive(hiveResponse.data);
       } catch (error) {
         console.error('Erro ao buscar análise ou colmeia:', error);

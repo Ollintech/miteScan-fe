@@ -50,6 +50,7 @@ export default function HivesList() {
         setHives(hivesWithAnalysis);
       } catch (error) {
         console.error("Erro ao buscar colmeias:", error);
+        setHives([]);
       }
     };
 

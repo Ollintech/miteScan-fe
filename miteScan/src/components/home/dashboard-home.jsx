@@ -16,7 +16,8 @@ export default function InfoHome() {
         const token = localStorage.getItem("token");
         console.log("🔑 Token encontrado:", token ? "Sim" : "Não");
 
-  const hivesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/all`, {
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+        const hivesResponse = await axios.get(`${base}/hives/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hives = hivesResponse.data;
@@ -26,13 +27,15 @@ export default function InfoHome() {
         const hivesWithAnalysis = await Promise.all(
           hives.map(async (hive) => {
             try {
-              const analysisResponse = await axios.get(
-                `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/hive/${hive.id}`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
+              try {
+              const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
               return { ...hive, analysis: analysisResponse.data };
+            } catch (err) {
+              console.warn(`Colmeia ${hive.id} sem análise.`);
+              return { ...hive, analysis: null };
+            }
             } catch (err) {
               console.warn(`Colmeia ${hive.id} sem análise.`);
               return { ...hive, analysis: null };

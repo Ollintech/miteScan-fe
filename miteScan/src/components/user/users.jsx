@@ -22,6 +22,7 @@ export default function UsersList() {
         // No credentials -> redirect to login
         setError("Sessão inválida. Faça login novamente.");
         navigate('/login');
+        setLoading(false);
         return;
       }
 
@@ -36,17 +37,15 @@ export default function UsersList() {
       if (!userRootId) {
         setError('ID do usuário raiz inválido. Faça login novamente.');
         navigate('/login');
+        setLoading(false);
         return;
       }
 
       try {
-        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-        const url = `${base}/${userRootId}/users_associated`;
-        const response = await axios.get(url, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        setUsers(response.data || []);
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  const url = `${base}/${userRootId}/users_associated`;
+  const response = await axios.get(url, { headers: token ? { Authorization: `Bearer ${token}` } : {}, });
+  setUsers(response.data || []);
       } catch (err) {
         console.error('Erro ao carregar usuários:', err);
         if (err.response && (err.response.status === 401 || err.response.status === 403)) {
