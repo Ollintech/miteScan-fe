@@ -7,12 +7,12 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-  const [loading, setLoading] = useState(false); // Adicionado estado de loading
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErro(''); // Limpa erros antigos
+    setErro(''); 
 
     if (!email || !senha) {
       setErro('Preencha todos os campos.');
@@ -21,7 +21,6 @@ export default function LoginForm() {
 
     setLoading(true);
 
-    // Prepara os dados do formulário
     const formData = new URLSearchParams();
     formData.append("username", email);
     formData.append("password", senha);
@@ -33,54 +32,66 @@ export default function LoginForm() {
 
     try {
       // --- Tentativa 1: Login como UserRoot ---
-      const rootLoginUrl = `${base}/users_root/login`;
+      const rootLoginUrl = `${base}/auth/login/root`;
       const response = await axios.post(rootLoginUrl, formData, config);
 
-      // Se chegou aqui, o login Root funcionou
       const { access_token } = response.data;
-      const userData = response.data['user_root']; // Chave específica do Root
+      // <-- CORRIGIDO: A chave é 'user' para ambos os tipos
+      const userData = response.data.user; 
       const userType = 'root';
 
-      // Salva os dados no localStorage
+      if (!userData || typeof userData !== 'object') {
+        console.error('Login (root) retornou sem dados de usuário válidos:', response.data);
+        setLoading(false);
+        setErro('Erro: dados do usuário ausentes no servidor.');
+        return;
+      }
+
       localStorage.clear();
       localStorage.setItem("token", access_token);
-      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("user", JSON.stringify(userData)); // userData agora tem {id, ..., role: 'root'}
       localStorage.setItem("user_type", userType);
-      if (userData.access_id) {
-        localStorage.setItem("access_id", userData.access_id.toString());
-      }
 
       setLoading(false);
       navigate('/home');
 
     } catch (rootError) {
-      // Se o login Root falhou, verificamos o motivo
       if (rootError.response && rootError.response.status === 401) {
         // Se foi 401 (Credenciais Inválidas), tentamos o login Associado
         try {
           // --- Tentativa 2: Login como UserAssociated ---
-          // IMPORTANTE: Este é o seu novo endpoint!
-          const associatedLoginUrl = `${base}/users_associated/login`; 
+          const associatedLoginUrl = `${base}/auth/login/associated`; 
           const response = await axios.post(associatedLoginUrl, formData, config);
 
-          // Se chegou aqui, o login Associado funcionou
           const { access_token } = response.data;
-          // A chave de resposta aqui é 'user_associated'
-          const userData = response.data['user_associated']; 
+           // <-- CORRIGIDO: A chave também é 'user', como corrigimos no backend
+          const userData = response.data.user;
           const userType = 'associated';
+          
+          if (!userData || typeof userData !== 'object') {
+             console.error('Login (associated) retornou sem dados de usuário válidos:', response.data);
+             setLoading(false);
+             setErro('Erro: dados do usuário ausentes no servidor.');
+             return;
+          }
+          
+          // Validação crucial que resolve nosso problema anterior
+          if (!userData.user_root_id) {
+              console.error('Login (associated) não retornou um user_root_id:', userData);
+              setLoading(false);
+              setErro('Erro: Falha ao obter ID de permissão do associado.');
+              return;
+          }
 
           localStorage.clear();
           localStorage.setItem("token", access_token);
-          localStorage.setItem("user", JSON.stringify(userData));
+          // userData agora tem {id, ..., role: 'associated', user_root_id: ...}
+          localStorage.setItem("user", JSON.stringify(userData)); 
           localStorage.setItem("user_type", userType);
-          if (userData.access_id) {
-            localStorage.setItem("access_id", userData.access_id.toString());
-          }
           
-          // Precisamos salvar o user_root_id que vem no payload do associado
-          if (userData.user_root_id) {
-             localStorage.setItem("user_root_id", userData.user_root_id.toString());
-          }
+          // Esta linha é opcional pois o user_root_id já está dentro do objeto 'user',
+          // mas não tem problema manter
+          localStorage.setItem("user_root_id", userData.user_root_id.toString());
 
           setLoading(false);
           navigate('/home');
@@ -122,7 +133,7 @@ export default function LoginForm() {
           placeholder="Insira sua senha"
           type="password"
           value={senha}
-          onChange={(e) => setSenha(e.targe.value)}
+          onChange={(e) => setSenha(e.target.value)}
           className="bg-gray-200 rounded p-2 w-full"
           disabled={loading}
         />

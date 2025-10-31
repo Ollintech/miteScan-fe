@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MdHexagon } from "react-icons/md";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function InfoHome() {
   const [dashboard, setDashboard] = useState([
@@ -9,44 +10,72 @@ export default function InfoHome() {
     { id: 3, label: "COLMEIAS + VARROA", value: 0 },
   ]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(""); // Adicionado estado de erro
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setLoading(true);
+      setError(""); // Limpa erro anterior
+
       try {
         const token = localStorage.getItem("token");
-        console.log("🔑 Token encontrado:", token ? "Sim" : "Não");
+        const userString = localStorage.getItem("user");
 
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-        const hivesResponse = await axios.get(`${base}/hives/all`, {
+        if (!token || !userString) {
+          setError("Sessão inválida. Faça login novamente.");
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+        
+        // --- INÍCIO: definição via access_id ---
+        let idParaRota;
+        try {
+          const userObj = JSON.parse(userString);
+          const accessId = Number(userObj?.access_id);
+          idParaRota = accessId === 1 ? userObj?.id : userObj?.user_root_id;
+
+        } catch (e) {
+          console.error("Erro ao parsear dados do usuário:", e);
+          setError("Erro ao ler sessão. Faça login novamente.");
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+
+        if (!idParaRota) {
+          console.error("Erro: ID de rota (user_root_id) não encontrado.");
+          setError("ID do usuário inválido. Faça login novamente.");
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+        // --- FIM ---
+        
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+        
+        // Rota corrigida para incluir o idParaRota
+        const url = `${base}/${idParaRota}/hives/all`;
+
+        const hivesResponse = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hives = hivesResponse.data;
-        console.log("📊 Colmeias recebidas:", hives.length);
-        console.log("📊 Dados das colmeias:", hives);
 
         const hivesWithAnalysis = await Promise.all(
           hives.map(async (hive) => {
             try {
-              try {
               const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`, {
                 headers: { Authorization: `Bearer ${token}` },
               });
               return { ...hive, analysis: analysisResponse.data };
             } catch (err) {
-              console.warn(`Colmeia ${hive.id} sem análise.`);
-              return { ...hive, analysis: null };
-            }
-            } catch (err) {
-              console.warn(`Colmeia ${hive.id} sem análise.`);
+              console.warn(`Colmeia ${hive.id} sem análise ou erro na busca:`, err.message);
               return { ...hive, analysis: null };
             }
           })
         );
-
-        console.log("🔍 Análises recebidas:", hivesWithAnalysis.map(h => ({
-          id: h.id,
-          varroa: h.analysis?.varroa_detected,
-        })));
 
         const total = hivesWithAnalysis.length;
         const comVarroa = hivesWithAnalysis.filter(
@@ -60,33 +89,46 @@ export default function InfoHome() {
           { id: 2, label: "TAXA DE VARROA", value: taxaVarroa },
           { id: 3, label: "COLMEIAS + VARROA", value: comVarroa },
         ]);
+
       } catch (error) {
-        console.error("❌ Erro ao carregar dados do dashboard:", error);
-        console.error("❌ Detalhes do erro:", error.response?.data || error.message);
+        console.error("❌ Erro ao carregar dados do dashboard:", error.message);
         
-        // Se for erro 404, significa que não há colmeias ainda
-        if (error.response?.status === 404) {
-          console.log("ℹ️ Nenhuma colmeia encontrada (404)");
+        if (error.response) {
+          console.error("❌ Detalhes do erro:", error.response.data);
+          if (error.response.status === 401 || error.response.status === 403) {
+            setError("Sessão expirada. Faça login novamente.");
+            navigate('/login');
+          } else if (error.response.status === 404) {
+            setError("Nenhuma colmeia encontrada.");
+            setDashboard([ // Zera o dashboard se não encontrar
+              { id: 1, label: "COLMEIAS", value: 0 },
+              { id: 2, label: "TAXA DE VARROA", value: "0%" },
+              { id: 3, label: "COLMEIAS + VARROA", value: 0 },
+            ]);
+          } else {
+            setError("Erro ao carregar dados do dashboard.");
+          }
+        } else {
+            setError("Erro de rede. Verifique sua conexão.");
         }
-        
-        setDashboard([
-          { id: 1, label: "COLMEIAS", value: 0 },
-          { id: 2, label: "TAXA DE VARROA", value: "0%" },
-          { id: 3, label: "COLMEIAS + VARROA", value: 0 },
-        ]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="flex flex-wrap justify-center gap-8 py-6 w-full">
       {loading ? (
         <div className="text-center py-8">
           <div className="text-lg font-semibold text-gray-600">Carregando dados...</div>
+        </div>
+      // Adiciona exibição de erro
+      ) : error ? (
+        <div className="text-center py-8 w-full">
+           <div className="text-lg font-semibold text-red-600">{error}</div>
         </div>
       ) : (
         dashboard.map((item) => (

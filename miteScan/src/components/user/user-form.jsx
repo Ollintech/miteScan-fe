@@ -5,12 +5,15 @@ import { useNavigate } from 'react-router-dom';
 export default function UserForm({ mode = 'create', userId = null }) {
   // mode: 'create' | 'edit' | 'delete'
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', access_id: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', access_id: '', status: '' });
   const [accessLevels, setAccessLevels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  // A linha abaixo foi modificada para evitar o erro de compilação 'import.meta'.
+  // Se você estiver usando o Vite, certifique-se de que seu 'target' no 'vite.config.js'
+  // seja 'esnext' ou similar, e não 'es2015'.
+  const base = 'http://localhost:8000'; // import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
   useEffect(() => {
     const fetchAccess = async () => {
@@ -20,9 +23,8 @@ export default function UserForm({ mode = 'create', userId = null }) {
         return;
       }
       try {
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-  const res = await axios.get(`${base}/accesses/all`, { headers: { Authorization: `Bearer ${token}` } });
-  setAccessLevels(res.data || []);
+        const res = await axios.get(`${base}/accesses/all`, { headers: { Authorization: `Bearer ${token}` } });
+        setAccessLevels(res.data || []);
       } catch (err) {
         console.error('Erro ao carregar níveis de acesso', err);
       }
@@ -44,7 +46,9 @@ export default function UserForm({ mode = 'create', userId = null }) {
 
       let userRootId = null;
       try {
-        userRootId = JSON.parse(userString)?.id;
+        const u = JSON.parse(userString);
+        const accessId = Number(u?.access_id);
+        userRootId = accessId === 1 ? u?.id : u?.user_root_id;
       } catch (e) {
         console.error('Erro ao parsear user do localStorage', e);
       }
@@ -62,14 +66,15 @@ export default function UserForm({ mode = 'create', userId = null }) {
       try {
         setLoading(true);
 
-  const url = `${base}/${userRootId}/users_associated/${userId}`;
-  const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+        const url = `${base}/${userRootId}/users_associated/${userId}`;
+        const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
         const data = res.data || {};
         setForm({
           name: data.name || '',
           email: data.email || '',
           password: '',
           access_id: data.access_id ? String(data.access_id) : '',
+          status: typeof data.status === 'boolean' ? String(data.status) : (data.status ?? ''),
         });
       } catch (err) {
         console.error('Erro ao carregar usuário:', err);
@@ -86,6 +91,36 @@ export default function UserForm({ mode = 'create', userId = null }) {
     setForm((p) => ({ ...p, [field]: value }));
   };
 
+  /**
+   * Tenta formatar a mensagem de erro de validação 422 do FastAPI.
+   * O 'detail' é geralmente um array de objetos.
+   * ex: [{ loc: ["body", "password"], msg: "field required", type: "value_error" }]
+   */
+  const formatFastApiError = (detail) => {
+    if (Array.isArray(detail)) {
+      try {
+        const msg = detail
+          .map((d) => {
+            // d.loc é um array, ex: ["body", "password"]
+            // Pegamos o último item (nome do campo)
+            const field = Array.isArray(d.loc) ? d.loc[d.loc.length - 1] : d.loc;
+            // d.msg é a mensagem de erro, ex: "must have at least 8 characters"
+            return `${field}: ${d.msg}`;
+          })
+          .join(' | '); // Junta várias mensagens
+        return msg;
+      } catch (e) {
+        console.error('Erro ao formatar "detail" do FastAPI:', e, detail);
+        return JSON.stringify(detail); // Fallback
+      }
+    } else if (typeof detail === 'string') {
+      return detail; // Erro simples de string (ex: email já existe)
+    }
+    // Fallback para outros tipos de erro
+    return 'Erro desconhecido ao processar resposta da API.';
+  };
+
+
   const handleSubmit = async () => {
     setError('');
     const token = localStorage.getItem('token');
@@ -95,7 +130,12 @@ export default function UserForm({ mode = 'create', userId = null }) {
       navigate('/login');
       return;
     }
-    const userRootId = JSON.parse(userString)?.id;
+    let userRootId = null;
+    try {
+      const u = JSON.parse(userString);
+      const accessId = Number(u?.access_id);
+      userRootId = accessId === 1 ? u?.id : u?.user_root_id;
+    } catch {}
     if (!userRootId) {
       setError('ID do usuário raiz inválido.');
       return;
@@ -115,11 +155,11 @@ export default function UserForm({ mode = 'create', userId = null }) {
           email: form.email,
           password: form.password,
           access_id: Number(form.access_id),
-          user_id: Number(userRootId),
+          user_root_id: Number(userRootId), // <-- CORREÇÃO: Adicione esta linha
         };
-  const url = `${base}/${userRootId}/users_associated/register`;
-  await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}` } });
-        alert('Usuário associado cadastrado com sucesso!');
+        const url = `${base}/${userRootId}/users_associated/register`;
+        await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}` } });
+        alert('Usuário associado cadastrado com sucesso!'); // Cuidado: alert() pode não funcionar em iframes.
         navigate('/home');
       } else if (mode === 'edit') {
         if (!userId) {
@@ -131,11 +171,11 @@ export default function UserForm({ mode = 'create', userId = null }) {
           name: form.name,
           email: form.email,
           access_id: Number(form.access_id),
-          user_id: Number(userRootId),
         };
+        if (form.status !== '') payload.status = (String(form.status) === 'true');
         if (form.password) payload.password = form.password;
-  const url = `${base}/${userRootId}/users_associated/${userId}`;
-  await axios.put(url, payload, { headers: { Authorization: `Bearer ${token}` } });
+        const url = `${base}/${userRootId}/users_associated/${userId}`;
+        await axios.put(url, payload, { headers: { Authorization: `Bearer ${token}` } });
         alert('Usuário atualizado com sucesso!');
         navigate('/users');
       } else if (mode === 'delete') {
@@ -145,15 +185,24 @@ export default function UserForm({ mode = 'create', userId = null }) {
           return;
         }
         // Perform backend deletion
-  const url = `${base}/${userRootId}/users_associated/${userId}?confirm=true`;
-  await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
+        const url = `${base}/${userRootId}/users_associated/${userId}?confirm=true`;
+        await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
         alert('Usuário excluído com sucesso!');
         navigate('/users');
       }
 
     } catch (err) {
       console.error('Erro na operação de usuário:', err);
-      setError(err.response?.data?.detail || 'Erro ao processar requisição.');
+      
+      // *** MUDANÇA PRINCIPAL AQUI ***
+      // Agora vamos formatar o erro corretamente
+      const resp = err.response?.data;
+      if (resp && resp.detail) {
+        setError(formatFastApiError(resp.detail));
+      } else {
+        setError(resp?.message || err.message || 'Erro ao processar requisição.');
+      }
+
     } finally {
       setLoading(false);
     }
@@ -166,8 +215,8 @@ export default function UserForm({ mode = 'create', userId = null }) {
   return (
     <div className="bg-gray-100 rounded-xl shadow-xl p-6 w-full mx-auto text-left">
       <div className="flex items-center justify-center gap-3 mb-7">
-  <img src={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFMEUyRTciLz48cGF0aCBkPSJNMjAgMjJDMjMuMzI4NCAyMiAyNiAxOS4zMjg0IDI2IDE2QzI2IDEyLjY3MTYgMjMuMzI4NCAxMCAyMCAxMEMxNi42NzE2IDEwIDE0IDEyLjY3MTYgMTQgMTZDMTQgMTkuMzI4NCAxNi42NzE2IDIyIDIwIDIyWk0yMCAyNUMxNC40NzcyIDI1IDEwIDI5LjQ3NzIgMTAgMzVDMTAgMzUuNTUyMyAxMC40NDc3IDM2IDExIDM2SDI5QzI5LjU1MmEgMzYgMzAgMzUuNTUyMyAzMCAzNUMzMCAyOS40NzcyIDI1LjUyMjggMjUgMjAgMjVaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=="} alt="Avatar" className="w-10 h-10" />
-  <span className="text-gray-700 text-md font-bold">{mode === 'create' ? 'PREENCHA AS INFORMAÇÕES DO NOVO USUÁRIO' : mode === 'edit' ? 'EDITAR USUÁRIO' : 'Deseja mesmo excluir este usuário?'}</span>
+        <img src={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFMEUyRTciLz48cGF0aCBkPSJNMjAgMjJDMjMuMzI4NCAyMiAyNiAxOS4zMjg0IDI2IDE2QzI2IDEyLjY3MTYgMjMuMzI4NCAxMCAyMCAxMEMxNi42NzE2IDEwIDE0IDEyLjY3MTYgMTQgMTZDMTQgMTkuMzI4NCAxNi42NzE2IDIyIDIwIDIyWk0yMCAyNUMxNC40NzcyIDI1IDEwIDI5LjQ3NzIgMTAgMzVDMTAgMzUuNTUyMyAxMC40NDc3IDM2IDExIDM2SDI5QzI5LjU1MmEgMzYgMzAgMzUuNTUyMyAzMCAzNUMzMCAyOS40NzcyIDI1LjUyMjggMjUgMjAgMjVaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=="} alt="Avatar" className="w-10 h-10" />
+        <span className="text-gray-700 text-md font-bold">{mode === 'create' ? 'PREENCHA AS INFORMAÇÕES DO NOVO USUÁRIO' : mode === 'edit' ? 'EDITAR USUÁRIO' : 'Deseja mesmo excluir este usuário?'}</span>
       </div>
 
       <div className="space-y-4">
@@ -221,6 +270,22 @@ export default function UserForm({ mode = 'create', userId = null }) {
             ))}
           </select>
         </div>
+
+        {mode !== 'create' && (
+          <div className="flex items-center gap-4">
+            <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Status:</label>
+            <select
+              value={form.status}
+              onChange={(e) => handleChange('status', e.target.value)}
+              className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none"
+              disabled={readonly}
+            >
+              <option value="">Selecione o status</option>
+              <option value="true">Ativo</option>
+              <option value="false">Inativo</option>
+            </select>
+          </div>
+        )}
       </div>
 
       {error && <div className="text-red-600 mt-3 font-semibold">{error}</div>}
@@ -239,3 +304,5 @@ export default function UserForm({ mode = 'create', userId = null }) {
     </div>
   );
 }
+
+

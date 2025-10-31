@@ -20,34 +20,67 @@ import axios from "axios";
 export default function HomeHives() {
   const [hives, setHives] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(""); // Adicionado estado de erro
   const navigate = useNavigate();
-
-  
 
   useEffect(() => {
     const fetchHivesWithAnalysis = async () => {
+      setLoading(true);
+      setError(""); // Limpa erros anteriores
+
       try {
         const token = localStorage.getItem("token");
-        console.log("🏠 HomeHives - Token encontrado:", token ? "Sim" : "Não");
+        const userString = localStorage.getItem("user");
 
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-        const hivesResponse = await axios.get(`${base}/hives/all`, {
+        if (!token || !userString) {
+          setError("Sessão inválida. Faça login novamente."); // Define o erro
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+
+        // --- INÍCIO DA CORREÇÃO (baseado em access_id) ---
+        let idParaRota;
+        try {
+          const userObj = JSON.parse(userString);
+          const accessId = Number(userObj?.access_id);
+          idParaRota = accessId === 1 ? userObj?.id : userObj?.user_root_id;
+        } catch (e) {
+          console.error("❌ Erro ao parsear dados do usuário:", e);
+          setError("Erro ao ler sessão. Faça login novamente.");
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+        
+        if (!idParaRota) {
+           console.error("❌ Erro: ID de rota (user_root_id) não encontrado.");
+           setError("ID do usuário inválido. Faça login novamente.");
+           setLoading(false);
+           navigate('/login');
+           return;
+        }
+        // --- FIM DA CORREÇÃO ---
+
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+        
+        const url = `${base}/${idParaRota}/hives/all`; // URL usa o ID corrigido
+
+        const hivesResponse = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hivesData = hivesResponse.data;
-        console.log("🏠 HomeHives - Colmeias recebidas:", hivesData.length);
-        console.log("🏠 HomeHives - Dados das colmeias:", hivesData);
 
         const hivesWithAnalysis = await Promise.all(
           hivesData.map(async (hive) => {
             try {
-              try {
-              const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`);
+              // NOTA: Esta rota também pode precisar do user_root_id
+              const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`, {
+                  headers: { Authorization: `Bearer ${token}` } // Adicionado token
+              });
               return { ...hive, analysis: analysisResponse.data };
             } catch {
-              return { ...hive, analysis: null };
-            }
-            } catch {
+              console.warn(`Nenhuma análise encontrada para colmeia ${hive.id}`);
               return { ...hive, analysis: null };
             }
           })
@@ -80,7 +113,19 @@ export default function HomeHives() {
         setHives(parsed);
       } catch (error) {
         console.error("❌ Erro ao buscar colmeias:", error);
-        console.error("❌ Detalhes do erro:", error.response?.data || error.message);
+        
+        if (error.response) {
+            if (error.response.status === 401 || error.response.status === 403) {
+                setError("Sessão expirada. Faça login novamente.");
+                navigate('/login');
+            } else if (error.response.status === 404) {
+                setError("Nenhuma colmeia encontrada."); // Mensagem específica para 404
+            } else {
+                setError("Erro ao carregar colmeias.");
+            }
+        } else {
+            setError("Erro de rede. Verifique sua conexão.");
+        }
         
         setHives([]);
       } finally {
@@ -89,7 +134,7 @@ export default function HomeHives() {
     };
 
     fetchHivesWithAnalysis();
-  }, []);
+  }, [navigate]);
 
   const renderIcon = (status) => {
     if (status === "ok") return <MdVerifiedUser size={25} className="text-green-600 mr-2" />;
@@ -108,6 +153,13 @@ export default function HomeHives() {
           <div className="text-center py-20">
             <div className="text-lg font-semibold text-gray-600">Carregando colmeias...</div>
           </div>
+        // Adiciona exibição de erro
+        ) : error ? ( 
+            <div className="text-center py-20 flex flex-col items-center gap-4">
+                <p className="text-lg font-semibold text-red-600">
+                    {error}
+                </p>
+            </div>
         ) : hives.length === 0 ? (
           <div className="text-center py-20 flex flex-col items-center gap-4">
             <p className="text-lg font-semibold text-gray-700">

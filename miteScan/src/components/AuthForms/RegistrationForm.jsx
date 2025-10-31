@@ -8,39 +8,20 @@ export default function RegistrationForm() {
     nome: "",
     email: "",
     senha: "",
-    access_id: "",
+    access_id: "1",
   });
 
-  const [accessLevels, setAccessLevels] = useState([]);
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingAccess, setLoadingAccess] = useState(true);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchAccessLevels = async () => {
-      try {
-        setLoadingAccess(true);
-  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/accesses/all`);
-        setAccessLevels(response.data);
-      } catch (error) {
-        console.error("Erro ao carregar os níveis de acesso:", error.response?.data || error.message);
-        setErro("Erro ao carregar níveis de acesso. Tente novamente.");
-      } finally {
-        setLoadingAccess(false);
-      }
-    };
-
-    fetchAccessLevels();
-  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const validateForm = () => {
-    const { nome, email, senha, access_id } = form;
-    if (!nome || !email || !senha || !access_id) {
+    const { nome, email, senha } = form;
+    if (!nome || !email || !senha) {
       setErro("Preencha todos os campos.");
       return false;
     }
@@ -70,7 +51,7 @@ export default function RegistrationForm() {
         name: form.nome,
         email: form.email,
         password: form.senha,
-        access_id: parseInt(form.access_id),
+        access_id: 1,
       };
 
   const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/users_root/register`, payload);
@@ -148,19 +129,6 @@ export default function RegistrationForm() {
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <label htmlFor="conta" className="w-28 text-sm font-semibold">Conta:</label>
-              <input
-                id="senha"
-                name="senha"
-                type="password"
-                placeholder="Crie um nome único"
-                value={form.senha}
-                onChange={handleChange}
-                className="flex-1 bg-gray-100 rounded-md p-2"
-              />
-            </div>
-
 
             {erro && <p className="text-red-600 mt-1 font-semibold">{erro}</p>}
           </form>
@@ -182,9 +150,9 @@ export default function RegistrationForm() {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={loading || loadingAccess}
+            disabled={loading}
             className={`${
-              loading || loadingAccess 
+              loading
                 ? "bg-gray-400 cursor-not-allowed" 
                 : "bg-yellow-400 hover:bg-yellow-300"
             } text-black font-bold py-3 px-8 rounded-full shadow-md w-48 transform active:translate-y-0.5`}

@@ -2,6 +2,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './Navbar.css';
 
+import logoImg from '../assets/images/logo-nav.png';
+import homeIcon from '../assets/images/home-icon.png';
+import cadastrarIcon from '../assets/images/cadastrar-colmeia.png';
+import historicoIcon from '../assets/images/historico-analise.png';
+import analisarIcon from '../assets/images/analisar.png';
+import usuarioIcon from '../assets/images/usuario.png';
+import logoutIcon from '../assets/images/logout.png';
+
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();  // para navegar programaticamente
@@ -9,25 +17,38 @@ function Navbar() {
 
   // Verificar se o usuário é admin/owner
   const userStr = localStorage.getItem('user');
-  const user = userStr ? JSON.parse(userStr) : null;
+  let user = null;
+  if (userStr) {
+    try {
+      user = JSON.parse(userStr);
+    } catch (e) {
+      console.error('Navbar: usuário no localStorage inválido, removendo chave:', e);
+      localStorage.removeItem('user');
+      user = null;
+    }
+  }
   
   // Função para verificar se é admin (mesma lógica do AdminRoute)
   const isAdminUser = (user) => {
     if (!user) return false;
-    
-    const checks = [
-      user.access_id === 1 || user.access_id === '1',
-      user.access?.id === 1 || user.access?.id === '1',
-      user.nivel === 'administrador' || user.nivel === 'owner',
-      user.access?.name?.toLowerCase() === 'owner' || 
-      user.access?.name?.toLowerCase() === 'administrador',
-      user.access_name?.toLowerCase() === 'owner' ||
-      user.access_name?.toLowerCase() === 'administrador',
-      user.role?.toLowerCase() === 'owner' ||
-      user.role?.toLowerCase() === 'administrador'
-    ];
-    
-    return checks.some(check => check === true);
+
+    // normalize values safely
+    const accessId = user.access_id ?? user.access?.id;
+    if (accessId === 1 || accessId === '1') return true;
+
+    const nivel = typeof user.nivel === 'string' ? user.nivel.toLowerCase() : null;
+    if (nivel === 'administrador' || nivel === 'owner') return true;
+
+    const accessName = typeof user.access?.name === 'string' ? user.access.name.toLowerCase() : null;
+    if (accessName === 'owner' || accessName === 'administrador') return true;
+
+    const accessNameAlt = typeof user.access_name === 'string' ? user.access_name.toLowerCase() : null;
+    if (accessNameAlt === 'owner' || accessNameAlt === 'administrador') return true;
+
+    const role = typeof user.role === 'string' ? user.role.toLowerCase() : null;
+    if (role === 'owner' || role === 'administrador') return true;
+
+    return false;
   };
   
   const isAdmin = isAdminUser(user);
@@ -44,8 +65,12 @@ function Navbar() {
 
   // Função para logout: limpa token e redireciona
   const handleLogout = () => {
+    // Remove session-related keys
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('user_type');
+    localStorage.removeItem('user_root_id');
+    localStorage.removeItem('access_id');
     closeMenu();
     navigate('/login');
   };
@@ -53,7 +78,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="item">
-        <img src="../../src/assets/images/logo-nav.png" alt="Logo" />
+        <img src={logoImg} alt="Logo" />
       </div>
 
       {/* Menu principal com links */}
@@ -61,28 +86,28 @@ function Navbar() {
         <ul>
           <li className={location.pathname === '/home' ? 'active' : ''}>
             <Link to="/home" onClick={closeMenu}>
-              <img src="../../src/assets/images/home-icon.png" alt="Home" style={{ width: '50px' }} />
+              <img src={homeIcon} alt="Home" style={{ width: '50px' }} />
             </Link>
           </li>
           <li className={location.pathname === '/hives' ? 'active' : ''}>
             <Link to="/hives" onClick={closeMenu}>
-              <img src="../../src/assets/images/cadastrar-colmeia.png" alt="Cadastrar Colmeia" style={{ width: '50px' }} />
+              <img src={cadastrarIcon} alt="Cadastrar Colmeia" style={{ width: '50px' }} />
             </Link>
           </li>
           <li className={location.pathname === '/historical' ? 'active' : ''}>
             <Link to="/historical" onClick={closeMenu}>
-              <img src="../../src/assets/images/historico-analise.png" alt="Histórico de Análise" style={{ width: '50px' }} />
+              <img src={historicoIcon} alt="Histórico de Análise" style={{ width: '50px' }} />
             </Link>
           </li>
           <li className={location.pathname === '/analysis' ? 'active' : ''}>
             <Link to="/analysis" onClick={closeMenu}>
-              <img src="../../src/assets/images/analisar.png" alt="Analisar" style={{ width: '50px' }} />
+              <img src={analisarIcon} alt="Analisar" style={{ width: '50px' }} />
             </Link>
           </li>
           {isAdmin && (
             <li className={location.pathname === '/users' ? 'active' : ''}>
               <Link to="/users" onClick={closeMenu}>
-                <img src="../../src/assets/images/usuario.png" alt="Usuário" style={{ width: '50px' }} />
+                <img src={usuarioIcon} alt="Usuário" style={{ width: '50px' }} />
               </Link>
             </li>
           )}
@@ -94,7 +119,7 @@ function Navbar() {
                 handleLogout();
               }}
             >
-              <img src="../../src/assets/images/logout.png" alt="Logout" style={{ width: '50px' }} />
+                <img src={logoutIcon} alt="Logout" style={{ width: '50px' }} />
             </a>
           </li>
         </ul>

@@ -20,13 +20,69 @@ import axios from "axios";
 
 export default function HivesList() {
   const [hives, setHives] = useState([]);
+  const [beeTypes, setBeeTypes] = useState([]); // <--- 1. ADICIONADO NOVO STATE
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHivesWithAnalysis = async () => {
+      setLoading(true);
+      setError("");
+
       try {
         const token = localStorage.getItem("token");
-  const hivesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hives/all`, {
+        const userString = localStorage.getItem("user");
+
+        if (!token || !userString) {
+          setError("Sessão inválida. Faça login novamente.");
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+
+        // --- INÍCIO (definição via access_id) ---
+        let idParaRota;
+        try {
+          const userObj = JSON.parse(userString);
+          const accessId = Number(userObj?.access_id);
+          idParaRota = accessId === 1 ? userObj?.id : userObj?.user_root_id;
+        } catch (e) {
+          console.error("Erro ao parsear dados do usuário:", e);
+          setError("Erro ao ler sessão. Faça login novamente.");
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+
+        if (!idParaRota) {
+          console.error("Erro: ID de rota (user_root_id) não encontrado.");
+          setError("ID do usuário inválido. Faça login novamente.");
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+        // --- FIM ---
+
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+        // --- 2. BUSCAR OS TIPOS DE ABELHA ---
+        try {
+          const beeTypesResponse = await axios.get(`${base}/bee_types/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setBeeTypes(beeTypesResponse.data);
+        } catch (e) {
+          console.error("Erro ao buscar tipos de abelha:", e);
+          // Não é um erro fatal, podemos continuar e mostrar os IDs
+        }
+        // --- FIM DA BUSCA ---
+
+
+        // Agora usamos a variável 'idParaRota' que tem o ID correto
+        const url = `${base}/${idParaRota}/hives/all`;
+
+        const hivesResponse = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hivesData = hivesResponse.data;
@@ -35,28 +91,45 @@ export default function HivesList() {
           hivesData.map(async (hive) => {
             try {
               const analysisResponse = await axios.get(
-                `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/hive_analyses/hive:${hive.id}`,
+                `${base}/hive_analyses/hive/${hive.id}`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
               );
               return { ...hive, analysis: analysisResponse.data };
             } catch {
+              console.warn(`Nenhuma análise encontrada para colmeia ${hive.id}`);
               return { ...hive, analysis: null };
             }
           })
         );
 
+
+
         setHives(hivesWithAnalysis);
       } catch (error) {
         console.error("Erro ao buscar colmeias:", error);
+        if (error.response) {
+          if (error.response.status === 401 || error.response.status === 403) {
+            setError("Sessão expirada. Faça login novamente.");
+            navigate('/login');
+          } else if (error.response.status === 404) {
+            setError("Nenhuma colmeia encontrada.");
+          } else {
+            setError("Erro ao carregar colmeias.");
+          }
+        } else {
+          setError("Erro de rede ao buscar colmeias.");
+        }
         setHives([]);
+      } finally {
+        setLoading(false);
       }
     };
 
 
     fetchHivesWithAnalysis();
-  }, []);
+  }, [navigate]);
 
 
   function getTemperatureColor(temp) {
@@ -96,10 +169,20 @@ export default function HivesList() {
     return "bg-red-200";
   }
 
+  // --- 3. ADICIONAR FUNÇÃO AUXILIAR ---
+  function getBeeTypeName(typeId) {
+    if (!beeTypes || beeTypes.length === 0) {
+      return (typeId || '--').toString(); // Fallback se 'beeTypes' ainda não carregou
+    }
+    const beeType = beeTypes.find(bt => bt.id === Number(typeId));
+    return beeType ? beeType.name : (typeId || '--').toString();
+  }
+  // --- FIM DA FUNÇÃO AUXILIAR ---
+
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="<div className=w-full max-w-[90%] mx-auto flex items-center justify-between mb-6 sm:max-w-full">
+      <div className="w-full max-w-[90%] mx-auto flex items-center justify-between mb-6 sm:max-w-full">
         <div className="flex items-center gap-4 sm:text-xl font-bold">
           <button
             className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
@@ -116,15 +199,23 @@ export default function HivesList() {
           <MdAdd size={25} />
           <span className="hidden sm:inline ml-1">ADICIONAR</span>
         </button>
-
-
-
       </div>
 
       {/* Lista */}
       <div className="max-h-[calc(100vh-340px)] overflow-y-auto pr-2">
+
+        {loading && (
+          <div className="text-center p-10 text-gray-600 font-semibold">Carregando colmeias...</div>
+        )}
+        {error && !loading && (
+          <div className="text-center p-10 text-red-600 font-semibold">{error}</div>
+        )}
+        {!loading && !error && hives.length === 0 && (
+          <div className="text-center p-10 text-gray-600 font-semibold">Nenhuma colmeia cadastrada.</div>
+        )}
+
         <div className="grid gap-6 sm:mx-0 mx-auto max-w-[95%]">
-          {hives.map((hive) => {
+          {!loading && !error && hives.map((hive) => {
             const analysis = hive.analysis;
             const estado = getEstado(analysis, hive);
 
@@ -139,22 +230,32 @@ export default function HivesList() {
                       className="w-full sm:w-32 h-32 sm:h-full object-cover rounded-t-xl sm:rounded-t-none sm:rounded-l-xl"
                     />
 
-
-                    {/* Info */}
+                    {/* Info --- 4. ATUALIZAR O JSX --- */}
                     <div className="flex flex-col gap-3 text-start font-bold text-sm p-4 w-full">
                       <div className="flex items-center gap-2">
                         <MdHexagon size={19} />
-                        COLMEIA {hive.id}
+                        {`COLMEIA ${hive.id}`}
                       </div>
+
+                      {/* CAMPO DE TAMANHO ADICIONADO */}
                       <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt size={18} />
-                        {hive.size} cm
+                        <MdHexagon size={19} /> {/* Pode trocar o ícone se tiver um melhor */}
+                        {hive.size || '--'} cm
                       </div>
+
+                      <div className="flex items-center gap-2">
+                        <img src={Bee} alt="Abelha" style={{ width: 18, height: 18 }} />
+                        {/* LÓGICA DO NOME DA ABELHA ATUALIZADA */}
+                        {getBeeTypeName(hive.bee_type_id).toUpperCase()}
+                      </div>
+
                       <div className="flex items-center gap-2">
                         <TbWorldLatitude size={18} />
                         {`${hive.location_lat}, ${hive.location_lng}`}
                       </div>
                     </div>
+                    {/* --- FIM DA ATUALIZAÇÃO DO JSX --- */}
+
 
                     {/* Medidas */}
                     <div className="h-25 w-0.5 bg-gray-600 mx-2 rounded-xl hidden sm:block"></div>

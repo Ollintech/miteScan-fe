@@ -4,17 +4,17 @@ import { Navigate } from 'react-router-dom';
 function AdminRoute({ children }) {
   const token = localStorage.getItem('token');
   const userString = localStorage.getItem('user');
-  const userType = localStorage.getItem('user_type'); // Pega o tipo de usuário
+  const userType = localStorage.getItem('user_type'); // legado; não mais determinante
 
-  if (!token || !userString || !userType) {
+  if (!token || !userString) {
     return <Navigate to="/login" replace />;
   }
 
   try {
     const user = JSON.parse(userString);
 
-    // Verificação dupla: precisa ter access_id 1 E ser do tipo 'root'
-    if (user && user.access_id === 1 && userType === 'root') {
+    // Novo critério: apenas access_id === 1 (owner)
+    if (user && Number(user.access_id) === 1) {
       return children;
     } else {
       return <Navigate to="/home" replace />;
