@@ -8,6 +8,12 @@ export default function LoadingAnalysis() {
   const { hiveAnalysisId } = location.state || {};
 
   useEffect(() => {
+    // Se não tiver hiveAnalysisId, redireciona para análise
+    if (!hiveAnalysisId) {
+      navigate('/analysis');
+      return;
+    }
+
     const timer = setTimeout(() => {
       navigate('/result-analysis', { state: { hiveAnalysisId } });
     }, 3000);

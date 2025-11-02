@@ -10,10 +10,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // A linha abaixo foi modificada para evitar o erro de compilação 'import.meta'.
-  // Se você estiver usando o Vite, certifique-se de que seu 'target' no 'vite.config.js'
-  // seja 'esnext' ou similar, e não 'es2015'.
-  const base = 'http://localhost:8000'; // import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
   useEffect(() => {
     const fetchAccess = async () => {
@@ -44,16 +41,15 @@ export default function UserForm({ mode = 'create', userId = null }) {
         return;
       }
 
-      let userRootId = null;
+      let account;
       try {
         const u = JSON.parse(userString);
-        const accessId = Number(u?.access_id);
-        userRootId = accessId === 1 ? u?.id : u?.user_root_id;
+        account = u?.account || localStorage.getItem('account');
       } catch (e) {
         console.error('Erro ao parsear user do localStorage', e);
       }
-      if (!userRootId) {
-        setError('ID do usuário raiz inválido.');
+      if (!account) {
+        setError('Account não encontrado.');
         navigate('/login');
         return;
       }
@@ -66,7 +62,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
       try {
         setLoading(true);
 
-        const url = `${base}/${userRootId}/users_associated/${userId}`;
+        const url = `${base}/${account}/users_associated/${userId}`;
         const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
         const data = res.data || {};
         setForm({
@@ -130,14 +126,13 @@ export default function UserForm({ mode = 'create', userId = null }) {
       navigate('/login');
       return;
     }
-    let userRootId = null;
+    let account;
     try {
       const u = JSON.parse(userString);
-      const accessId = Number(u?.access_id);
-      userRootId = accessId === 1 ? u?.id : u?.user_root_id;
+      account = u?.account || localStorage.getItem('account');
     } catch {}
-    if (!userRootId) {
-      setError('ID do usuário raiz inválido.');
+    if (!account) {
+      setError('Account não encontrado.');
       return;
     }
 
@@ -155,11 +150,11 @@ export default function UserForm({ mode = 'create', userId = null }) {
           email: form.email,
           password: form.password,
           access_id: Number(form.access_id),
-          user_root_id: Number(userRootId), // <-- CORREÇÃO: Adicione esta linha
+          account: account,
         };
-        const url = `${base}/${userRootId}/users_associated/register`;
+        const url = `${base}/${account}/users_associated/register`;
         await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}` } });
-        alert('Usuário associado cadastrado com sucesso!'); // Cuidado: alert() pode não funcionar em iframes.
+        alert('Usuário associado cadastrado com sucesso!');
         navigate('/home');
       } else if (mode === 'edit') {
         if (!userId) {
@@ -174,7 +169,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
         };
         if (form.status !== '') payload.status = (String(form.status) === 'true');
         if (form.password) payload.password = form.password;
-        const url = `${base}/${userRootId}/users_associated/${userId}`;
+        const url = `${base}/${account}/users_associated/${userId}`;
         await axios.put(url, payload, { headers: { Authorization: `Bearer ${token}` } });
         alert('Usuário atualizado com sucesso!');
         navigate('/users');
@@ -185,7 +180,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
           return;
         }
         // Perform backend deletion
-        const url = `${base}/${userRootId}/users_associated/${userId}?confirm=true`;
+        const url = `${base}/${account}/users_associated/${userId}?confirm=true`;
         await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
         alert('Usuário excluído com sucesso!');
         navigate('/users');
@@ -194,8 +189,6 @@ export default function UserForm({ mode = 'create', userId = null }) {
     } catch (err) {
       console.error('Erro na operação de usuário:', err);
       
-      // *** MUDANÇA PRINCIPAL AQUI ***
-      // Agora vamos formatar o erro corretamente
       const resp = err.response?.data;
       if (resp && resp.detail) {
         setError(formatFastApiError(resp.detail));

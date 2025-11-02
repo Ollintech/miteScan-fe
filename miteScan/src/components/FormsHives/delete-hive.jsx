@@ -8,9 +8,9 @@ export default function DeleteHiveCard() {
   const navigate = useNavigate()
   
   const [hive, setHive] = useState(null)
-  const [beeTypes, setBeeTypes] = useState([]) // Adicionado para exibir o nome
+  const [beeTypes, setBeeTypes] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("") // Adicionado para feedback
+  const [error, setError] = useState("")
 
   const token = localStorage.getItem("token")
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
@@ -20,7 +20,6 @@ export default function DeleteHiveCard() {
       setLoading(true)
       setError("")
 
-      // 1. Validar sessão e pegar userRootId
       const userString = localStorage.getItem('user');
       if (!token || !userString) {
         setError('Sessão inválida. Faça login novamente.');
@@ -29,11 +28,10 @@ export default function DeleteHiveCard() {
         return;
       }
       
-      let userRootId;
+      let account;
       try {
         const u = JSON.parse(userString);
-        const accessId = Number(u?.access_id);
-        userRootId = accessId === 1 ? u?.id : u?.user_root_id;
+        account = u?.account || localStorage.getItem('account');
       } catch (e) {
         setError('Erro ao ler sessão. Faça login novamente.');
         setLoading(false);
@@ -41,16 +39,15 @@ export default function DeleteHiveCard() {
         return;
       }
 
-      if (!userRootId) {
-        setError('ID do usuário inválido. Faça login novamente.');
+      if (!account) {
+        setError('Account não encontrado. Faça login novamente.');
         setLoading(false);
         navigate('/login');
         return;
       }
 
       try {
-        // 2. URLs corrigidas e busca de beeTypes
-        const hiveUrl = `${base}/${userRootId}/hives/${hiveId}`;
+        const hiveUrl = `${base}/${account}/hives/${hiveId}`;
         const beeTypesUrl = `${base}/bee_types/all`;
 
         const [hiveRes, beeTypesRes] = await Promise.all([
@@ -60,22 +57,21 @@ export default function DeleteHiveCard() {
         
         const hiveData = hiveRes.data
         
-        setBeeTypes(beeTypesRes.data || []); // Salva os tipos de abelha
+        setBeeTypes(beeTypesRes.data || []);
         setHive({
           id: hiveData.id,
           name: hiveData.name || `COLMEIA ${hiveData.id}`,
           size: hiveData.size || '',
-          bee_type_id: hiveData.bee_type_id || '', // Adicionado
+          bee_type_id: hiveData.bee_type_id || '',
           location: {
             lat: hiveData.location_lat,
             lng: hiveData.location_lng
           },
-          cameraConnected: true // Mantido
+          cameraConnected: true
         })
         
       } catch (err) {
-        console.error('❌ Erro ao buscar colmeia:', err)
-        // 3. Tratamento de erro melhorado
+        console.error('Erro ao buscar colmeia:', err)
         if (err.response && (err.response.status === 401 || err.response.status === 403)) {
            setError('Sessão expirada. Faça login novamente.');
            navigate('/login');
@@ -90,34 +86,31 @@ export default function DeleteHiveCard() {
     }
 
     fetchDados()
-  }, [hiveId, token, base, navigate]) // Dependências atualizadas
+  }, [hiveId, token, base, navigate])
 
   const handleDelete = async () => {
-    // 4. Validar userRootId antes de deletar
     const userString = localStorage.getItem('user');
-    let userRootId = null;
+    let account = null;
     try {
       const u = userString ? JSON.parse(userString) : null;
-      const accessId = Number(u?.access_id);
-      userRootId = accessId === 1 ? u?.id : u?.user_root_id;
+      account = u?.account || localStorage.getItem('account');
     } catch {}
     
-    if (!token || !userRootId) {
+    if (!token || !account) {
         alert('Sessão inválida. Faça login novamente.');
         navigate('/login');
         return;
     }
 
     try {
-      // 5. URL de exclusão corrigida
-      const url = `${base}/${userRootId}/hives/${hiveId}?confirm=true`;
+      const url = `${base}/${account}/hives/${hiveId}?confirm=true`;
 
       await axios.delete(url, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
       alert('Colmeia excluída com sucesso.')
-      navigate('/hives') // 6. Navegação corrigida
+      navigate('/hives')
     } catch (error) {
       console.error('❌ Erro ao excluir colmeia:', error.response?.data || error.message)
       alert('Erro ao excluir colmeia.')
@@ -134,7 +127,7 @@ export default function DeleteHiveCard() {
       modo="excluir"
       colmeia={hive}
       onExcluir={handleDelete}
-      beeTypes={beeTypes} // Passa os tipos de abelha para o formulário
+      beeTypes={beeTypes}
     />
   )
 }

@@ -59,7 +59,7 @@ function App() {
 
         {/* Rotas sem layout */}
         <Route path="/loading" element={<PublicRoute><LoadingScreen /></PublicRoute>} />
-        <Route path="/loading-analysis" element={<PublicRoute><LoadingAnalysis /></PublicRoute>} />
+        <Route path="/loading-analysis" element={<LoadingAnalysis />} />
 
         {/* Rotas protegidas com layout */}
         <Route element={<DefaultLayout />}>

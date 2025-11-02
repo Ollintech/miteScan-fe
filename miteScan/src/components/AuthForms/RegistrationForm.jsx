@@ -8,20 +8,21 @@ export default function RegistrationForm() {
     nome: "",
     email: "",
     senha: "",
-    access_id: "1",
+    account: "",
   });
 
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Simplificado. Removemos a lógica 'if' desnecessária.
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const validateForm = () => {
-    const { nome, email, senha } = form;
-    if (!nome || !email || !senha) {
+    const { nome, email, senha, account } = form;
+    if (!nome || !email || !senha || !account) {
       setErro("Preencha todos os campos.");
       return false;
     }
@@ -46,27 +47,38 @@ export default function RegistrationForm() {
 
     try {
       setLoading(true);
-      
+
       const payload = {
         name: form.nome,
         email: form.email,
         password: form.senha,
-        access_id: 1,
+        account: form.account,
+        access_id: 4, // O 'access_id' é definido aqui, diretamente.
       };
 
-  const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/users_root/register`, payload);
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/users_root/register`, payload);
 
-      console.log("Cadastro realizado:", response.data);
       alert("Usuário cadastrado com sucesso!");
       navigate("/login");
 
     } catch (error) {
       console.error("Erro no cadastro:", error.response?.data || error.message);
-      
+
       if (error.response) {
         const errorData = error.response.data;
         if (errorData.detail) {
-          setErro(errorData.detail);
+          // Este 'if' agora trata o erro de ID 4
+          if (errorData.detail.includes("is not present in table \"accesses\"")) {
+            setErro("Erro: O nível de acesso ID 4 não existe no banco de dados.");
+          }
+          else if (errorData.detail.includes("account")) {
+            setErro("Esse nome de conta já está em uso. Tente outro.");
+          } else if (errorData.detail.includes("Email")) {
+            setErro("Este email já está cadastrado.");
+          }
+          else {
+            setErro(errorData.detail);
+          }
         } else if (errorData.message) {
           setErro(errorData.message);
         } else if (typeof errorData === 'string') {
@@ -122,13 +134,24 @@ export default function RegistrationForm() {
                 id="senha"
                 name="senha"
                 type="password"
-                placeholder="Insira sua senha"
+                placeholder="Mínimo 6 caracteres"
                 value={form.senha}
                 onChange={handleChange}
                 className="flex-1 bg-gray-100 rounded-md p-2"
               />
             </div>
 
+            <div className="flex items-center gap-3">
+              <label htmlFor="account" className="w-28 text-sm font-semibold">Conta:</label>
+              <input
+                id="account"
+                name="account"
+                placeholder="Login único (ex: 'minha-empresa')"
+                value={form.account}
+                onChange={handleChange}
+                className="flex-1 bg-gray-100 rounded-md p-2"
+              />
+            </div>
 
             {erro && <p className="text-red-600 mt-1 font-semibold">{erro}</p>}
           </form>
@@ -137,10 +160,12 @@ export default function RegistrationForm() {
             <p>
               Este será o <span className="font-bold">usuário principal (root)</span> da conta.
             </p>
+            <p className="mt-2 text-md font-medium text-gray-600">
+              O campo <span className="font-bold">'Conta'</span> será o seu identificador
+              único para criar e associar seus funcionários.
+            </p>
             <p className="mt-2 text-lg font-medium">
-              Com ele, você poderá acessar o sistema e
-              <span className="font-bold"> criar acessos individuais</span> para sua equipe ou
-              colaboradores.
+              Com ele, você poderá criar acessos individuais para sua equipe.
             </p>
           </div>
         </div>
@@ -151,11 +176,10 @@ export default function RegistrationForm() {
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className={`${
-              loading
-                ? "bg-gray-400 cursor-not-allowed" 
+            className={`${loading
+                ? "bg-gray-400 cursor-not-allowed"
                 : "bg-yellow-400 hover:bg-yellow-300"
-            } text-black font-bold py-3 px-8 rounded-full shadow-md w-48 transform active:translate-y-0.5`}
+              } text-black font-bold py-3 px-8 rounded-full shadow-md w-48 transform active:translate-y-0.5`}
           >
             {loading ? "CADASTRANDO..." : "CADASTRAR"}
           </button>

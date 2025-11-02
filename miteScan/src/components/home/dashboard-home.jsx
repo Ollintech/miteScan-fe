@@ -10,13 +10,13 @@ export default function InfoHome() {
     { id: 3, label: "COLMEIAS + VARROA", value: 0 },
   ]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(""); // Adicionado estado de erro
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
-      setError(""); // Limpa erro anterior
+      setError("");
 
       try {
         const token = localStorage.getItem("token");
@@ -29,13 +29,10 @@ export default function InfoHome() {
           return;
         }
         
-        // --- INÍCIO: definição via access_id ---
-        let idParaRota;
+        let account;
         try {
           const userObj = JSON.parse(userString);
-          const accessId = Number(userObj?.access_id);
-          idParaRota = accessId === 1 ? userObj?.id : userObj?.user_root_id;
-
+          account = userObj?.account || localStorage.getItem('account');
         } catch (e) {
           console.error("Erro ao parsear dados do usuário:", e);
           setError("Erro ao ler sessão. Faça login novamente.");
@@ -44,19 +41,16 @@ export default function InfoHome() {
           return;
         }
 
-        if (!idParaRota) {
-          console.error("Erro: ID de rota (user_root_id) não encontrado.");
-          setError("ID do usuário inválido. Faça login novamente.");
+        if (!account) {
+          console.error("Erro: account não encontrado.");
+          setError("Account não encontrado. Faça login novamente.");
           setLoading(false);
           navigate('/login');
           return;
         }
-        // --- FIM ---
         
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-        
-        // Rota corrigida para incluir o idParaRota
-        const url = `${base}/${idParaRota}/hives/all`;
+        const url = `${base}/${account}/hives/all`;
 
         const hivesResponse = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
@@ -91,16 +85,15 @@ export default function InfoHome() {
         ]);
 
       } catch (error) {
-        console.error("❌ Erro ao carregar dados do dashboard:", error.message);
+        console.error("Erro ao carregar dados do dashboard:", error.message);
         
         if (error.response) {
-          console.error("❌ Detalhes do erro:", error.response.data);
           if (error.response.status === 401 || error.response.status === 403) {
             setError("Sessão expirada. Faça login novamente.");
             navigate('/login');
           } else if (error.response.status === 404) {
             setError("Nenhuma colmeia encontrada.");
-            setDashboard([ // Zera o dashboard se não encontrar
+            setDashboard([
               { id: 1, label: "COLMEIAS", value: 0 },
               { id: 2, label: "TAXA DE VARROA", value: "0%" },
               { id: 3, label: "COLMEIAS + VARROA", value: 0 },
@@ -125,7 +118,6 @@ export default function InfoHome() {
         <div className="text-center py-8">
           <div className="text-lg font-semibold text-gray-600">Carregando dados...</div>
         </div>
-      // Adiciona exibição de erro
       ) : error ? (
         <div className="text-center py-8 w-full">
            <div className="text-lg font-semibold text-red-600">{error}</div>

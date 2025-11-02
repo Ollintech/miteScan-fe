@@ -21,7 +21,6 @@ export default function EditHiveCard() {
       setLoading(true)
       setError("")
 
-      // 1. Validar sessão e pegar userRootId
       const userString = localStorage.getItem('user');
       if (!token || !userString) {
         setError('Sessão inválida. Faça login novamente.');
@@ -30,11 +29,10 @@ export default function EditHiveCard() {
         return;
       }
       
-      let userRootId;
+      let account;
       try {
         const u = JSON.parse(userString);
-        const accessId = Number(u?.access_id);
-        userRootId = accessId === 1 ? u?.id : u?.user_root_id;
+        account = u?.account || localStorage.getItem('account');
       } catch (e) {
         setError('Erro ao ler sessão. Faça login novamente.');
         setLoading(false);
@@ -42,41 +40,38 @@ export default function EditHiveCard() {
         return;
       }
 
-      if (!userRootId) {
-        setError('ID do usuário inválido. Faça login novamente.');
+      if (!account) {
+        setError('Account não encontrado. Faça login novamente.');
         setLoading(false);
         navigate('/login');
         return;
       }
 
       try {
-        // 2. Buscar dados da colmeia e tipos de abelha em paralelo
-        const hiveUrl = `${base}/${userRootId}/hives/${hiveId}`;
-        const beeTypesUrl = `${base}/bee_types/all`; // Assumindo que esta é a rota
+        const hiveUrl = `${base}/${account}/hives/${hiveId}`;
+        const beeTypesUrl = `${base}/bee_types/all`;
 
         const [hiveRes, beeTypesRes] = await Promise.all([
           axios.get(hiveUrl, {
             headers: { "Authorization": `Bearer ${token}` }
           }),
-          axios.get(beeTypesUrl, { // Tipos de abelha também precisam de auth
+          axios.get(beeTypesUrl, {
              headers: { "Authorization": `Bearer ${token}` }
           })
         ]);
 
-        // 3. Salvar tipos de abelha
         setBeeTypes(beeTypesRes.data || []);
 
-        // 4. Salvar dados da colmeia, incluindo bee_type_id
         setHive({
           id: hiveRes.data.id,
-          name: hiveRes.data.name || `COLMEIA ${hiveRes.data.id}`, // Garante um nome
+          name: hiveRes.data.name || `COLMEIA ${hiveRes.data.id}`,
           size: hiveRes.data.size || '',
-          bee_type_id: hiveRes.data.bee_type_id || '', // <-- ESSENCIAL PARA O FORM
+          bee_type_id: hiveRes.data.bee_type_id || '',
           location: {
             lat: hiveRes.data.location_lat,
             lng: hiveRes.data.location_lng
           },
-          cameraConnected: true // Manter lógica original
+          cameraConnected: true
         })
 
       } catch (err) {
@@ -112,22 +107,19 @@ export default function EditHiveCard() {
   }, [location.state])
 
   const handleEdit = async (dadosAtualizados) => {
-    // 1. Validar sessão e pegar userRootId
     const userString = localStorage.getItem('user');
-    let userRootId = null;
+    let account = null;
     try {
       const u = userString ? JSON.parse(userString) : null;
-      const accessId = Number(u?.access_id);
-      userRootId = accessId === 1 ? u?.id : u?.user_root_id;
+      account = u?.account || localStorage.getItem('account');
     } catch {}
     
-    if (!token || !userRootId) {
+    if (!token || !account) {
         alert('Sessão inválida. Faça login novamente.');
         navigate('/login');
         return;
     }
 
-    // 2. Validar dados do formulário
     const size = parseInt(dadosAtualizados.size);
     if (isNaN(size) || size <= 0) {
       alert('Erro: Por favor, insira um tamanho válido.');
@@ -140,19 +132,15 @@ export default function EditHiveCard() {
       return;
     }
 
-    // 3. Montar payload corrigido
     const payload = {
       bee_type_id: bee_type_id,
       location_lat: parseFloat(dadosAtualizados.location?.lat) || 0,
       location_lng: parseFloat(dadosAtualizados.location?.lng) || 0,
       size: size,
-      // O backend em Pydantic (PUT) geralmente ignora campos não enviados,
-      // então não precisamos enviar humidity/temperature se não forem editáveis.
     }
 
     try {
-      // 4. Usar a rota PUT correta
-      const url = `${base}/${userRootId}/hives/${hiveId}`;
+      const url = `${base}/${account}/hives/${hiveId}`;
       
       const response = await axios.put(
         url,
@@ -165,8 +153,7 @@ export default function EditHiveCard() {
         }
       )
 
-      console.log('Colmeia atualizada com sucesso:', response.data)
-      navigate('/hives-list') // Navega para a lista de colmeias
+      navigate('/hives-list')
     } catch (error) {
       console.error('Erro ao atualizar colmeia:', error.response?.data || error.message)
       alert('Erro ao atualizar colmeia.')
@@ -179,12 +166,11 @@ export default function EditHiveCard() {
 
   return (
     <FormHive
-      // A 'key' força o FormHive a remontar quando os dados (v.g. location) mudam
       key={hive.id + '-' + hive.location?.lat + '-' + hive.location?.lng + '-' + hive.cameraConnected}
       modo="editar"
       colmeia={hive}
       onConfirmar={handleEdit}
-      beeTypes={beeTypes} // 5. Passar beeTypes para o formulário
+      beeTypes={beeTypes}
     />
   )
 }

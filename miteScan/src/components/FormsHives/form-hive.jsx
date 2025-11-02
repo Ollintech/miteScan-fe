@@ -2,17 +2,14 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import yellowBee from '../../assets/images/yellowBee.png'
 
-// 1. Receber beeTypes como prop
 export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, beeTypes = [] }) {
-  console.log("colmeia recebida:", colmeia)
   const navigate = useNavigate()
   const location = useLocation()
 
-  // 2. Adicionar bee_type_id ao estado inicial
   const [formData, setFormData] = useState({
     name: 'COLMEIA 1',
     size: '',
-    bee_type_id: '', // Campo novo
+    bee_type_id: '',
     location: null,
     cameraConnected: false,
   })
@@ -23,7 +20,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         setFormData({
           name: colmeia.name || '',
           size: colmeia.size || '',
-          bee_type_id: colmeia.bee_type_id || '', // 3. Carregar bee_type_id para edição/exclusão
+          bee_type_id: colmeia.bee_type_id || '',
           location: colmeia.location || null,
           cameraConnected: colmeia.cameraConnected ?? true,
         });

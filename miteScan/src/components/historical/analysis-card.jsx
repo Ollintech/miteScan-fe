@@ -8,31 +8,51 @@ export default function AnalysisHist() {
   const navigate = useNavigate()
   const [analyses, setAnalyses] = useState([])
   const [loading, setLoading] = useState(true)
-  const [selectedDays, setSelectedDays] = useState('all')
   const [selectedHive, setSelectedHive] = useState('all')
 
   useEffect(() => {
     const fetchAnalyses = async () => {
       try {
         const token = localStorage.getItem('token')
-        if (!token) {
-          console.error('Token não encontrado')
+        const userString = localStorage.getItem('user')
+        
+        if (!token || !userString) {
+          console.error('Token ou usuário não encontrado')
+          setLoading(false)
+          return
+        }
+
+        // Obter account
+        let account;
+        try {
+          const userObj = JSON.parse(userString);
+          account = userObj?.account || localStorage.getItem('account');
+        } catch (e) {
+          console.error('Erro ao parsear user:', e);
+          setLoading(false)
+          return;
+        }
+
+        if (!account) {
+          console.error('Account não encontrado');
+          setLoading(false)
           return
         }
 
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+        
+        // Buscar todas as análises
         const response = await axios.get(`${base}/hive_analyses/all`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
         const analyses = (response.data || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
-
+        // Buscar dados das colmeias usando a rota correta com account
         const getHive = await Promise.all(
           analyses.map(async (analysis) => {
             try {
-              try {
-              const hiveRes = await axios.get(`${base}/hives/${analysis.hive_id}`, {
+              const hiveRes = await axios.get(`${base}/${account}/hives/${analysis.hive_id}`, {
                 headers: { Authorization: `Bearer ${token}` },
               })
 
@@ -42,17 +62,15 @@ export default function AnalysisHist() {
               }
             } catch (err) {
               console.error(`Erro ao buscar colmeia ${analysis.hive_id}:`, err)
-              return analysis
-            }
-            } catch (err) {
-              console.error(`Erro ao buscar colmeia ${analysis.hive_id}:`, err)
-              return analysis // retorna sem os dados da colmeia se der erro
+              return {
+                ...analysis,
+                hive: null, // Retorna análise sem dados da colmeia se der erro
+              }
             }
           })
         )
 
         setAnalyses(getHive)
-        console.log(getHive)
       } catch (error) {
         console.error('Erro ao buscar análises:', error)
         setAnalyses([]);
@@ -68,41 +86,26 @@ export default function AnalysisHist() {
 
   if (analyses.length === 0) return <p className="text-center p-6">Nenhuma análise encontrada</p>
 
-  // derive unique hive list for the hive select
   const hiveOptions = Array.from(new Set(analyses.map(a => a.hive_id))).map(id => ({ id }))
-
-  const now = new Date()
-  const filterByDays = (item) => {
-    if (selectedDays === 'all') return true
-    const days = Number(selectedDays)
-    const created = new Date(item.created_at)
-    const diffDays = (now - created) / (1000 * 60 * 60 * 24)
-    return diffDays <= days
-  }
 
   const filterByHive = (item) => {
     if (selectedHive === 'all') return true
     return String(item.hive_id) === String(selectedHive)
   }
 
-  const visible = analyses.filter(a => filterByDays(a) && filterByHive(a))
+  const visible = analyses.filter(a => filterByHive(a))
 
   return (
     <div className='w-full'>
-      {/* Filters header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold">Filtrar por:</h2>
-        <div className="flex items-center gap-3">
-          <label className="sr-only">Dias</label>
-          <select value={selectedDays} onChange={(e) => setSelectedDays(e.target.value)} className="bg-gray-200 rounded px-2 py-1 text-sm">
-            <option value="all">DIAS</option>
-            <option value="7">Últimos 7 dias</option>
-            <option value="30">Últimos 30 dias</option>
-            <option value="90">Últimos 90 dias</option>
-          </select>
-
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+        <h2 className="text-base sm:text-lg font-bold">Filtrar por:</h2>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <label className="sr-only">Colmeia</label>
-          <select value={selectedHive} onChange={(e) => setSelectedHive(e.target.value)} className="bg-gray-200 rounded px-2 py-1 text-sm">
+          <select 
+            value={selectedHive} 
+            onChange={(e) => setSelectedHive(e.target.value)} 
+            className="bg-gray-200 rounded px-2 py-1 text-sm w-full sm:w-auto"
+          >
             <option value="all">COLMEIA</option>
             {hiveOptions.map(h => (
               <option key={h.id} value={h.id}>Colmeia {h.id}</option>
@@ -113,34 +116,31 @@ export default function AnalysisHist() {
 
       <div className='w-full max-h-[calc(100vh-340px)] overflow-y-auto'>
       {visible.map((analysis) => (
-        <div key={analysis.id} className="p-5">
+        <div key={analysis.id} className="p-3 sm:p-5 mb-4">
           <div className="bg-gray-100 rounded-xl shadow-xl w-full">
-            {/* Cabeçalho */}
-            <div className="flex flex-wrap items-center gap-3 p-4 font-bold text-sm sm:text-base">
-              <MdHexagon size={20} />
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 p-3 sm:p-4 font-bold text-xs sm:text-sm">
+              <MdHexagon size={18} className="sm:w-5" />
               <h3>COLMEIA {analysis.hive_id}</h3>
-              |
-              <p>{new Date(analysis.created_at).toLocaleDateString()}</p>
+              <span className="hidden sm:inline">|</span>
+              <p className="text-xs sm:text-sm">{new Date(analysis.created_at).toLocaleDateString()}</p>
             </div>
 
-            {/* Conteúdo principal */}
-            <div className="flex flex-col m-3 sm:flex-row items-center sm:items-center">
+            <div className="flex flex-col m-3 sm:flex-row items-center sm:items-center gap-4">
               <img
                 src={Image}
                 alt="colmeia"
-                className="w-full sm:w-1/2 rounded-xl mb-4 sm:mb-0"
+                className="w-full sm:w-1/2 h-auto rounded-xl"
               />
 
-              <div className="text-lg w-full space-y-3 justify-items-start sm:max-w-xs sm:ml-5">
-                <p><strong>Tamanho:</strong> {analysis.hive?.size} cm</p>
-                <p><strong>Temperatura:</strong> {analysis.hive?.temperature}°C</p>
-                <p><strong>Umidade:</strong> {analysis.hive?.humidity}%</p>
-                <p><strong>Varroa:</strong> {analysis.has_varroa ? 'Detectada' : 'Não detectada'}</p>
+              <div className="text-sm sm:text-base w-full sm:max-w-xs space-y-2 sm:space-y-3 sm:ml-5">
+                <p className="text-xs sm:text-base"><strong>Tamanho:</strong> {analysis.hive?.size ?? '--'} cm</p>
+                <p className="text-xs sm:text-base"><strong>Temperatura:</strong> {analysis.hive?.temperature ?? '--'}°C</p>
+                <p className="text-xs sm:text-base"><strong>Umidade:</strong> {analysis.hive?.humidity ?? '--'}%</p>
+                <p className="text-xs sm:text-base"><strong>Varroa:</strong> {analysis.varroa_detected ? 'Detectada' : 'Não detectada'}</p>
               </div>
             </div>
 
-            {/* Rodapé com status */}
-            <div className={`w-full h-13 rounded-b-xl font-bold flex items-center justify-center text-sm sm:text-base
+            <div className={`w-full min-h-[48px] rounded-b-xl font-bold flex items-center justify-center text-xs sm:text-sm px-4 py-2
             ${analysis.varroa_detected ? 'bg-red-200 text-red-900' : 'bg-green-100 text-green-900'}
           `}>
               {analysis.varroa_detected ? '⚠️ Varroa detectada' : '✅ Sem varroa detectada'}

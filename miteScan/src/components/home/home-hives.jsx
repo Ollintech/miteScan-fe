@@ -20,51 +20,48 @@ import axios from "axios";
 export default function HomeHives() {
   const [hives, setHives] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(""); // Adicionado estado de erro
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHivesWithAnalysis = async () => {
       setLoading(true);
-      setError(""); // Limpa erros anteriores
+      setError("");
 
       try {
         const token = localStorage.getItem("token");
         const userString = localStorage.getItem("user");
 
         if (!token || !userString) {
-          setError("Sessão inválida. Faça login novamente."); // Define o erro
+          setError("Sessão inválida. Faça login novamente.");
           setLoading(false);
           navigate('/login');
           return;
         }
 
-        // --- INÍCIO DA CORREÇÃO (baseado em access_id) ---
-        let idParaRota;
+        let account;
         try {
           const userObj = JSON.parse(userString);
-          const accessId = Number(userObj?.access_id);
-          idParaRota = accessId === 1 ? userObj?.id : userObj?.user_root_id;
+          account = userObj?.account || localStorage.getItem('account');
         } catch (e) {
-          console.error("❌ Erro ao parsear dados do usuário:", e);
+          console.error("Erro ao parsear dados do usuário:", e);
           setError("Erro ao ler sessão. Faça login novamente.");
           setLoading(false);
           navigate('/login');
           return;
         }
         
-        if (!idParaRota) {
-           console.error("❌ Erro: ID de rota (user_root_id) não encontrado.");
-           setError("ID do usuário inválido. Faça login novamente.");
+        if (!account) {
+           console.error("Erro: account não encontrado.");
+           setError("Account não encontrado. Faça login novamente.");
            setLoading(false);
            navigate('/login');
            return;
         }
-        // --- FIM DA CORREÇÃO ---
 
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
         
-        const url = `${base}/${idParaRota}/hives/all`; // URL usa o ID corrigido
+        const url = `${base}/${account}/hives/all`;
 
         const hivesResponse = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
@@ -74,9 +71,8 @@ export default function HomeHives() {
         const hivesWithAnalysis = await Promise.all(
           hivesData.map(async (hive) => {
             try {
-              // NOTA: Esta rota também pode precisar do user_root_id
               const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`, {
-                  headers: { Authorization: `Bearer ${token}` } // Adicionado token
+                  headers: { Authorization: `Bearer ${token}` }
               });
               return { ...hive, analysis: analysisResponse.data };
             } catch {
@@ -112,14 +108,14 @@ export default function HomeHives() {
 
         setHives(parsed);
       } catch (error) {
-        console.error("❌ Erro ao buscar colmeias:", error);
+        console.error("Erro ao buscar colmeias:", error);
         
         if (error.response) {
             if (error.response.status === 401 || error.response.status === 403) {
                 setError("Sessão expirada. Faça login novamente.");
                 navigate('/login');
             } else if (error.response.status === 404) {
-                setError("Nenhuma colmeia encontrada."); // Mensagem específica para 404
+                setError("Nenhuma colmeia encontrada.");
             } else {
                 setError("Erro ao carregar colmeias.");
             }
@@ -153,7 +149,6 @@ export default function HomeHives() {
           <div className="text-center py-20">
             <div className="text-lg font-semibold text-gray-600">Carregando colmeias...</div>
           </div>
-        // Adiciona exibição de erro
         ) : error ? ( 
             <div className="text-center py-20 flex flex-col items-center gap-4">
                 <p className="text-lg font-semibold text-red-600">
@@ -174,32 +169,33 @@ export default function HomeHives() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-10 gap-y-4 sm:gap-y-6">
             {hives.map((colmeia) => (
               <div
                 key={colmeia.id}
-                className="text-sm flex flex-col items-start bg-gray-200 rounded-xl shadow-md hover:scale-105 transition-transform max-w-50 min-w-35 mx-auto cursor-pointer"
+                className="text-sm flex flex-col items-start bg-gray-200 rounded-xl shadow-md hover:scale-105 transition-transform w-full max-w-sm mx-auto cursor-pointer"
                 onClick={() => navigate(`/hives/${colmeia.id}`)}
               >
                 <img
                   src={colmeia.imagem}
                   alt={colmeia.nome}
-                  className="h-25 w-full object-cover rounded-xl mb-2"
+                  className="h-40 sm:h-48 w-full object-cover rounded-xl mb-2"
                 />
 
                 <div className="flex items-center justify-between mx-2 w-full">
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 items-center">
                     <MdHexagon size={18} />
-                    <h3 className="text-gray-800 font-semibold">{colmeia.nome}</h3>
+                    <h3 className="text-gray-800 font-semibold text-xs sm:text-sm">{colmeia.nome}</h3>
                   </div>
                   {renderIcon(colmeia.status)}
                 </div>
 
-                <div className="text-md font-bold text-gray-700 flex items-center mx-2 mb-3">
-                  <FaThermometerHalf />
-                  {colmeia.temperatura ?? "--"}°C&nbsp;|&nbsp;
-                  <MdOutlineWaterDrop size={15} />
-                  {colmeia.umidade ?? "--"}%
+                <div className="text-xs sm:text-sm font-bold text-gray-700 flex items-center mx-2 mb-3">
+                  <FaThermometerHalf size={14} />
+                  <span className="ml-1">{colmeia.temperatura ?? "--"}°C</span>
+                  <span className="mx-2">|</span>
+                  <MdOutlineWaterDrop size={14} />
+                  <span className="ml-1">{colmeia.umidade ?? "--"}%</span>
                 </div>
               </div>
             ))}

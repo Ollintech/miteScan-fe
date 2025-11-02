@@ -34,7 +34,7 @@ function Navbar() {
 
     // normalize values safely
     const accessId = user.access_id ?? user.access?.id;
-    if (accessId === 1 || accessId === '1') return true;
+    if (accessId === 4 || accessId === '4') return true;
 
     const nivel = typeof user.nivel === 'string' ? user.nivel.toLowerCase() : null;
     if (nivel === 'administrador' || nivel === 'owner') return true;
@@ -69,7 +69,7 @@ function Navbar() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('user_type');
-    localStorage.removeItem('user_root_id');
+    localStorage.removeItem('account');
     localStorage.removeItem('access_id');
     closeMenu();
     navigate('/login');

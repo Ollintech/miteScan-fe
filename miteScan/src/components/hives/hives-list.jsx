@@ -20,7 +20,7 @@ import axios from "axios";
 
 export default function HivesList() {
   const [hives, setHives] = useState([]);
-  const [beeTypes, setBeeTypes] = useState([]); // <--- 1. ADICIONADO NOVO STATE
+  const [beeTypes, setBeeTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -41,12 +41,10 @@ export default function HivesList() {
           return;
         }
 
-        // --- INÍCIO (definição via access_id) ---
-        let idParaRota;
+        let account;
         try {
           const userObj = JSON.parse(userString);
-          const accessId = Number(userObj?.access_id);
-          idParaRota = accessId === 1 ? userObj?.id : userObj?.user_root_id;
+          account = userObj?.account || localStorage.getItem('account');
         } catch (e) {
           console.error("Erro ao parsear dados do usuário:", e);
           setError("Erro ao ler sessão. Faça login novamente.");
@@ -55,18 +53,16 @@ export default function HivesList() {
           return;
         }
 
-        if (!idParaRota) {
-          console.error("Erro: ID de rota (user_root_id) não encontrado.");
-          setError("ID do usuário inválido. Faça login novamente.");
+        if (!account) {
+          console.error("Erro: account não encontrado.");
+          setError("Account não encontrado. Faça login novamente.");
           setLoading(false);
           navigate('/login');
           return;
         }
-        // --- FIM ---
 
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
-        // --- 2. BUSCAR OS TIPOS DE ABELHA ---
         try {
           const beeTypesResponse = await axios.get(`${base}/bee_types/all`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -74,13 +70,9 @@ export default function HivesList() {
           setBeeTypes(beeTypesResponse.data);
         } catch (e) {
           console.error("Erro ao buscar tipos de abelha:", e);
-          // Não é um erro fatal, podemos continuar e mostrar os IDs
         }
-        // --- FIM DA BUSCA ---
 
-
-        // Agora usamos a variável 'idParaRota' que tem o ID correto
-        const url = `${base}/${idParaRota}/hives/all`;
+        const url = `${base}/${account}/hives/all`;
 
         const hivesResponse = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
@@ -169,40 +161,36 @@ export default function HivesList() {
     return "bg-red-200";
   }
 
-  // --- 3. ADICIONAR FUNÇÃO AUXILIAR ---
   function getBeeTypeName(typeId) {
     if (!beeTypes || beeTypes.length === 0) {
-      return (typeId || '--').toString(); // Fallback se 'beeTypes' ainda não carregou
+      return (typeId || '--').toString();
     }
     const beeType = beeTypes.find(bt => bt.id === Number(typeId));
     return beeType ? beeType.name : (typeId || '--').toString();
   }
-  // --- FIM DA FUNÇÃO AUXILIAR ---
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="w-full max-w-[90%] mx-auto flex items-center justify-between mb-6 sm:max-w-full">
-        <div className="flex items-center gap-4 sm:text-xl font-bold">
+    <div className="p-4 sm:p-6">
+      <div className="w-full max-w-[90%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:max-w-full gap-4">
+        <div className="flex items-center gap-4 text-base sm:text-xl font-bold">
           <button
-            className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-3 px-4"
+            className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-2 sm:py-3 px-3 sm:px-4"
             onClick={() => navigate("/home")}
           >
-            <FaArrowLeft size={25} />
+            <FaArrowLeft size={20} className="sm:w-6" />
           </button>
-          MINHAS COLMEIAS
+          <span className="text-sm sm:text-base lg:text-xl">MINHAS COLMEIAS</span>
         </div>
         <button
-          className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-3 sm:ml-0 ml-auto sm:self-end"
+          className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-2 sm:p-3 text-xs sm:text-base w-full sm:w-auto"
           onClick={() => navigate("/create-hive")}
         >
-          <MdAdd size={25} />
-          <span className="hidden sm:inline ml-1">ADICIONAR</span>
+          <MdAdd size={20} className="sm:w-6" />
+          <span className="sm:inline">ADICIONAR</span>
         </button>
       </div>
 
-      {/* Lista */}
-      <div className="max-h-[calc(100vh-340px)] overflow-y-auto pr-2">
+      <div className="max-h-[calc(100vh-340px)] overflow-y-auto pr-2 w-full">
 
         {loading && (
           <div className="text-center p-10 text-gray-600 font-semibold">Carregando colmeias...</div>

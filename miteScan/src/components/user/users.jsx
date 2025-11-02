@@ -6,6 +6,7 @@ import { MdAdd, MdEdit } from "react-icons/md";
 
 export default function UsersList() {
   const [users, setUsers] = useState([]);
+  const [accessLevels, setAccessLevels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -26,26 +27,37 @@ export default function UsersList() {
         return;
       }
 
-      let userRootId;
+      // Sempre usar o account (string) na URL
+      let account;
       try {
         const userObj = JSON.parse(userString);
-        userRootId = userObj?.id;
+        account = userObj?.account || localStorage.getItem('account');
       } catch (e) {
         console.error('Erro ao ler usuário da sessão:', e);
       }
 
-      if (!userRootId) {
-        setError('ID do usuário raiz inválido. Faça login novamente.');
+      if (!account) {
+        setError('Account não encontrado. Faça login novamente.');
         navigate('/login');
         setLoading(false);
         return;
       }
 
       try {
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-  const url = `${base}/${userRootId}/users_associated`;
-  const response = await axios.get(url, { headers: token ? { Authorization: `Bearer ${token}` } : {}, });
-  setUsers(response.data || []);
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+        
+        // Buscar níveis de acesso e usuários em paralelo
+        const [usersResponse, accessLevelsResponse] = await Promise.all([
+          axios.get(`${base}/${account}/users_associated`, { 
+            headers: { Authorization: `Bearer ${token}` } 
+          }),
+          axios.get(`${base}/accesses/all`, { 
+            headers: { Authorization: `Bearer ${token}` } 
+          })
+        ]);
+        
+        setUsers(usersResponse.data || []);
+        setAccessLevels(accessLevelsResponse.data || []);
       } catch (err) {
         console.error('Erro ao carregar usuários:', err);
         if (err.response && (err.response.status === 401 || err.response.status === 403)) {
@@ -61,6 +73,15 @@ export default function UsersList() {
 
     fetchUsers();
   }, [navigate]);
+
+  // Função para obter o nome do nível de acesso pelo ID
+  const getAccessLevelName = (accessId) => {
+    if (!accessId || !accessLevels.length) {
+      return accessId || '--';
+    }
+    const accessLevel = accessLevels.find(level => level.id === Number(accessId));
+    return accessLevel ? accessLevel.name : accessId;
+  };
 
   return (
     <div className="p-6">
@@ -84,62 +105,63 @@ export default function UsersList() {
         </button>
       </div>
 
-      {/* Tabela */}
-      <div className="w-full max-w-[90%] mx-auto bg-white rounded-xl shadow-[0_8px_12px_rgba(0,0,0,0.15)] overflow-hidden">
-        <div className="grid grid-cols-[2fr_2fr_1fr_1fr] bg-gray-100 text-gray-700 font-semibold text-sm">
-          <div className="p-4 text-center border-r">Nome</div>
-          <div className="p-4 text-center border-r">Email</div>
-          <div className="p-4 text-center border-r">Nível</div>
-          <div className="p-4 text-center">Ações</div>
-        </div>
+      <div className="w-full max-w-[90%] mx-auto bg-white rounded-xl shadow-[0_8px_12px_rgba(0,0,0,0.15)] overflow-x-auto">
+        <div className="min-w-[600px]">
+          <div className="grid grid-cols-[2fr_2fr_1fr_1fr] bg-gray-100 text-gray-700 font-semibold text-xs sm:text-sm">
+            <div className="p-3 sm:p-4 text-center border-r">Nome</div>
+            <div className="p-3 sm:p-4 text-center border-r">Email</div>
+            <div className="p-3 sm:p-4 text-center border-r">Nível</div>
+            <div className="p-3 sm:p-4 text-center">Ações</div>
+          </div>
 
-        {loading && (
-          <div className="p-6 text-center text-sm">Carregando...</div>
-        )}
-        {error && !loading && (
-          <div className="p-6 text-center text-red-600 text-sm">{error}</div>
-        )}
+          {loading && (
+            <div className="p-6 text-center text-xs sm:text-sm">Carregando...</div>
+          )}
+          {error && !loading && (
+            <div className="p-6 text-center text-red-600 text-xs sm:text-sm">{error}</div>
+          )}
 
-        {!loading && !error && (
-          <div>
-            {users.map((user, index) => (
-              <div
-                key={user.id}
-                className={`grid grid-cols-[2fr_2fr_1fr_1fr] text-sm ${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                }`}
-              >
-                <div className="p-4 text-center border-t border-r">
-                  {user.name}
-                </div>
-                <div className="p-4 text-center border-t border-r break-words">
-                  {user.email}
-                </div>
-                <div className="p-4 text-center border-t border-r">
-                  {user.nivel}
-                </div>
-                <div className="p-4 text-center border-t">
-                  <div className="flex items-center justify-center gap-4">
-                    <button
-                      className="hover:text-yellow-600"
-                      onClick={() => navigate(`/edit-user/${user.id}`)}
-                      title="Editar"
-                    >
-                      <MdEdit size={20} />
-                    </button>
-                    <button
-                      className="hover:text-red-600"
-                      onClick={() => navigate(`/delete-user/${user.id}`)}
-                      title="Excluir"
-                    >
-                      <FaTrash size={18} />
-                    </button>
+          {!loading && !error && (
+            <div>
+              {users.map((user, index) => (
+                <div
+                  key={user.id}
+                  className={`grid grid-cols-[2fr_2fr_1fr_1fr] text-xs sm:text-sm ${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  }`}
+                >
+                  <div className="p-3 sm:p-4 text-center border-t border-r break-words">
+                    {user.name}
+                  </div>
+                  <div className="p-3 sm:p-4 text-center border-t border-r break-words">
+                    {user.email}
+                  </div>
+                  <div className="p-3 sm:p-4 text-center border-t border-r">
+                    {getAccessLevelName(user.access_id)}
+                  </div>
+                  <div className="p-3 sm:p-4 text-center border-t">
+                    <div className="flex items-center justify-center gap-3 sm:gap-4">
+                      <button
+                        className="hover:text-yellow-600 transition-colors"
+                        onClick={() => navigate(`/edit-user/${user.id}`)}
+                        title="Editar"
+                      >
+                        <MdEdit size={18} className="sm:w-5" />
+                      </button>
+                      <button
+                        className="hover:text-red-600 transition-colors"
+                        onClick={() => navigate(`/delete-user/${user.id}`)}
+                        title="Excluir"
+                      >
+                        <FaTrash size={16} className="sm:w-5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
