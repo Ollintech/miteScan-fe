@@ -106,19 +106,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
       </div>
 
       <div className="space-y-5">
-        {/* Nome */}
-        <div className="flex items-center gap-4">
-          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Nome:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            readOnly={isLeitura}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            placeholder="Nome da colmeia"
-          />
-        </div>
 
         {/* Tamanho */}
         <div className="flex items-center gap-4">

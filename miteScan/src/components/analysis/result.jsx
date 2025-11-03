@@ -149,9 +149,6 @@ export default function Result() {
               <FaThermometerHalf size={16} className="sm:w-5" />
               <span>{hive.temperature ?? '--'} °C</span>
             </div>
-            <div className="text-xs text-gray-500 sm:hidden">
-              <span>Tamanho: {hive.size ?? '--'} cm</span>
-            </div>
           </div>
           <div className='hidden sm:block bg-gray-600 h-auto w-0.5 rounded-xl'></div>
           <div className="flex flex-col items-center gap-1 w-full sm:w-1/3 justify-center">

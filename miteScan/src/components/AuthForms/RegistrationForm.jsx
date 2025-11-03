@@ -134,7 +134,7 @@ export default function RegistrationForm() {
                 id="senha"
                 name="senha"
                 type="password"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínimo 8 caracteres"
                 value={form.senha}
                 onChange={handleChange}
                 className="flex-1 bg-gray-100 rounded-md p-2"

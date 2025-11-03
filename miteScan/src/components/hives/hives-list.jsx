@@ -22,8 +22,11 @@ export default function HivesList() {
   const [hives, setHives] = useState([]);
   const [beeTypes, setBeeTypes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [isRoot, setIsRoot] = useState(false);
 
   useEffect(() => {
     const fetchHivesWithAnalysis = async () => {
@@ -41,9 +44,14 @@ export default function HivesList() {
           return;
         }
 
-        let account;
+
+
+
+
+                let account;
         try {
           const userObj = JSON.parse(userString);
+          setIsRoot(userObj?.user_type === 'user_root');
           account = userObj?.account || localStorage.getItem('account');
         } catch (e) {
           console.error("Erro ao parsear dados do usuário:", e);
@@ -180,14 +188,22 @@ export default function HivesList() {
             <FaArrowLeft size={20} className="sm:w-6" />
           </button>
           <span className="text-sm sm:text-base lg:text-xl">MINHAS COLMEIAS</span>
-        </div>
-        <button
+
+
+
+
+
+
+
+
+                </div>
+        {isRoot && <button
           className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-2 sm:p-3 text-xs sm:text-base w-full sm:w-auto"
           onClick={() => navigate("/create-hive")}
         >
           <MdAdd size={20} className="sm:w-6" />
           <span className="sm:inline">ADICIONAR</span>
-        </button>
+        </button>}
       </div>
 
       <div className="max-h-[calc(100vh-340px)] overflow-y-auto pr-2 w-full">
@@ -276,15 +292,24 @@ export default function HivesList() {
                   </div>
                 </div>
 
-                {/* Ações */}
-                <div className="flex sm:flex-col flex-row gap-4 sm:ml-3 items-center mt-4 sm:mt-0">
+
+
+
+
+
+
+
+
+
+                                {/* Ações */}
+                {isRoot && <div className="flex sm:flex-col flex-row gap-4 sm:ml-3 items-center mt-4 sm:mt-0">
                   <button onClick={() => navigate(`/edit-hive/${hive.id}`)}>
                     <MdEdit size={25} />
                   </button>
                   <button onClick={() => navigate(`/delete-hive/${hive.id}`)}>
                     <FaTrash size={20} />
                   </button>
-                </div>
+                </div>}
               </div>
             );
           })}

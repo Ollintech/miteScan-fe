@@ -153,7 +153,7 @@ export default function EditHiveCard() {
         }
       )
 
-      navigate('/hives-list')
+      navigate('/hives')
     } catch (error) {
       console.error('Erro ao atualizar colmeia:', error.response?.data || error.message)
       alert('Erro ao atualizar colmeia.')

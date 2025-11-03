@@ -115,7 +115,7 @@ export default function LoginForm() {
                     className="bg-gray-200 rounded p-2 w-full"
                     disabled={loading}
                 />
-                <label className="text-md">Login (Email):</label>
+                <label className="text-md">Email:</label>
                 <input
                     placeholder="Insira seu email"
                     type="text"
