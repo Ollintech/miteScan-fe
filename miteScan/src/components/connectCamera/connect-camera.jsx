@@ -48,7 +48,7 @@ export default function CameraCard() {
 
     return (
         <>
-            <h3 className='uppercase text-md mb-3'>Lique sua câmera e a conecte ao aplicativo para análise!</h3>
+            <h3 className='uppercase text-md mb-3'>Ligue sua câmera e a conecte ao aplicativo para análise!</h3>
             {cameraInfo ? (
                 <div className="bg-gray-100 rounded-xl shadow-xl w-sm mx-auto">
                     <p className='p-3'><strong>Modelo:</strong> {cameraInfo.label || 'Câmera detectada'}</p>

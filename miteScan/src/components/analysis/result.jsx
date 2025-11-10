@@ -156,9 +156,6 @@ export default function Result() {
               <MdOutlineWaterDrop size={16} className="sm:w-5" />
               <span>{hive.humidity ?? '--'}%</span>
             </div>
-            <div className="text-xs text-gray-500 hidden sm:block">
-              <span>Tamanho: {hive.size ?? '--'} cm</span>
-            </div>
           </div>
         </div>
       </div>

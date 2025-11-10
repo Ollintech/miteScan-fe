@@ -2,9 +2,18 @@ import { useEffect, useState } from 'react'
 import FormHive from './form-hive'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import Modal from '../common/Modal'
 
 export default function CreateHiveCard() {
   const [beeTypes, setBeeTypes] = useState([]);
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "error",
+    onClose: null
+  });
+
   const navigate = useNavigate();
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -16,16 +25,16 @@ export default function CreateHiveCard() {
         navigate('/login');
         return;
       }
-      
+
       try {
         const response = await axios.get(`${base}/bee_types/all`, {
-           headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` }
         });
         setBeeTypes(response.data);
       } catch (error) {
         console.error('Erro ao buscar tipos de abelha:', error.response?.data || error.message);
         if (error.response?.status === 401 || error.response?.status === 403) {
-            navigate('/login');
+          navigate('/login');
         }
       }
     };
@@ -33,13 +42,27 @@ export default function CreateHiveCard() {
     fetchBeeTypes();
   }, [base, navigate]);
 
+  const closeModal = () => {
+    // Esta função agora lida com o redirecionamento
+    // apenas se modalInfo.onClose estiver definido (o que só acontece no sucesso)
+    if (modalInfo.onClose) {
+      modalInfo.onClose();
+    }
+    setModalInfo({ isOpen: false, title: "", message: "", type: "error", onClose: null });
+  };
+
   const handleCreate = async (dados) => {
     const token = localStorage.getItem("token");
     const userString = localStorage.getItem("user");
 
     if (!token || !userString) {
-      alert('Sessão inválida. Faça login novamente.');
-      navigate('/login');
+      setModalInfo({
+        isOpen: true,
+        title: "Erro de Sessão",
+        message: "Sessão inválida. Faça login novamente.",
+        type: "error",
+        onClose: () => navigate('/login')
+      });
       return;
     }
 
@@ -48,13 +71,35 @@ export default function CreateHiveCard() {
       const userObj = JSON.parse(userString);
       account = userObj?.account || localStorage.getItem('account');
     } catch (e) {
-      alert('Erro ao ler sessão. Faça login novamente.');
-      navigate('/login');
+      setModalInfo({
+        isOpen: true,
+        title: "Erro de Sessão",
+        message: "Erro ao ler sessão. Faça login novamente.",
+        type: "error",
+        onClose: () => navigate('/login')
+      });
       return;
     }
 
     if (!account) {
-      alert('Account não encontrado. Faça login novamente.');
+      setModalInfo({
+        isOpen: true,
+        title: "Erro de Sessão",
+        message: "Account não encontrado. Faça login novamente.",
+        type: "error",
+        onClose: () => navigate('/login') // Corrigido: redireciona para login
+      });
+      return;
+    }
+
+    if (!dados.name) {
+      setModalInfo({
+        isOpen: true,
+        title: "Erro de Validação",
+        message: "Por favor, insira um nome para a colmeia.",
+        type: "error",
+        onClose: null // Fica na página
+      });
       return;
     }
 
@@ -62,20 +107,39 @@ export default function CreateHiveCard() {
     const bee_type_id = parseInt(dados.bee_type_id);
 
     if (isNaN(size) || size <= 0) {
-      alert('Erro: Por favor, insira um tamanho válido.');
+      setModalInfo({
+        isOpen: true,
+        title: "Erro de Validação",
+        message: "Por favor, insira um tamanho válido.",
+        type: "error",
+        onClose: null // Fica na página
+      });
       return;
     }
     if (isNaN(bee_type_id)) {
-      alert('Erro: Por favor, selecione um tipo de abelha.');
+      setModalInfo({
+        isOpen: true,
+        title: "Erro de Validação",
+        message: "Por favor, selecione um tipo de abelha.",
+        type: "error",
+        onClose: null // Fica na página
+      });
       return;
     }
     if (!dados.location?.lat || !dados.location?.lng) {
-        alert('Erro: Por favor, defina uma localização.');
-        return;
+      setModalInfo({
+        isOpen: true,
+        title: "Erro de Validação",
+        message: "Por favor, defina uma localização.",
+        type: "error",
+        onClose: null // Fica na página
+      });
+      return;
     }
 
     const payload = {
       account: account,
+      name: dados.name,
       bee_type_id: bee_type_id,
       location_lat: parseFloat(dados.location.lat),
       location_lng: parseFloat(dados.location.lng),
@@ -98,25 +162,45 @@ export default function CreateHiveCard() {
         }
       )
       localStorage.removeItem('draftHiveForm');
-      alert('Colmeia cadastrada com sucesso!');
-      navigate('/hives');
+      
+      // **SUCESSO: Exibe o modal e define o onClose para redirecionar**
+      setModalInfo({
+        isOpen: true,
+        title: "Sucesso",
+        message: "Colmeia cadastrada com sucesso!", // Mensagem de sucesso
+        type: "success",
+        onClose: () => navigate('/hives') // Redireciona ao fechar
+      });
 
     } catch (error) {
       console.error('Erro ao criar colmeia:', error.response?.data || error.message)
-      const detail = error.response?.data?.detail;
-      if (Array.isArray(detail)) {
-         alert(`Erro: ${detail[0].msg}`);
-      } else {
-         alert('Erro ao cadastrar colmeia. Verifique os dados ou tente novamente.')
-      }
+      
+      // **ERRO: Exibe o modal e define onClose como null para ficar na página**
+      setModalInfo({
+        isOpen: true,
+        title: "Erro ao Cadastrar",
+        message: "Erro ao cadastrar colmeia.", // Mensagem de erro exata
+        type: "error",
+        onClose: null // Não faz nada ao fechar, fica na página
+      });
     }
   }
 
   return (
-    <FormHive
-      modo="criar"
-      onConfirmar={handleCreate}
-      beeTypes={beeTypes} 
-    />
+    <>
+      <Modal
+        isOpen={modalInfo.isOpen}
+        onClose={closeModal}
+        title={modalInfo.title}
+        type={modalInfo.type}
+      >
+        <p className="text-gray-700">{modalInfo.message}</p>
+      </Modal>
+      <FormHive
+        modo="criar"
+        onConfirmar={handleCreate}
+        beeTypes={beeTypes}
+      />
+    </>
   )
 }

@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import FormHive from './form-hive'
 import axios from 'axios'
+import Modal from '../common/Modal'
 
 export default function EditHiveCard() {
-  const { id: hiveId } = useParams() // Renomeado para evitar conflito
+  const { id: hiveId } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   
   const [hive, setHive] = useState(null)
-  const [beeTypes, setBeeTypes] = useState([]) // Estado para os tipos de abelha
+  const [beeTypes, setBeeTypes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [modalInfo, setModalInfo] = useState({ isOpen: false, title: "", message: "", type: "error", onClose: null });
 
   const token = localStorage.getItem("token")
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
@@ -56,7 +58,7 @@ export default function EditHiveCard() {
             headers: { "Authorization": `Bearer ${token}` }
           }),
           axios.get(beeTypesUrl, {
-             headers: { "Authorization": `Bearer ${token}` }
+              headers: { "Authorization": `Bearer ${token}` }
           })
         ]);
 
@@ -77,12 +79,12 @@ export default function EditHiveCard() {
       } catch (err) {
         console.error('Erro ao carregar dados:', err)
         if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-           setError('Sessão expirada. Faça login novamente.');
-           navigate('/login');
+            setError('Sessão expirada. Faça login novamente.');
+            navigate('/login');
         } else if (err.response && err.response.status === 404) {
-           setError('Colmeia não encontrada.');
+            setError('Colmeia não encontrada.');
         } else {
-           setError('Erro ao carregar dados da colmeia.')
+            setError('Erro ao carregar dados da colmeia.')
         }
       } finally {
         setLoading(false)
@@ -90,9 +92,8 @@ export default function EditHiveCard() {
     }
 
     fetchDados()
-  }, [hiveId, base, token, navigate]) // Dependências
+  }, [hiveId, base, token, navigate])
 
-  // Este useEffect lida com retornos do mapa/câmera
   useEffect(() => {
     if (location.state?.location || location.state?.cameraConnected) {
       setHive(prev => {
@@ -106,6 +107,13 @@ export default function EditHiveCard() {
     }
   }, [location.state])
 
+  const closeModal = () => {
+    if (modalInfo.onClose) {
+      modalInfo.onClose();
+    }
+    setModalInfo({ isOpen: false, title: "", message: "", type: "error", onClose: null });
+  };
+
   const handleEdit = async (dadosAtualizados) => {
     const userString = localStorage.getItem('user');
     let account = null;
@@ -115,24 +123,50 @@ export default function EditHiveCard() {
     } catch {}
     
     if (!token || !account) {
-        alert('Sessão inválida. Faça login novamente.');
-        navigate('/login');
+        setModalInfo({ 
+          isOpen: true, 
+          title: "Erro de Sessão", 
+          message: "Sessão inválida. Faça login novamente.", 
+          type: "error", 
+          onClose: () => navigate('/login') 
+        });
         return;
+    }
+
+    if (!dadosAtualizados.name) {
+      setModalInfo({ 
+        isOpen: true, 
+        title: "Erro de Validação", 
+        message: "Por favor, insira um nome para a colmeia.", 
+        type: "error" 
+      });
+      return;
     }
 
     const size = parseInt(dadosAtualizados.size);
     if (isNaN(size) || size <= 0) {
-      alert('Erro: Por favor, insira um tamanho válido.');
+      setModalInfo({ 
+        isOpen: true, 
+        title: "Erro de Validação", 
+        message: "Por favor, insira um tamanho válido.", 
+        type: "error" 
+      });
       return;
     }
 
     const bee_type_id = parseInt(dadosAtualizados.bee_type_id);
     if (isNaN(bee_type_id)) {
-      alert('Erro: Por favor, selecione um tipo de abelha.');
+      setModalInfo({ 
+        isOpen: true, 
+        title: "Erro de Validação", 
+        message: "Por favor, selecione um tipo de abelha.", 
+        type: "error" 
+      });
       return;
     }
 
     const payload = {
+      name: dadosAtualizados.name,
       bee_type_id: bee_type_id,
       location_lat: parseFloat(dadosAtualizados.location?.lat) || 0,
       location_lng: parseFloat(dadosAtualizados.location?.lng) || 0,
@@ -153,10 +187,21 @@ export default function EditHiveCard() {
         }
       )
 
-      navigate('/hives')
+      setModalInfo({
+        isOpen: true,
+        title: "Sucesso",
+        message: "Colmeia atualizada com sucesso!",
+        type: "success",
+        onClose: () => navigate('/hives')
+      });
     } catch (error) {
       console.error('Erro ao atualizar colmeia:', error.response?.data || error.message)
-      alert('Erro ao atualizar colmeia.')
+      setModalInfo({
+        isOpen: true,
+        title: "Erro",
+        message: "Erro ao atualizar colmeia.",
+        type: "error"
+      });
     }
   }
 
@@ -165,12 +210,22 @@ export default function EditHiveCard() {
   if (!hive) return <p className="text-center p-10 text-red-500">Colmeia não encontrada.</p>
 
   return (
-    <FormHive
-      key={hive.id + '-' + hive.location?.lat + '-' + hive.location?.lng + '-' + hive.cameraConnected}
-      modo="editar"
-      colmeia={hive}
-      onConfirmar={handleEdit}
-      beeTypes={beeTypes}
-    />
+    <>
+      <Modal 
+        isOpen={modalInfo.isOpen} 
+        onClose={closeModal} 
+        title={modalInfo.title} 
+        type={modalInfo.type}
+      >
+        <p className="text-gray-700">{modalInfo.message}</p>
+      </Modal>
+      <FormHive
+        key={hive.id + '-' + hive.location?.lat + '-' + hive.location?.lng + '-' + hive.cameraConnected}
+        modo="editar"
+        colmeia={hive}
+        onConfirmar={handleEdit}
+        beeTypes={beeTypes}
+      />
+    </>
   )
 }

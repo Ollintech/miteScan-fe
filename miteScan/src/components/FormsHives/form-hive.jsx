@@ -7,7 +7,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
   const location = useLocation()
 
   const [formData, setFormData] = useState({
-    name: 'COLMEIA 1',
+    name: '',
     size: '',
     bee_type_id: '',
     location: null,
@@ -31,7 +31,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         setFormData(draft);
       }
     }
-
   }, [modo, colmeia?.id, location.state]);
 
 
@@ -88,14 +87,12 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
 
   const isLeitura = modo === 'excluir'
 
-  // Para exibir o nome do tipo de abelha no modo de exclusão
-  const beeTypeName = isLeitura 
+  const beeTypeName = isLeitura
     ? beeTypes.find(b => b.id === parseInt(formData.bee_type_id))?.name || 'Não informado'
     : '';
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-gray-100 rounded-xl shadow-lg p-6">
-      {/* Header */}
       <div className='flex items-center gap-3 mb-6 pb-4 border-b border-gray-200'>
         <img src={yellowBee} alt="Abelha" className='w-8 h-8' />
         <h3 className="text-gray-800 font-bold text-lg">
@@ -107,7 +104,21 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
 
       <div className="space-y-5">
 
-        {/* Tamanho */}
+        <div className="flex items-center gap-4">
+          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Nome da Colmeia:</label>
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              readOnly={isLeitura}
+              className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="Ex.: Colmeia 01 - Jataí"
+            />
+          </div>
+        </div>
+
         <div className="flex items-center gap-4">
           <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tamanho (cm):</label>
           <div className="flex-1 relative">
@@ -122,33 +133,31 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
             />
           </div>
         </div>
-        
-        {/* Tipo de Abelha */}
+
         <div className="flex items-center gap-4">
-            <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
-            <div className="flex-1 relative">
-                {isLeitura ? (
-                    <span className="text-gray-700 px-3 py-2">{beeTypeName}</span>
-                ) : (
-                    <select
-                        name="bee_type_id"
-                        value={formData.bee_type_id}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                    >
-                        <option value="" disabled>Selecione um tipo</option>
-                        {beeTypes.map(type => (
-                            <option key={type.id} value={type.id}>
-                                {type.name}
-                            </option>
-                        ))}
-                    </select>
-                )}
-            </div>
+          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
+          <div className="flex-1 relative">
+            {isLeitura ? (
+              <span className="text-gray-700 px-3 py-2">{beeTypeName}</span>
+            ) : (
+              <select
+                name="bee_type_id"
+                value={formData.bee_type_id}
+                onChange={handleChange}
+                className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              >
+                <option value="" disabled>Selecione um tipo</option>
+                {beeTypes.map(type => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
 
 
-        {/* Localização */}
         <div className="flex items-center gap-4">
           <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Localização:</label>
           {!isLeitura ? (
@@ -169,7 +178,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
           </div>
         )}
 
-        {/* Câmera */}
         {!isLeitura && formData.location && (
           <div className="flex items-center gap-4">
             <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Câmera:</label>
@@ -183,13 +191,12 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         )}
 
 
-        {/* Botões finais */}
         <div className="flex justify-center mt-8 pt-4 border-t border-gray-200">
           {modo === 'criar' && formData.location && formData.cameraConnected && (
             <button
+              // **MUDANÇA AQUI: Removido o navigate()**
               onClick={() => {
                 onConfirmar(formData)
-                navigate('/analysis')
               }}
               className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-1 px-8 rounded-xl shadow-md transition-colors"
             >

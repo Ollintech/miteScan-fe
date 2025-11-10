@@ -117,7 +117,7 @@ export default function AnalysisCard() {
         >
           {hives.map(hive => (
             <option key={hive.id} value={hive.id}>
-              COLMEIA {hive.id}
+              {hive.name}
             </option>
           ))}
         </select>
