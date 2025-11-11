@@ -85,7 +85,7 @@ export default function AnalysisHist() {
 
   if (loading) return <p className="text-center p-6">Carregando...</p>
 
-  if (analyses.length === 0) return <p className="text-center p-6">Nenhuma análise encontrada</p>
+  if (analyses.length === 0) return <p className="text-center p-6">Você ainda nao possui análises ou colmeias cadastradas</p>
 
   // Lógica para extrair nomes únicos das colmeias para o filtro
   const hiveMap = new Map();

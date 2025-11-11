@@ -3,11 +3,19 @@ import axios from 'axios';
 import colmeia1 from '../../assets/images/colmeia1.png';
 import colmeia2 from '../../assets/images/colmeia2.jpg';
 import { useNavigate } from 'react-router-dom';
+import Modal from '../common/Modal';
 
 export default function AnalysisCard() {
   const [hives, setHives] = useState([]);
   const [selectedHiveId, setSelectedHiveId] = useState('');
   const navigate = useNavigate();
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info',
+    onClose: null
+  });
 
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -56,7 +64,14 @@ export default function AnalysisCard() {
     fetchHives();
   }, [token, base]);
 
-  const handleAnalysis = async () => {
+  const closeModal = () => {
+    if (modalInfo.onClose) {
+      modalInfo.onClose();
+    }
+    setModalInfo({ isOpen: false, title: '', message: '', type: 'info', onClose: null });
+  };
+
+  const handleAnalysis = async () => {
     const selectedHive = hives.find(h => h.id === selectedHiveId);
 
     if (!selectedHive) return;
@@ -101,12 +116,26 @@ export default function AnalysisCard() {
       if (error.response?.data) {
         console.error('Detalhes do erro ao criar análise:', JSON.stringify(error.response.data));
       }
-      alert('Erro ao criar análise. Tente novamente.');
+      setModalInfo({
+        isOpen: true,
+        title: 'Erro',
+        message: 'Erro ao criar análise. Tente novamente.',
+        type: 'error',
+        onClose: null
+      });
     }
   };
 
   return (
-    <>
+    <>
+      <Modal
+        isOpen={modalInfo.isOpen}
+        onClose={closeModal}
+        title={modalInfo.title}
+        type={modalInfo.type}
+      >
+        <p className="text-gray-700">{modalInfo.message}</p>
+      </Modal>
       <div className="flex flex-col sm:flex-row items-center gap-3 mb-3 mx-auto w-full">
         <label className="font-bold text-sm sm:text-base" htmlFor="hive-select">SELECIONE A COLMEIA:</label>
         <select

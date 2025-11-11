@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Modal from '../common/Modal';
 
 export default function UserForm({ mode = 'create', userId = null }) {
   // mode: 'create' | 'edit' | 'delete'
@@ -9,6 +10,13 @@ export default function UserForm({ mode = 'create', userId = null }) {
   const [accessLevels, setAccessLevels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info',
+    onClose: null
+  });
 
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -116,6 +124,13 @@ export default function UserForm({ mode = 'create', userId = null }) {
     return 'Erro desconhecido ao processar resposta da API.';
   };
 
+  const closeModal = () => {
+    if (modalInfo.onClose) {
+      modalInfo.onClose();
+    }
+    setModalInfo({ isOpen: false, title: '', message: '', type: 'info', onClose: null });
+  };
+
 
   const handleSubmit = async () => {
     setError('');
@@ -154,8 +169,13 @@ export default function UserForm({ mode = 'create', userId = null }) {
         };
         const url = `${base}/${account}/users_associated/register`;
         await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}` } });
-        alert('Usuário associado cadastrado com sucesso!');
-        navigate('/home');
+        setModalInfo({
+          isOpen: true,
+          title: 'Sucesso',
+          message: 'Usuário associado cadastrado com sucesso!',
+          type: 'success',
+          onClose: () => navigate('/home')
+        });
       } else if (mode === 'edit') {
         if (!userId) {
           setError('ID do usuário não informado.');
@@ -171,8 +191,13 @@ export default function UserForm({ mode = 'create', userId = null }) {
         if (form.password) payload.password = form.password;
         const url = `${base}/${account}/users_associated/${userId}`;
         await axios.put(url, payload, { headers: { Authorization: `Bearer ${token}` } });
-        alert('Usuário atualizado com sucesso!');
-        navigate('/users');
+        setModalInfo({
+          isOpen: true,
+          title: 'Sucesso',
+          message: 'Usuário atualizado com sucesso!',
+          type: 'success',
+          onClose: () => navigate('/users')
+        });
       } else if (mode === 'delete') {
         if (!userId) {
           setError('ID do usuário não informado.');
@@ -182,19 +207,33 @@ export default function UserForm({ mode = 'create', userId = null }) {
         // Perform backend deletion
         const url = `${base}/${account}/users_associated/${userId}?confirm=true`;
         await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
-        alert('Usuário excluído com sucesso!');
-        navigate('/users');
+        setModalInfo({
+          isOpen: true,
+          title: 'Sucesso',
+          message: 'Usuário excluído com sucesso!',
+          type: 'success',
+          onClose: () => navigate('/users')
+        });
       }
 
     } catch (err) {
       console.error('Erro na operação de usuário:', err);
-      
       const resp = err.response?.data;
+      let message = '';
       if (resp && resp.detail) {
-        setError(formatFastApiError(resp.detail));
+        message = formatFastApiError(resp.detail);
+        setError(message);
       } else {
-        setError(resp?.message || err.message || 'Erro ao processar requisição.');
+        message = resp?.message || err.message || 'Erro ao processar requisição.';
+        setError(message);
       }
+      setModalInfo({
+        isOpen: true,
+        title: 'Erro',
+        message,
+        type: 'error',
+        onClose: null
+      });
 
     } finally {
       setLoading(false);
@@ -207,6 +246,14 @@ export default function UserForm({ mode = 'create', userId = null }) {
 
   return (
     <div className="bg-gray-100 rounded-xl shadow-xl p-6 w-full mx-auto text-left">
+      <Modal
+        isOpen={modalInfo.isOpen}
+        onClose={closeModal}
+        title={modalInfo.title}
+        type={modalInfo.type}
+      >
+        <p className="text-gray-700">{modalInfo.message}</p>
+      </Modal>
       <div className="flex items-center justify-center gap-3 mb-7">
         <img src={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFMEUyRTciLz48cGF0aCBkPSJNMjAgMjJDMjMuMzI4NCAyMiAyNiAxOS4zMjg0IDI2IDE2QzI2IDEyLjY3MTYgMjMuMzI4NCAxMCAyMCAxMEMxNi42NzE2IDEwIDE0IDEyLjY3MTYgMTQgMTZDMTQgMTkuMzI4NCAxNi42NzE2IDIyIDIwIDIyWk0yMCAyNUMxNC40NzcyIDI1IDEwIDI5LjQ3NzIgMTAgMzVDMTAgMzUuNTUyMyAxMC40NDc3IDM2IDExIDM2SDI5QzI5LjU1MmEgMzYgMzAgMzUuNTUyMyAzMCAzNUMzMCAyOS40NzcyIDI1LjUyMjggMjUgMjAgMjVaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=="} alt="Avatar" className="w-10 h-10" />
         <span className="text-gray-700 text-md font-bold">{mode === 'create' ? 'PREENCHA AS INFORMAÇÕES DO NOVO USUÁRIO' : mode === 'edit' ? 'EDITAR USUÁRIO' : 'Deseja mesmo excluir este usuário?'}</span>

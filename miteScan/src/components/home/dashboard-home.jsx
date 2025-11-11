@@ -118,10 +118,7 @@ export default function InfoHome() {
         <div className="text-center py-8">
           <div className="text-lg font-semibold text-gray-600">Carregando dados...</div>
         </div>
-      ) : error ? (
-        <div className="text-center py-8 w-full">
-           <div className="text-lg font-semibold text-red-600">{error}</div>
-        </div>
+     
       ) : (
         dashboard.map((item) => (
           <div

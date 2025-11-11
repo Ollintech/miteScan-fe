@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import BeeIcon from '../../assets/images/bee-icon.png';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Modal from '../common/Modal';
 
 export default function RegistrationForm() {
   const [form, setForm] = useState({
@@ -14,6 +15,13 @@ export default function RegistrationForm() {
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info',
+    onClose: null
+  });
 
   // Simplificado. Removemos a lógica 'if' desnecessária.
   const handleChange = (e) => {
@@ -58,8 +66,13 @@ export default function RegistrationForm() {
 
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/users_root/register`, payload);
 
-      alert("Usuário cadastrado com sucesso!");
-      navigate("/login");
+      setModalInfo({
+        isOpen: true,
+        title: 'Sucesso',
+        message: 'Usuário cadastrado com sucesso!',
+        type: 'success',
+        onClose: () => navigate('/login')
+      });
 
     } catch (error) {
       console.error("Erro no cadastro:", error.response?.data || error.message);
@@ -97,6 +110,17 @@ export default function RegistrationForm() {
   return (
     <div className="w-full flex justify-center">
       <div className="relative w-full max-w-3xl bg-white text-gray-700 rounded-xl p-8 shadow-lg">
+        <Modal
+          isOpen={modalInfo.isOpen}
+          onClose={() => {
+            if (modalInfo.onClose) modalInfo.onClose();
+            setModalInfo({ isOpen: false, title: '', message: '', type: 'info', onClose: null });
+          }}
+          title={modalInfo.title}
+          type={modalInfo.type}
+        >
+          <p className="text-gray-700">{modalInfo.message}</p>
+        </Modal>
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-25 h-25 rounded-full bg-black flex items-center justify-center shadow-lg">
           <img src={BeeIcon} alt="Ícone" className="w-25" />
         </div>
@@ -186,7 +210,7 @@ export default function RegistrationForm() {
         </div>
 
         <p className="text-sm text-center mt-6">
-          Já possui conta? <a href="/login" className="font-bold">Voltar ao login!</a>
+          Já possui conta? <a href="/login">Voltar ao login!</a>
         </p>
       </div>
     </div>

@@ -203,7 +203,7 @@ export default function HivesList() {
           <div className="text-center p-10 text-gray-600 font-semibold">Carregando colmeias...</div>
         )}
         {!loading && !error && hives.length === 0 && (
-          <div className="text-center p-10 text-gray-600 font-semibold">Nenhuma colmeia cadastrada.</div>
+          <div className="text-center p-10 text-gray-600 font-semibold">Você ainda não possui colmeias.</div>
         )}
 
         <div className="grid gap-6 sm:mx-0 mx-auto max-w-[95%]">

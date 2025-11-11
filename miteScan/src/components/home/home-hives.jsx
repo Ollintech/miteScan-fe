@@ -65,14 +65,22 @@ export default function HomeHives() {
 
         const hivesResponse = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
+          timeout: 8000
         });
         const hivesData = hivesResponse.data;
+
+        // Caso não existam colmeias, evitar chamadas adicionais e exibir estado vazio
+        if (!Array.isArray(hivesData) || hivesData.length === 0) {
+          setHives([]);
+          return;
+        }
 
         const hivesWithAnalysis = await Promise.all(
           hivesData.map(async (hive) => {
             try {
               const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`, {
-                  headers: { Authorization: `Bearer ${token}` }
+                  headers: { Authorization: `Bearer ${token}` },
+                  timeout: 8000
               });
               return { ...hive, analysis: analysisResponse.data };
             } catch {
@@ -115,7 +123,10 @@ export default function HomeHives() {
                 setError("Sessão expirada. Faça login novamente.");
                 navigate('/login');
             } else if (error.response.status === 404) {
-                setError("Nenhuma colmeia encontrada.");
+                // Tratar 404 como lista vazia para exibir estado "Comece aqui!"
+                setError("");
+                setHives([]);
+                return;
             } else {
                 setError("Erro ao carregar colmeias.");
             }
@@ -158,14 +169,14 @@ export default function HomeHives() {
         ) : hives.length === 0 ? (
           <div className="text-center py-20 flex flex-col items-center gap-4">
             <p className="text-lg font-semibold text-gray-700">
-              Não há colmeias cadastradas no momento.
+              você ainda não possui colmeias.
             </p>
             <button
               className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-2 px-4 rounded-xl flex items-center gap-2"
               onClick={() => navigate("/create-hive")}
             >
               <MdAdd size={20} />
-              Nova colmeia
+              Comece aqui!
             </button>
           </div>
         ) : (
