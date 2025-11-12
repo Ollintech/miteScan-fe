@@ -17,6 +17,7 @@ export default function DeleteHiveCard() {
   const token = localStorage.getItem("token")
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
+  // Função para buscar dados da colmeia a ser excluída
   useEffect(() => {
     const fetchDados = async () => {
       setLoading(true)
@@ -90,6 +91,7 @@ export default function DeleteHiveCard() {
     fetchDados()
   }, [hiveId, token, base, navigate])
 
+  // Função para fechar modal
   const closeModal = () => {
     if (modalInfo.onClose) {
       modalInfo.onClose();
@@ -97,6 +99,7 @@ export default function DeleteHiveCard() {
     setModalInfo({ isOpen: false, title: "", message: "", type: "error", onClose: null });
   };
 
+  // Função para excluir colmeia
   const handleDelete = async () => {
     const userString = localStorage.getItem('user');
     let account = null;

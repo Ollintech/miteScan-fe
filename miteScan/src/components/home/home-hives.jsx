@@ -181,7 +181,7 @@ export default function HomeHives() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-10 gap-y-4 sm:gap-y-6">
-            {hives.map((colmeia) => (
+            {hives.slice(0, 5).map((colmeia) => (
               <div
                 key={colmeia.id}
                 className="text-sm flex flex-col items-start bg-gray-200 rounded-xl shadow-md hover:scale-105 transition-transform w-full max-w-sm mx-auto cursor-pointer"
@@ -190,7 +190,7 @@ export default function HomeHives() {
                 <img
                   src={colmeia.imagem}
                   alt={colmeia.nome}
-                  className="h-40 sm:h-48 w-full object-cover rounded-xl mb-2"
+                  className="h-18 sm:h-26 w-full object-cover rounded-xl mb-2"
                 />
 
                 <div className="flex items-center justify-between mx-2 w-full">
@@ -210,6 +210,16 @@ export default function HomeHives() {
                 </div>
               </div>
             ))}
+            {hives.length > 5 && (
+              <div className="flex items-center justify-center w-full max-w-sm mx-auto">
+                <button
+                  onClick={() => navigate("/hives")}
+                  className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-3 px-6 rounded-xl shadow-md transition-colors w-40 h-25 flex items-center justify-center"
+                >
+                  Ver mais...
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

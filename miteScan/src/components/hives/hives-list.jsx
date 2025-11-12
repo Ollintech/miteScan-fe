@@ -24,10 +24,11 @@ export default function HivesList() {
   const [loading, setLoading] = useState(true);
   const [isUserRoot, setIsUserRoot] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchHivesWithAnalysis = async () => {
+  // Função para listar colmeias
+  useEffect(() => {
+    const fetchHivesWithAnalysis = async () => {
       setLoading(true);
       setError("");
 
@@ -124,22 +125,25 @@ export default function HivesList() {
       }
     };
 
-    fetchHivesWithAnalysis();
-  }, [navigate]);
+    fetchHivesWithAnalysis();
+  }, [navigate]);
 
-  function getTemperatureColor(temp) {
+  // Função para obter cor da temperatura
+  function getTemperatureColor(temp) {
     if (temp == null) return "gray";
     if (temp >= 33.5 && temp <= 36) return "green";
-    return "red";
-  }
+    return "red";
+  }
 
-  function getHumidityColor(hum) {
+  // Função para obter cor da umidade
+  function getHumidityColor(hum) {
     if (hum == null) return "gray";
     if (hum >= 37 && hum <= 43) return "green";
-    return "red";
-  }
+    return "red";
+  }
 
-  function getEstado(analysis, hive) {
+  // Função para obter estado da colmeia
+  function getEstado(analysis, hive) {
     if (!analysis) return "segura";
     if (analysis.varroa_detected) return "perigo";
 
@@ -147,24 +151,27 @@ export default function HivesList() {
     const humOk = hive.humidity >= 37 && hive.humidity <= 43;
 
     if (!tempOk || !humOk) return "alerta";
-    return "segura";
-  }
+    return "segura";
+  }
 
-  function getIcon(estado) {
+  // Função para obter ícone do estado
+  function getIcon(estado) {
     if (estado === "segura")
       return <MdVerifiedUser size={28} className="text-green-600" />;
     if (estado === "alerta")
       return <TbAlertTriangleFilled size={28} className="text-yellow-500" />;
-    return <TbAlertOctagonFilled size={25} className="text-red-600" />;
-  }
+    return <TbAlertOctagonFilled size={25} className="text-red-600" />;
+  }
 
-  function getBgColor(estado) {
+  // Função para obter cor de fundo do estado
+  function getBgColor(estado) {
     if (estado === "segura") return "bg-green-200";
     if (estado === "alerta") return "bg-yellow-200";
-    return "bg-red-200";
-  }
+    return "bg-red-200";
+  }
 
-  function getBeeTypeName(typeId) {
+  // Função para obter nome do tipo de abelha
+  function getBeeTypeName(typeId) {
     if (!beeTypes || beeTypes.length === 0) {
       return (typeId || '--').toString();
     }

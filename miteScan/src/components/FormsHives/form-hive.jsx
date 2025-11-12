@@ -14,6 +14,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
     cameraConnected: false,
   })
 
+  // Função para carregar dados da colmeia ao editar ou excluir
   useEffect(() => {
     if (modo === 'editar' || modo === 'excluir') {
       if (colmeia) {
@@ -33,7 +34,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
     }
   }, [modo, colmeia?.id, location.state]);
 
-
+  // Função para atualizar localização e status da câmera
   useEffect(() => {
     if ((modo === 'editar' || modo === 'excluir') && colmeia) {
       setFormData(prev => ({
@@ -44,7 +45,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
     }
   }, [colmeia?.location?.lat, colmeia?.location?.lng, colmeia?.cameraConnected])
 
-
+  // Função para atualizar dados do formulário a partir do estado da navegação
   useEffect(() => {
     if (location.state?.location) {
       setFormData(prev => ({ ...prev, location: location.state.location }))
@@ -54,18 +55,20 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
     }
   }, [location.state])
 
+  // Função para salvar rascunho do formulário ao criar colmeia
   useEffect(() => {
     if (modo === 'criar') {
       localStorage.setItem('draftHiveForm', JSON.stringify(formData));
     }
   }, [formData, modo]);
 
-
+  // Função para atualizar campos do formulário
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  // Função para navegar para seleção de localização
   const handleLocationClick = () => {
     navigate('/select-location', {
       state: {
@@ -76,6 +79,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
     })
   }
 
+  // Função para navegar para conexão de câmera
   const handleConnectCamera = () => {
     navigate('/connect-camera', {
       state: {
@@ -89,7 +93,15 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
 
   const beeTypeName = isLeitura
     ? beeTypes.find(b => b.id === parseInt(formData.bee_type_id))?.name || 'Não informado'
-    : '';
+    : ''
+
+  // Função para formatar coordenadas
+  const formatCoordinate = (value) => {
+    if (value === null || value === undefined || value === '') return 'Não informado'
+    const num = Number(value)
+    if (Number.isNaN(num)) return value
+    return num.toFixed(6)
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-gray-100 rounded-xl shadow-lg p-6">
@@ -113,7 +125,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
               value={formData.name}
               onChange={handleChange}
               readOnly={isLeitura}
-              className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               placeholder="Ex.: Colmeia 01 - Jataí"
             />
           </div>
@@ -128,7 +140,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
               value={formData.size}
               onChange={(e) => handleChange({ target: { name: 'size', value: e.target.value.replace(/[^0-9]/g, '') } })}
               readOnly={isLeitura}
-              className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               placeholder="Ex.: 50"
             />
           </div>
@@ -138,13 +150,15 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
           <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
           <div className="flex-1 relative">
             {isLeitura ? (
-              <span className="text-gray-700 px-3 py-2">{beeTypeName}</span>
+              <div className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm">
+                {beeTypeName}
+              </div>
             ) : (
               <select
                 name="bee_type_id"
                 value={formData.bee_type_id}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               >
                 <option value="" disabled>Selecione um tipo</option>
                 {beeTypes.map(type => (
@@ -168,12 +182,23 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
               {formData.location ? 'Editar localização' : 'Clique aqui para definir localização'}
             </button>
           ) : (
-            <span className="text-gray-700">{formData.location?.lat}, {formData.location?.lng}</span>
+            <div className="flex-1">
+              <div className="w-full px-3 py-2 rounded-lg bg-yellow-300/80 text-gray-900 font-semibold shadow-sm">
+                {formData.location ? (
+                  <>
+                    <p>{formatCoordinate(formData.location.lat)}</p>
+                    <p>{formatCoordinate(formData.location.lng)}</p>
+                  </>
+                ) : (
+                  <p>Não informada</p>
+                )}
+              </div>
+            </div>
           )}
         </div>
 
         {formData.location && !isLeitura && (
-          <div className="text-sm text-gray-600 pl-[124px]">
+          <div className="text-sm text-gray-600 pl-[124px] ">
             {formData.location.lat}, {formData.location.lng}
           </div>
         )}
@@ -194,7 +219,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         <div className="flex justify-center mt-8 pt-4 border-t border-gray-200">
           {modo === 'criar' && formData.location && formData.cameraConnected && (
             <button
-              // **MUDANÇA AQUI: Removido o navigate()**
               onClick={() => {
                 onConfirmar(formData)
               }}

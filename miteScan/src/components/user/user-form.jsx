@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import Modal from '../common/Modal';
 
 export default function UserForm({ mode = 'create', userId = null }) {
-  // mode: 'create' | 'edit' | 'delete'
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '', access_id: '', status: '' });
   const [accessLevels, setAccessLevels] = useState([]);
@@ -20,6 +19,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
 
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
+  // Função para buscar níveis de acesso
   useEffect(() => {
     const fetchAccess = async () => {
       const token = localStorage.getItem('token');
@@ -37,6 +37,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
     fetchAccess();
   }, [base, navigate]);
 
+  // Função para buscar dados do usuário ao editar ou excluir
   useEffect(() => {
     const fetchUser = async () => {
       if (mode === 'create') return;
@@ -91,39 +92,33 @@ export default function UserForm({ mode = 'create', userId = null }) {
     fetchUser();
   }, [mode, userId, base, navigate]);
 
+  // Função para atualizar campos do formulário
   const handleChange = (field, value) => {
     setForm((p) => ({ ...p, [field]: value }));
   };
 
-  /**
-   * Tenta formatar a mensagem de erro de validação 422 do FastAPI.
-   * O 'detail' é geralmente um array de objetos.
-   * ex: [{ loc: ["body", "password"], msg: "field required", type: "value_error" }]
-   */
+  // Função para formatar mensagens de erro da API FastAPI
   const formatFastApiError = (detail) => {
     if (Array.isArray(detail)) {
       try {
         const msg = detail
           .map((d) => {
-            // d.loc é um array, ex: ["body", "password"]
-            // Pegamos o último item (nome do campo)
             const field = Array.isArray(d.loc) ? d.loc[d.loc.length - 1] : d.loc;
-            // d.msg é a mensagem de erro, ex: "must have at least 8 characters"
             return `${field}: ${d.msg}`;
           })
-          .join(' | '); // Junta várias mensagens
+          .join(' | ');
         return msg;
       } catch (e) {
         console.error('Erro ao formatar "detail" do FastAPI:', e, detail);
-        return JSON.stringify(detail); // Fallback
+        return JSON.stringify(detail);
       }
     } else if (typeof detail === 'string') {
-      return detail; // Erro simples de string (ex: email já existe)
+      return detail;
     }
-    // Fallback para outros tipos de erro
     return 'Erro desconhecido ao processar resposta da API.';
   };
 
+  // Função para fechar modal
   const closeModal = () => {
     if (modalInfo.onClose) {
       modalInfo.onClose();
@@ -131,7 +126,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
     setModalInfo({ isOpen: false, title: '', message: '', type: 'info', onClose: null });
   };
 
-
+  // Função para criar, editar ou excluir usuário
   const handleSubmit = async () => {
     setError('');
     const token = localStorage.getItem('token');
@@ -204,7 +199,6 @@ export default function UserForm({ mode = 'create', userId = null }) {
           setLoading(false);
           return;
         }
-        // Perform backend deletion
         const url = `${base}/${account}/users_associated/${userId}?confirm=true`;
         await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
         setModalInfo({
@@ -266,7 +260,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
             type="text"
             value={form.name}
             onChange={(e) => handleChange('name', e.target.value)}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none"
+            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
             placeholder="nome"
             readOnly={readonly}
           />
@@ -278,7 +272,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
             type="email"
             value={form.email}
             onChange={(e) => handleChange('email', e.target.value)}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none"
+            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
             placeholder="nome@email.com"
             readOnly={readonly}
           />
@@ -290,7 +284,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
             type="password"
             value={form.password}
             onChange={(e) => handleChange('password', e.target.value)}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none"
+            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
             placeholder={mode === 'edit' ? 'Deixe em branco para manter a senha' : 'Senha do usuário'}
             readOnly={readonly}
           />
@@ -301,7 +295,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
           <select
             value={form.access_id}
             onChange={(e) => handleChange('access_id', e.target.value)}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none"
+            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
             disabled={readonly}
           >
             <option value="">Selecione um nível</option>
@@ -317,7 +311,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
             <select
               value={form.status}
               onChange={(e) => handleChange('status', e.target.value)}
-              className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none"
+              className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               disabled={readonly}
             >
               <option value="">Selecione o status</option>

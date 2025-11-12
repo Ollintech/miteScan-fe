@@ -136,7 +136,7 @@ export default function RegistrationForm() {
                 placeholder="Insira seu nome"
                 value={form.nome}
                 onChange={handleChange}
-                className="flex-1 bg-gray-100 rounded-md p-2"
+                className="flex-1 bg-gray-200 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               />
             </div>
 
@@ -148,7 +148,7 @@ export default function RegistrationForm() {
                 placeholder="nome@email.com"
                 value={form.email}
                 onChange={handleChange}
-                className="flex-1 bg-gray-100 rounded-md p-2"
+                className="flex-1 bg-gray-200 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               />
             </div>
 
@@ -161,7 +161,7 @@ export default function RegistrationForm() {
                 placeholder="Mínimo 8 caracteres"
                 value={form.senha}
                 onChange={handleChange}
-                className="flex-1 bg-gray-100 rounded-md p-2"
+                className="flex-1 bg-gray-200 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               />
             </div>
 
@@ -173,7 +173,7 @@ export default function RegistrationForm() {
                 placeholder="Login único (ex: 'minha-empresa')"
                 value={form.account}
                 onChange={handleChange}
-                className="flex-1 bg-gray-100 rounded-md p-2"
+                className="flex-1 bg-gray-200 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               />
             </div>
 
