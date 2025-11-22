@@ -1,5 +1,5 @@
 // src/pages/MapSelect/MapSelect.jsx
-import MapCard from '../../components/MapSelect/map-card'
+import MapCard from '../../components/mapselect/map-card'
 import ButtonBack from '../../components/buttonBack'
 
 function MapSelect() {
