@@ -1,5 +1,5 @@
 // src/pages/Analysis.jsx
-import AnalysisCard from '../../components/Analysis/analysis'
+import AnalysisCard from '../../components/analysis/analysis'
 import ButtonBack from '../../components/buttonBack'
 
 function Analysis() {
