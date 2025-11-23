@@ -169,7 +169,7 @@ export default function HomeHives() {
         ) : hives.length === 0 ? (
           <div className="text-center py-20 flex flex-col items-center gap-4">
             <p className="text-lg font-semibold text-gray-700">
-              você ainda não possui colmeias.
+              Você ainda não possui colmeias.
             </p>
             <button
               className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-2 px-4 rounded-xl flex items-center gap-2"

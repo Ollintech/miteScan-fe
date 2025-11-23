@@ -11,7 +11,6 @@ export default function UsersList() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Função para listar usuários
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
@@ -75,7 +74,6 @@ export default function UsersList() {
     fetchUsers();
   }, [navigate]);
 
-  // Função para obter o nome do nível de acesso pelo ID
   const getAccessLevelName = (accessId) => {
     if (!accessId || !accessLevels.length) {
       return accessId || '--';
@@ -84,7 +82,6 @@ export default function UsersList() {
     return accessLevel ? accessLevel.name : accessId;
   };
 
-  // Função para obter informações de status do usuário
   const getStatusInfo = (status) => {
     const value = typeof status === 'string' ? status.toLowerCase() : status;
     if (value === false || value === 'false' || value === 'inativo') {
@@ -128,6 +125,7 @@ export default function UsersList() {
 
       {!loading && !error && (
         <>
+          {/* Tabela para Desktop */}
           <div className="hidden md:block w-full max-w-[90%] mx-auto bg-white rounded-xl shadow-[0_8px_12px_rgba(0,0,0,0.15)] overflow-x-auto">
             <div className="min-w-[680px]">
               <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1fr] bg-gray-100 text-gray-700 font-semibold text-xs lg:text-sm">
@@ -137,100 +135,120 @@ export default function UsersList() {
                 <div className="p-4 text-center border-r">Status</div>
                 <div className="p-4 text-center">Ações</div>
               </div>
-              {users.map((user, index) => (
-                <div
-                  key={user.id}
-                  className={`grid grid-cols-[2fr_2fr_1fr_1fr_1fr] text-xs lg:text-sm ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
-                >
-                  <div className="p-4 text-left border-t border-r break-words">
-                    {user.name}
-                  </div>
-                  <div className="p-4 text-left border-t border-r break-words">
-                    {user.email}
-                  </div>
-                  <div className="p-4 text-center border-t border-r">
-                    {getAccessLevelName(user.access_id)}
-                  </div>
-                  <div className="p-4 text-center border-t border-r">
-                    {getStatusInfo(user.status).label}
-                  </div>
-                  <div className="p-4 text-center border-t">
-                    <div className="flex items-center justify-center gap-4">
-                      <button
-                        className="hover:text-yellow-600 transition-colors"
-                        onClick={() => navigate(`/edit-user/${user.id}`)}
-                        title="Editar"
-                      >
-                        <MdEdit size={20} />
-                      </button>
-                      <button
-                        className="hover:text-red-600 transition-colors"
-                        onClick={() => navigate(`/delete-user/${user.id}`)}
-                        title="Excluir"
-                      >
-                        <FaTrash size={18} />
-                      </button>
-                    </div>
+
+              {users.length === 0 ? (
+                <div className="bg-white">
+                  <div className="p-4 text-center text-sm text-gray-500 font-medium border-t" style={{ gridColumn: '1 / -1' }}>
+                    Nenhum usuário cadastrado.
                   </div>
                 </div>
-              ))}
+              ) : (
+                users.map((user, index) => (
+                  <div
+                    key={user.id}
+                    className={`grid grid-cols-[2fr_2fr_1fr_1fr_1fr] text-xs lg:text-sm ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    }`}
+                  >
+                    <div className="p-4 text-left border-t border-r break-words">
+                      {user.name}
+                    </div>
+                    <div className="p-4 text-left border-t border-r break-words">
+                      {user.email}
+                    </div>
+                    <div className="p-4 text-center border-t border-r">
+                      {getAccessLevelName(user.access_id)}
+                    </div>
+                    <div className="p-4 text-center border-t border-r">
+                      <span className="inline-flex items-center gap-2 font-medium">
+                        <span className={`w-2 h-2 rounded-full ${getStatusInfo(user.status).dotClass}`} />
+                        {getStatusInfo(user.status).label}
+                      </span>
+                    </div>
+                    <div className="p-4 text-center border-t">
+                      <div className="flex items-center justify-center gap-4">
+                        <button
+                          className="hover:text-yellow-600 transition-colors"
+                          onClick={() => navigate(`/edit-user/${user.id}`)}
+                          title="Editar"
+                        >
+                          <MdEdit size={20} />
+                        </button>
+                        <button
+                          className="hover:text-red-600 transition-colors"
+                          onClick={() => navigate(`/delete-user/${user.id}`)}
+                          title="Excluir"
+                        >
+                          <FaTrash size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
-          <div className="md:hidden w-full max-w-[93%] mx-auto space-y-5">
-            {users.map((user) => {
-              const statusInfo = getStatusInfo(user.status);
-              return (
-                <div
-                  key={user.id}
-                  className="bg-gray-100 rounded-3xl shadow-[0_10px_16px_rgba(0,0,0,0.12)] px-5 py-6"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex flex-1 items-start gap-4">
-                      <div className="flex-shrink-0">
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-inner">
-                          <FaUserCircle className="text-gray-500 w-16 h-16" />
+          {/* Lista para Mobile */}
+          {users.length === 0 ? (
+            <div className="md:hidden w-full max-w-[93%] mx-auto bg-white rounded-xl shadow-[0_8px_12px_rgba(0,0,0,0.15)] p-6 text-center text-gray-500 font-semibold text-base sm:text-lg">
+              Nenhum usuário cadastrado.
+            </div>
+          ) : (
+            <div className="md:hidden w-full max-w-[93%] mx-auto space-y-5">
+              {users.map((user) => {
+                const statusInfo = getStatusInfo(user.status);
+                return (
+                  <div
+                    key={user.id}
+                    className="bg-gray-100 rounded-3xl shadow-[0_10px_16px_rgba(0,0,0,0.12)] px-5 py-6"
+                  >
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className="flex-shrink-0">
+                            <FaUserCircle className="text-gray-500 w-12 h-12" />
+                          </div>
+                          <div className="flex-1 text-left min-w-0">
+                            <p className="text-gray-800 font-semibold text-base leading-tight truncate">{user.name}</p>
+                            <p className="text-gray-600 text-sm truncate">{user.email}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex-1 text-left">
-                        <p className="text-gray-800 font-semibold text-base leading-tight">{user.name}</p>
-                        <p className="text-gray-600 text-sm">{user.email}</p>
-                        <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-wide">
-                          {getAccessLevelName(user.access_id)}
+                        <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 mt-1 flex-shrink-0">
+                          <span className={`w-3 h-3 rounded-full ${statusInfo.dotClass}`} />
+                          {statusInfo.label}
                         </span>
                       </div>
+
+                      <hr className="border-gray-300"></hr>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-wide">
+                          Nível: {getAccessLevelName(user.access_id)}
+                        </span>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => navigate(`/edit-user/${user.id}`)}
+                            className="inline-flex items-center justify-center gap-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-3 rounded-xl shadow-md transition-colors text-sm"
+                          >
+                            <MdEdit size={18} />
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => navigate(`/delete-user/${user.id}`)}
+                            className="inline-flex items-center justify-center gap-1 bg-red-500 hover:bg-red-400 text-white font-semibold py-2 px-3 rounded-xl shadow-md transition-colors text-sm"
+                          >
+                            <FaTrash size={16} />
+                            Excluir
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    </div>
-                    <hr className="mt-4 mb-2"></hr>
-                    <div className="flex flex-col items-end justify-center text-right">
-                      <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <span className={`w-3 h-3 rounded-full ${statusInfo.dotClass}`} />
-                        {statusInfo.label}
-                      </span>
-                    </div>
-                  
-                  <div className="mt-5 flex items-center gap-3">
-                    <button
-                      onClick={() => navigate(`/edit-user/${user.id}`)}
-                      className="flex-1 inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 rounded-xl shadow-md transition-colors"
-                    >
-                      <MdEdit size={18} />
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => navigate(`/delete-user/${user.id}`)}
-                      className="flex-1 inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-400 text-white font-semibold py-2 rounded-xl shadow-md transition-colors"
-                    >
-                      <FaTrash size={16} />
-                      Excluir
-                    </button>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
     </div>

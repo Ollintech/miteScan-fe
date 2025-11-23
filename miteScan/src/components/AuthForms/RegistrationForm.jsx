@@ -170,7 +170,7 @@ export default function RegistrationForm() {
               <input
                 id="account"
                 name="account"
-                placeholder="Login único (ex: 'minha-empresa')"
+                placeholder="Identificador único"
                 value={form.account}
                 onChange={handleChange}
                 className="flex-1 bg-gray-200 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
@@ -189,12 +189,11 @@ export default function RegistrationForm() {
               único para criar e associar seus funcionários.
             </p>
             <p className="mt-2 text-lg font-medium">
-              Com ele, você poderá criar acessos individuais para sua equipe.
+              Com ele, você poderá criar acessos individuais para sua equipe. (não utilize espaços)
             </p>
           </div>
         </div>
 
-        {/* Button centered under both columns */}
         <div className="w-full flex justify-center mt-6">
           <button
             type="button"
