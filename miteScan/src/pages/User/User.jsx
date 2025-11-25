@@ -1,4 +1,4 @@
-import UserCard from '../../components/User/user-card';
+import UserCard from '../../components/user/user-card';
 
 function User() {
 

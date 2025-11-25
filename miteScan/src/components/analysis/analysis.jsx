@@ -4,11 +4,13 @@ import colmeia1 from '../../assets/images/colmeia1.png';
 import colmeia2 from '../../assets/images/colmeia2.jpg';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../common/Modal';
+import { MdAdd } from 'react-icons/md';
 
 export default function AnalysisCard() {
-  const [hives, setHives] = useState([]);
-  const [selectedHiveId, setSelectedHiveId] = useState('');
-  const navigate = useNavigate();
+  const [hives, setHives] = useState([]);
+  const [selectedHiveId, setSelectedHiveId] = useState('');
+  const [loadingHives, setLoadingHives] = useState(true);
+  const navigate = useNavigate();
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,
     title: '',
@@ -17,27 +19,28 @@ export default function AnalysisCard() {
     onClose: null
   });
 
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
-  const hiveImages = {
-    1: colmeia1,
-    2: colmeia2
-  };
+  const hiveImages = {
+    1: colmeia1,
+    2: colmeia2
+  };
 
-  let user = null;
-  try {
-    const s = localStorage.getItem('user');
-    user = s ? JSON.parse(s) : null;
-  } catch (e) {
-    console.error('Erro ao parsear user do localStorage em AnalysisCard:', e);
-    localStorage.removeItem('user');
-    user = null;
-  }
+  let user = null;
+  try {
+    const s = localStorage.getItem('user');
+    user = s ? JSON.parse(s) : null;
+  } catch (e) {
+    console.error('Erro ao parsear user do localStorage em AnalysisCard:', e);
+    localStorage.removeItem('user');
+    user = null;
+  }
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    const fetchHives = async () => {
-      try {
+  useEffect(() => {
+    const fetchHives = async () => {
+      setLoadingHives(true);
+      try {
         const userString = localStorage.getItem('user');
         let account;
         try {
@@ -50,28 +53,30 @@ export default function AnalysisCard() {
         if (!account) throw new Error('Account não encontrado');
 
         const response = await axios.get(`${base}/${account}/hives/all`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setHives(response.data);
-        setSelectedHiveId(response.data[0]?.id || '');
-      } catch (error) {
-        console.error('Erro ao buscar colmeias:', error.response?.data || error.message);
-        setHives([]);
-        setSelectedHiveId('');
-      }
-    };
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setHives(response.data);
+        setSelectedHiveId(response.data[0]?.id || '');
+      } catch (error) {
+        console.error('Erro ao buscar colmeias:', error.response?.data || error.message);
+        setHives([]);
+        setSelectedHiveId('');
+      } finally {
+        setLoadingHives(false);
+      }
+    };
 
     fetchHives();
   }, [token, base]);
 
-  const closeModal = () => {
+  const closeModal = () => {
     if (modalInfo.onClose) {
       modalInfo.onClose();
     }
     setModalInfo({ isOpen: false, title: '', message: '', type: 'info', onClose: null });
   };
 
-  const handleAnalysis = async () => {
+  const handleAnalysis = async () => {
     const selectedHive = hives.find(h => h.id === selectedHiveId);
 
     if (!selectedHive) return;
@@ -91,6 +96,7 @@ export default function AnalysisCard() {
         throw new Error('Account não encontrado');
       }
 
+      // Simulação de dados para a análise (mantido do original)
       const analysisPayload = {
         hive_id: selectedHiveId,
         account: account,
@@ -111,23 +117,59 @@ export default function AnalysisCard() {
         state: { hiveAnalysisId }
       });
 
-    } catch (error) {
-      console.error('Erro ao criar análise:', error.response?.data || error.message, 'status:', error.response?.status);
-      if (error.response?.data) {
-        console.error('Detalhes do erro ao criar análise:', JSON.stringify(error.response.data));
-      }
-      setModalInfo({
+    } catch (error) {
+      console.error('Erro ao criar análise:', error.response?.data || error.message, 'status:', error.response?.status);
+      if (error.response?.data) {
+        console.error('Detalhes do erro ao criar análise:', JSON.stringify(error.response.data));
+      }
+      setModalInfo({
         isOpen: true,
         title: 'Erro',
         message: 'Erro ao criar análise. Tente novamente.',
         type: 'error',
         onClose: null
       });
-    }
-  };
+    }
+  };
 
-  return (
-    <>
+  if (loadingHives) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-gray-500 font-semibold">Carregando colmeias...</p>
+      </div>
+    );
+  }
+
+  if (hives.length === 0) {
+    return (
+      <>
+        <Modal
+          isOpen={modalInfo.isOpen}
+          onClose={closeModal}
+          title={modalInfo.title}
+          type={modalInfo.type}
+        >
+          <p className="text-gray-700">{modalInfo.message}</p>
+        </Modal>
+        <div className="text-center py-20 flex flex-col items-center gap-4">
+            <p className="text-lg font-semibold text-gray-700">
+              Você ainda não possui colmeias.
+            </p>
+            <button
+              className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-2 px-4 rounded-xl flex items-center gap-2"
+              onClick={() => navigate("/create-hive")}
+            >
+              <MdAdd size={20} />
+              Comece aqui!
+            </button>
+          </div>
+      </>
+    );
+  }
+
+  // Renderização normal se houver colmeias
+  return (
+    <>
       <Modal
         isOpen={modalInfo.isOpen}
         onClose={closeModal}
@@ -162,11 +204,12 @@ export default function AnalysisCard() {
           <button
             className="rounded-xl shadow-lg bg-yellow-400 hover:bg-yellow-300 font-bold my-4 w-full sm:w-1/3 p-2 text-sm sm:text-base"
             onClick={handleAnalysis}
+            disabled={!selectedHiveId} 
           >
             🔍 Analisar
           </button>
         </div>
       </div>
-    </>
-  );
+    </>
+  );
 }

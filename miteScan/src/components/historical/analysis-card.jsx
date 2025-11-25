@@ -44,12 +44,11 @@ export default function AnalysisHist() {
         // Buscar todas as análises
         const response = await axios.get(`${base}/hive_analyses/all`, {
           headers: { Authorization: `Bearer ${token}` },
-          params: { account: account } // <-- CORREÇÃO AQUI
+          params: { account: account }
         })
 
         const analyses = (response.data || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
-        // Buscar dados das colmeias usando a rota correta com account
         const getHive = await Promise.all(
           analyses.map(async (analysis) => {
             try {
@@ -65,7 +64,7 @@ export default function AnalysisHist() {
               console.error(`Erro ao buscar colmeia ${analysis.hive_id}:`, err)
               return {
                 ...analysis,
-                hive: null, // Retorna análise sem dados da colmeia se der erro
+                hive: null, 
               }
             }
           })
@@ -85,7 +84,7 @@ export default function AnalysisHist() {
 
   if (loading) return <p className="text-center p-6">Carregando...</p>
 
-  if (analyses.length === 0) return <p className="text-center p-6">Você ainda nao possui análises ou colmeias cadastradas</p>
+  if (analyses.length === 0) return <p className="text-center p-6">Você ainda não possui análises ou colmeias cadastradas.</p>
 
   // Lógica para extrair nomes únicos das colmeias para o filtro
   const hiveMap = new Map();
@@ -119,7 +118,6 @@ export default function AnalysisHist() {
             className="bg-gray-200 rounded px-2 py-1 text-sm w-full sm:w-auto"
           >
             <option value="all">COLMEIA</option>
-            {/* CORREÇÃO AQUI para mostrar o nome */}
             {hiveOptions.map(h => (
               <option key={h.id} value={h.id}>{h.name}</option>
             ))}
@@ -133,7 +131,6 @@ export default function AnalysisHist() {
           <div className="bg-gray-100 rounded-xl shadow-xl w-full">
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 p-3 sm:p-4 font-bold text-xs sm:text-sm">
               <MdHexagon size={18} className="sm:w-5" />
-              {/* CORREÇÃO AQUI para mostrar o nome */}
               <h3>{analysis.hive?.name ?? `COLMEIA ${analysis.hive_id}`}</h3>
               <span className="hidden sm:inline">|</span>
               <p className="text-xs sm:text-sm">{new Date(analysis.created_at).toLocaleDateString()}</p>
@@ -141,12 +138,12 @@ export default function AnalysisHist() {
 
             <div className="flex flex-col m-3 sm:flex-row items-center sm:items-center gap-4">
               <img
-                src={Image} // Idealmente, isso deveria ser analysis.image_path
+                src={Image} 
                 alt="colmeia"
                 className="w-full sm:w-1/2 h-auto rounded-xl"
               />
 
-              <div className="text-sm sm:text-base w-full sm:max-w-xs space-y-2 sm:space-y-3 sm:ml-5">
+              <div className="text-sm sm:text-base w-full sm:max-w-xs space-y-2 sm:space-y-3 sm:ml-5 justify-items-start">
                 <p className="text-xs sm:text-base"><strong>Tamanho:</strong> {analysis.hive?.size ?? '--'} cm</p>
                 <p className="text-xs sm:text-base"><strong>Temperatura:</strong> {analysis.hive?.temperature ?? '--'}°C</p>
                 <p className="text-xs sm:text-base"><strong>Umidade:</strong> {analysis.hive?.humidity ?? '--'}%</p>
