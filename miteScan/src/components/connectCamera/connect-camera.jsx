@@ -49,25 +49,14 @@ export default function CameraCard() {
     return (
         <>
             <h3 className='uppercase text-md mb-3'>Ligue sua câmera e a conecte ao aplicativo para análise!</h3>
-            {/* {cameraInfo ? (
+            {cameraInfo ? (
                 <div className="bg-gray-100 rounded-xl shadow-xl w-sm mx-auto">
                     <p className='p-3'><strong>Modelo:</strong> {cameraInfo.label || 'Câmera detectada'}</p>
                     <video ref={videoRef} autoPlay playsInline width="400" className='rounded-xl' />
                 </div>
             ) : (
                 <p>Nenhuma câmera conectada ou permissão negada.</p>
-            )} */}
-
-            <div className="bg-gray-100 rounded-xl shadow-xl w-sm mx-auto">
-                <p className='p-3'><strong>Modelo:</strong> ESP32-CAM</p>
-                <img
-                    src="http://192.168.18.126:81/stream"
-                    alt="Stream da ESP32"
-                    width="400"
-                    className="rounded-xl"
-                />
-            </div>
-
+            )}
 
             {/* Botão "Finalizar" para redirecionar para a tela de "analysis" */}
             <button onClick={handleBackToForm}
