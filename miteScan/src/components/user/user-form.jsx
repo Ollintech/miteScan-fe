@@ -248,54 +248,54 @@ export default function UserForm({ mode = 'create', userId = null }) {
       >
         <p className="text-gray-700">{modalInfo.message}</p>
       </Modal>
-      <div className="flex items-center justify-center gap-3 mb-7">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-7 text-center sm:text-left">
         <img src={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFMEUyRTciLz48cGF0aCBkPSJNMjAgMjJDMjMuMzI4NCAyMiAyNiAxOS4zMjg0IDI2IDE2QzI2IDEyLjY3MTYgMjMuMzI4NCAxMCAyMCAxMEMxNi42NzE2IDEwIDE0IDEyLjY3MTYgMTQgMTZDMTQgMTkuMzI4NCAxNi42NzE2IDIyIDIwIDIyWk0yMCAyNUMxNC40NzcyIDI1IDEwIDI5LjQ3NzIgMTAgMzVDMTAgMzUuNTUyMyAxMC40NDc3IDM2IDExIDM2SDI5QzI5LjU1MmEgMzYgMzAgMzUuNTUyMyAzMCAzNUMzMCAyOS40NzcyIDI1LjUyMjggMjUgMjAgMjVaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=="} alt="Avatar" className="w-10 h-10" />
         <span className="text-gray-700 text-md font-bold">{mode === 'create' ? 'PREENCHA AS INFORMAÇÕES DO NOVO USUÁRIO' : mode === 'edit' ? 'EDITAR USUÁRIO' : 'Deseja mesmo excluir este usuário?'}</span>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Nome:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+          <label className="w-full sm:min-w-[90px] text-gray-800 font-semibold text-sm">Nome:</label>
           <input
             type="text"
             value={form.name}
             onChange={(e) => handleChange('name', e.target.value)}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+            className="w-full sm:flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
             placeholder="nome"
             readOnly={readonly}
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Email:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+          <label className="w-full sm:min-w-[90px] text-gray-800 font-semibold text-sm">Email:</label>
           <input
             type="email"
             value={form.email}
             onChange={(e) => handleChange('email', e.target.value)}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+            className="w-full sm:flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
             placeholder="nome@email.com"
             readOnly={readonly}
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Senha:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+          <label className="w-full sm:min-w-[90px] text-gray-800 font-semibold text-sm">Senha:</label>
           <input
             type="password"
             value={form.password}
             onChange={(e) => handleChange('password', e.target.value)}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+            className="w-full sm:flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
             placeholder={mode === 'edit' ? 'Deixe em branco para manter a senha' : 'Senha do usuário'}
             readOnly={readonly}
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Nível:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+          <label className="w-full sm:min-w-[90px] text-gray-800 font-semibold text-sm">Nível:</label>
           <select
             value={form.access_id}
             onChange={(e) => handleChange('access_id', e.target.value)}
-            className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+            className="w-full sm:flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
             disabled={readonly}
           >
             <option value="">Selecione um nível</option>
@@ -306,12 +306,12 @@ export default function UserForm({ mode = 'create', userId = null }) {
         </div>
 
         {mode !== 'create' && (
-          <div className="flex items-center gap-4">
-            <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Status:</label>
+          <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+            <label className="w-full sm:min-w-[90px] text-gray-800 font-semibold text-sm">Status:</label>
             <select
               value={form.status}
               onChange={(e) => handleChange('status', e.target.value)}
-              className="flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+              className="w-full sm:flex-1 px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               disabled={readonly}
             >
               <option value="">Selecione o status</option>

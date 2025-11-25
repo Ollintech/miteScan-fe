@@ -117,39 +117,39 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
 
       <div className="space-y-5">
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Nome da Colmeia:</label>
-          <div className="flex-1 relative">
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+          <label className="w-full sm:min-w-[120px] text-gray-800 font-semibold text-sm">Nome da Colmeia:</label>
+          <div className="w-full sm:flex-1 relative">
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
               readOnly={isLeitura}
-              className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+               className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               placeholder="Ex.: Colmeia 01 - Jataí"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tamanho (cm):</label>
-          <div className="flex-1 relative">
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+          <label className="w-full sm:min-w-[120px] text-gray-800 font-semibold text-sm">Tamanho (cm):</label>
+          <div className="w-full sm:flex-1 relative">
             <input
               type="number"
               name="size"
               value={formData.size}
               onChange={(e) => handleChange({ target: { name: 'size', value: e.target.value.replace(/[^0-9]/g, '') } })}
               readOnly={isLeitura}
-              className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+               className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               placeholder="Ex.: 50"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
-          <div className="flex-1 relative">
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+          <label className="w-full sm:min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
+          <div className="w-full sm:flex-1 relative">
             {isLeitura ? (
               <div className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm">
                 {beeTypeName}
@@ -159,7 +159,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                 name="bee_type_id"
                 value={formData.bee_type_id}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+                 className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
               >
                 <option value="" disabled>Selecione um tipo</option>
                 {beeTypes.map(type => (
@@ -173,17 +173,34 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         </div>
 
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Localização:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+          <label className="w-full sm:min-w-[120px] text-gray-800 font-semibold text-sm">Localização:</label>
           {!isLeitura ? (
-            <button
-              onClick={handleLocationClick}
-              className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
-            >
-              {formData.location ? 'Editar localização' : 'Clique aqui para definir localização'}
-            </button>
+            modo === 'editar' && formData.location ? (
+              <div className="w-full sm:flex-1 flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  readOnly
+                  value={`${formatCoordinate(formData.location.lat)}, ${formatCoordinate(formData.location.lng)}`}
+                  className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm"
+                />
+                <button
+                  onClick={handleLocationClick}
+                   className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
+                >
+                  Editar
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleLocationClick}
+                 className="w-full sm:flex-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
+              >
+                {formData.location ? 'Editar' : 'Clique aqui para definir localização'}
+              </button>
+            )
           ) : (
-            <div className="flex-1">
+            <div className="w-full sm:flex-1">
               <div className="w-full px-3 py-2 rounded-lg bg-yellow-300/80 text-gray-900 font-semibold shadow-sm">
                 {formData.location ? (
                   <>
@@ -199,17 +216,17 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         </div>
 
         {formData.location && !isLeitura && (
-          <div className="text-sm text-gray-600 pl-[124px] ">
+          <div className="text-sm text-gray-600 w-full sm:pl-[124px] text-left mt-1 sm:mt-0">
             {formData.location.lat}, {formData.location.lng}
           </div>
         )}
 
         {!isLeitura && formData.location && (
-          <div className="flex items-center gap-4">
-            <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Câmera:</label>
+          <div className="flex flex-col sm:flex-row sm:items-center items-start gap-2 sm:gap-4">
+            <label className="w-full sm:min-w-[120px] text-gray-800 font-semibold text-sm">Câmera:</label>
             <button
               onClick={handleConnectCamera}
-              className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
+               className="w-full sm:flex-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
             >
               {formData.cameraConnected ? 'Câmera Conectada' : 'Conectar Câmera'}
             </button>

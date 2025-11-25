@@ -43,16 +43,16 @@ export default function UsersList() {
 
       try {
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-        
+
         const [usersResponse, accessLevelsResponse] = await Promise.all([
-          axios.get(`${base}/${account}/users_associated`, { 
-            headers: { Authorization: `Bearer ${token}` } 
+          axios.get(`${base}/${account}/users_associated`, {
+            headers: { Authorization: `Bearer ${token}` }
           }),
-          axios.get(`${base}/accesses/all`, { 
-            headers: { Authorization: `Bearer ${token}` } 
+          axios.get(`${base}/accesses/all`, {
+            headers: { Authorization: `Bearer ${token}` }
           })
         ]);
-        
+
         setUsers(usersResponse.data || []);
         setAccessLevels(accessLevelsResponse.data || []);
       } catch (err) {
@@ -146,9 +146,8 @@ export default function UsersList() {
                 users.map((user, index) => (
                   <div
                     key={user.id}
-                    className={`grid grid-cols-[2fr_2fr_1fr_1fr_1fr] text-xs lg:text-sm ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    }`}
+                    className={`grid grid-cols-[2fr_2fr_1fr_1fr_1fr] text-xs lg:text-sm ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      }`}
                   >
                     <div className="p-4 text-left border-t border-r break-words">
                       {user.name}
@@ -214,34 +213,35 @@ export default function UsersList() {
                             <p className="text-gray-600 text-sm truncate">{user.email}</p>
                           </div>
                         </div>
+
+                      </div>
+
+                      <hr className="border-gray-300"></hr>
+
+                      <div className="flex items-center justify-between">
                         <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 mt-1 flex-shrink-0">
                           <span className={`w-3 h-3 rounded-full ${statusInfo.dotClass}`} />
                           {statusInfo.label}
                         </span>
-                      </div>
-
-                      <hr className="border-gray-300"></hr>
-                      
-                      <div className="flex items-center justify-between">
                         <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-wide">
                           Nível: {getAccessLevelName(user.access_id)}
                         </span>
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => navigate(`/edit-user/${user.id}`)}
-                            className="inline-flex items-center justify-center gap-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-3 rounded-xl shadow-md transition-colors text-sm"
-                          >
-                            <MdEdit size={18} />
-                            Editar
-                          </button>
-                          <button
-                            onClick={() => navigate(`/delete-user/${user.id}`)}
-                            className="inline-flex items-center justify-center gap-1 bg-red-500 hover:bg-red-400 text-white font-semibold py-2 px-3 rounded-xl shadow-md transition-colors text-sm"
-                          >
-                            <FaTrash size={16} />
-                            Excluir
-                          </button>
-                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 justify-center">
+                        <button
+                          onClick={() => navigate(`/edit-user/${user.id}`)}
+                          className="inline-flex items-center justify-center gap-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-3 rounded-xl shadow-md transition-colors text-sm"
+                        >
+                          <MdEdit size={18} />
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => navigate(`/delete-user/${user.id}`)}
+                          className="inline-flex items-center justify-center gap-1 bg-red-500 hover:bg-red-400 text-white font-semibold py-2 px-3 rounded-xl shadow-md transition-colors text-sm"
+                        >
+                          <FaTrash size={16} />
+                          Excluir
+                        </button>
                       </div>
                     </div>
                   </div>
