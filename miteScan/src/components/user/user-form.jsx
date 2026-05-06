@@ -160,7 +160,7 @@ export default function UserForm({ mode = 'create', userId = null }) {
           email: form.email,
           password: form.password,
           access_id: Number(form.access_id),
-          account: account,
+          user_id: parseInt(account),
         };
         const url = `${base}/${account}/users_associated/register`;
         await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}` } });

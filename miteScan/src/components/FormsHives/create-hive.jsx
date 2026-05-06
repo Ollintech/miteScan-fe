@@ -138,8 +138,7 @@ export default function CreateHiveCard() {
     }
 
     const payload = {
-      account: account,
-      name: dados.name,
+      user_id: parseInt(account),
       bee_type_id: bee_type_id,
       location_lat: parseFloat(dados.location.lat),
       location_lng: parseFloat(dados.location.lng),

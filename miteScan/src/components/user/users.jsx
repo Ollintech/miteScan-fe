@@ -45,7 +45,7 @@ export default function UsersList() {
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         
         const [usersResponse, accessLevelsResponse] = await Promise.all([
-          axios.get(`${base}/${account}/users_associated`, { 
+          axios.get(`${base}/${account}/users_associated/`, { 
             headers: { Authorization: `Bearer ${token}` } 
           }),
           axios.get(`${base}/accesses/all`, { 

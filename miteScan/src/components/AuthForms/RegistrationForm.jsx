@@ -61,7 +61,7 @@ export default function RegistrationForm() {
         email: form.email,
         password: form.senha,
         account: form.account,
-        access_id: 4, // O 'access_id' é definido aqui, diretamente.
+        access_id: 1, // 1 é o ID para 'owner' / root
       };
 
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/users_root/register`, payload);
@@ -80,9 +80,9 @@ export default function RegistrationForm() {
       if (error.response) {
         const errorData = error.response.data;
         if (errorData.detail) {
-          // Este 'if' agora trata o erro de ID 4
+          // Este 'if' trata erro de chave estrangeira de nível de acesso
           if (errorData.detail.includes("is not present in table \"accesses\"")) {
-            setErro("Erro: O nível de acesso ID 4 não existe no banco de dados.");
+            setErro("Erro: O nível de acesso selecionado não existe no banco de dados.");
           }
           else if (errorData.detail.includes("account")) {
             setErro("Esse nome de conta já está em uso. Tente outro.");

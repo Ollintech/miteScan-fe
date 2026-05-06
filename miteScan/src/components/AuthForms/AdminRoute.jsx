@@ -13,7 +13,7 @@ function AdminRoute({ children }) {
   try {
     const user = JSON.parse(userString);
 
-    if (user && Number(user.access_id) === 4) {
+    if (user && (Number(user.access_id) === 1 || Number(user.access_id) === 2)) {
       return children;
     } else {
       return <Navigate to="/home" replace />;

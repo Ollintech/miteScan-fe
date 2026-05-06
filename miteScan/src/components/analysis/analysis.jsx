@@ -99,7 +99,7 @@ export default function AnalysisCard() {
       // Simulação de dados para a análise (mantido do original)
       const analysisPayload = {
         hive_id: selectedHiveId,
-        account: account,
+        user_id: parseInt(account),
         image_path: "string",
         varroa_detected: Math.random() < 0.5,
         detection_confidence: Math.round(Math.random() * 100) / 100
@@ -188,7 +188,7 @@ export default function AnalysisCard() {
         >
           {hives.map(hive => (
             <option key={hive.id} value={hive.id}>
-              {hive.name}
+              Colmeia {hive.id}
             </option>
           ))}
         </select>

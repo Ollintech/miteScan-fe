@@ -35,15 +35,15 @@ export default function LoginForm() {
         };
 
         try {
-            const rootLoginUrl = `${base}/auth/login/root`;
+            const rootLoginUrl = `${base}/users_root/login`;
             const response = await axios.post(rootLoginUrl, formData, config);
 
             const { access_token } = response.data;
-            const userData = response.data.user;
+            const userData = response.data.user_root;
             const userType = 'root';
 
-            if (!userData || typeof userData !== 'object' || !userData.account) {
-                console.error('Login (root) retornou sem dados de usuário ou "account" válidos:', response.data);
+            if (!userData || typeof userData !== 'object') {
+                console.error('Login (root) retornou sem dados de usuário válidos:', response.data);
                 setLoading(false);
                 setErro('Erro: dados do usuário ausentes no servidor.');
                 return;
@@ -53,7 +53,9 @@ export default function LoginForm() {
             localStorage.setItem("token", access_token);
             localStorage.setItem("user", JSON.stringify(userData));
             localStorage.setItem("user_type", userType);
-            localStorage.setItem("account", userData.account);
+            // O frontend usa 'account' na URL para buscar as colmeias: /${account}/hives/all
+            // No backend, a rota é /{user_root_id}/hives/all. Portanto, 'account' deve ser o ID do usuário root.
+            localStorage.setItem("account", userData.id);
 
             setLoading(false);
             navigate('/home');
