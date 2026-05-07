@@ -35,11 +35,11 @@ export default function LoginForm() {
         };
 
         try {
-            const rootLoginUrl = `${base}/users_root/login`;
+            const rootLoginUrl = `${base}/auth/login/root`;
             const response = await axios.post(rootLoginUrl, formData, config);
 
             const { access_token } = response.data;
-            const userData = response.data.user_root;
+            const userData = response.data.user;
             const userType = 'root';
 
             if (!userData || typeof userData !== 'object') {
@@ -54,8 +54,7 @@ export default function LoginForm() {
             localStorage.setItem("user", JSON.stringify(userData));
             localStorage.setItem("user_type", userType);
             // O frontend usa 'account' na URL para buscar as colmeias: /${account}/hives/all
-            // No backend, a rota é /{user_root_id}/hives/all. Portanto, 'account' deve ser o ID do usuário root.
-            localStorage.setItem("account", userData.id);
+            localStorage.setItem("account", userData.account);
 
             setLoading(false);
             navigate('/home');
