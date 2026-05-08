@@ -137,14 +137,14 @@ export default function CreateHiveCard() {
       return;
     }
 
-    const payload = {
-      user_id: parseInt(account),
-      bee_type_id: bee_type_id,
-      location_lat: parseFloat(dados.location.lat),
-      location_lng: parseFloat(dados.location.lng),
-      size: size,
-      humidity: null,
-      temperature: null
+    const formData = new FormData();
+    formData.append('name', dados.name);
+    formData.append('bee_type_id', bee_type_id);
+    formData.append('location_lat', parseFloat(dados.location.lat));
+    formData.append('location_lng', parseFloat(dados.location.lng));
+    formData.append('size', size);
+    if (dados.image) {
+      formData.append('image', dados.image);
     }
 
     const url = `${base}/${account}/hives/create`;
@@ -152,10 +152,9 @@ export default function CreateHiveCard() {
     try {
       const response = await axios.post(
         url,
-        payload,
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           }
         }

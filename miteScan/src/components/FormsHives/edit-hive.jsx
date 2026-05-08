@@ -69,6 +69,7 @@ export default function EditHiveCard() {
           name: hiveRes.data.name || `COLMEIA ${hiveRes.data.id}`,
           size: hiveRes.data.size || '',
           bee_type_id: hiveRes.data.bee_type_id || '',
+          image_path: hiveRes.data.image_path || '',
           location: {
             lat: hiveRes.data.location_lat,
             lng: hiveRes.data.location_lng
@@ -165,12 +166,14 @@ export default function EditHiveCard() {
       return;
     }
 
-    const payload = {
-      name: dadosAtualizados.name,
-      bee_type_id: bee_type_id,
-      location_lat: parseFloat(dadosAtualizados.location?.lat) || 0,
-      location_lng: parseFloat(dadosAtualizados.location?.lng) || 0,
-      size: size,
+    const formData = new FormData();
+    formData.append('name', dadosAtualizados.name);
+    formData.append('bee_type_id', bee_type_id);
+    formData.append('location_lat', parseFloat(dadosAtualizados.location?.lat) || 0);
+    formData.append('location_lng', parseFloat(dadosAtualizados.location?.lng) || 0);
+    formData.append('size', size);
+    if (dadosAtualizados.image) {
+      formData.append('image', dadosAtualizados.image);
     }
 
     try {
@@ -178,10 +181,9 @@ export default function EditHiveCard() {
       
       const response = await axios.put(
         url,
-        payload,
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           }
         }

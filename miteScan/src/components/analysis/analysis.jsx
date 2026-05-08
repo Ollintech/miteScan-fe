@@ -10,6 +10,10 @@ export default function AnalysisCard() {
   const [hives, setHives] = useState([]);
   const [selectedHiveId, setSelectedHiveId] = useState('');
   const [loadingHives, setLoadingHives] = useState(true);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
   const navigate = useNavigate();
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,
@@ -20,11 +24,6 @@ export default function AnalysisCard() {
   });
 
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-
-  const hiveImages = {
-    1: colmeia1,
-    2: colmeia2
-  };
 
   let user = null;
   try {
@@ -69,6 +68,14 @@ export default function AnalysisCard() {
     fetchHives();
   }, [token, base]);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const closeModal = () => {
     if (modalInfo.onClose) {
       modalInfo.onClose();
@@ -79,8 +86,18 @@ export default function AnalysisCard() {
   const handleAnalysis = async () => {
     const selectedHive = hives.find(h => h.id === selectedHiveId);
 
-    if (!selectedHive) return;
+    if (!selectedHive || !selectedFile) {
+      setModalInfo({
+        isOpen: true,
+        title: 'Aviso',
+        message: 'Selecione uma colmeia e anexe uma imagem para analisar.',
+        type: 'info',
+        onClose: null
+      });
+      return;
+    }
 
+    setIsAnalyzing(true);
     try {
       const userString = localStorage.getItem('user');
       let account;
@@ -96,39 +113,34 @@ export default function AnalysisCard() {
         throw new Error('Account não encontrado');
       }
 
-      // Simulação de dados para a análise (mantido do original)
-      const analysisPayload = {
-        hive_id: selectedHiveId,
-        user_id: parseInt(account),
-        image_path: "string",
-        varroa_detected: Math.random() < 0.5,
-        detection_confidence: Math.round(Math.random() * 100) / 100
-      };
+      // Chamada SEGURA para o novo endpoint protegido
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('hive_id', selectedHiveId);
 
-      const analysisResponse = await axios.post(
-        `${base}/hive_analyses/create`,
-        analysisPayload,
-        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+      const response = await axios.post(
+        `${base}/hive_analyses/create-protected`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const hiveAnalysisId = analysisResponse.data.id;
+      const hiveAnalysisId = response.data.id;
 
       navigate('/loading-analysis', {
         state: { hiveAnalysisId }
       });
 
     } catch (error) {
-      console.error('Erro ao criar análise:', error.response?.data || error.message, 'status:', error.response?.status);
-      if (error.response?.data) {
-        console.error('Detalhes do erro ao criar análise:', JSON.stringify(error.response.data));
-      }
+      console.error('Erro ao criar análise:', error.response?.data || error.message);
       setModalInfo({
         isOpen: true,
         title: 'Erro',
-        message: 'Erro ao criar análise. Tente novamente.',
+        message: 'Erro ao processar análise. Verifique sua conexão e tente novamente.',
         type: 'error',
         onClose: null
       });
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -167,7 +179,6 @@ export default function AnalysisCard() {
     );
   }
 
-  // Renderização normal se houver colmeias
   return (
     <>
       <Modal
@@ -194,19 +205,41 @@ export default function AnalysisCard() {
         </select>
       </div>
 
-      <div className="bg-gray-100 rounded-2xl shadow-2xl">
-        <img
-          src={hiveImages[selectedHiveId] || colmeia1}
-          alt={`Colmeia ${selectedHiveId}`}
-          className="w-full h-auto sm:h-75 object-cover rounded-xl"
-        />
+      <div className="bg-gray-100 rounded-2xl shadow-2xl p-4">
+        <div className="border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center p-6 mb-4 cursor-pointer hover:bg-gray-200 transition-colors relative"
+             onClick={() => document.getElementById('file-upload').click()}>
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt="Preview"
+              className="w-full h-auto max-h-80 object-contain rounded-xl"
+            />
+          ) : (
+            <div className="flex flex-col items-center gap-2 text-gray-500">
+              <MdAdd size={48} />
+              <p className="font-bold">ANEXE UMA FOTO PARA ANALISAR</p>
+            </div>
+          )}
+          <input
+            id="file-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </div>
+        
         <div className="flex justify-center">
           <button
-            className="rounded-xl shadow-lg bg-yellow-400 hover:bg-yellow-300 font-bold my-4 w-full sm:w-1/3 p-2 text-sm sm:text-base"
+            className={`rounded-xl shadow-lg font-bold my-2 w-full sm:w-1/3 p-3 text-sm sm:text-base transition-all ${
+              isAnalyzing 
+              ? 'bg-gray-400 cursor-not-allowed' 
+              : 'bg-yellow-400 hover:bg-yellow-300'
+            }`}
             onClick={handleAnalysis}
-            disabled={!selectedHiveId} 
+            disabled={!selectedHiveId || !selectedFile || isAnalyzing} 
           >
-            🔍 Analisar
+            {isAnalyzing ? '⌛ Analisando...' : '🔍 Analisar'}
           </button>
         </div>
       </div>

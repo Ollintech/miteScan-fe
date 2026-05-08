@@ -11,7 +11,8 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         size: '',
         bee_type_id: '',
         location: null,
-        cameraConnected: false,
+        image: null,
+        imagePreview: null
     })
 
     // Função para carregar dados da colmeia ao editar ou excluir
@@ -23,7 +24,8 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                     size: colmeia.size || '',
                     bee_type_id: colmeia.bee_type_id || '',
                     location: colmeia.location || null,
-                    cameraConnected: colmeia.cameraConnected ?? true,
+                    image: null,
+                    imagePreview: colmeia.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${colmeia.image_path}` : null,
                 });
             }
         } else if (modo === 'criar') {
@@ -33,25 +35,19 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
             }
         }
     }, [modo, colmeia?.id, location.state]);
-
-    // Função para atualizar localização e status da câmera
     useEffect(() => {
         if ((modo === 'editar' || modo === 'excluir') && colmeia) {
             setFormData(prev => ({
                 ...prev,
                 location: colmeia.location || prev.location,
-                cameraConnected: colmeia.cameraConnected ?? prev.cameraConnected,
             }))
         }
-    }, [colmeia?.location?.lat, colmeia?.location?.lng, colmeia?.cameraConnected])
+    }, [colmeia?.location?.lat, colmeia?.location?.lng])
 
     // Função para atualizar dados do formulário a partir do estado da navegação
     useEffect(() => {
         if (location.state?.location) {
             setFormData(prev => ({ ...prev, location: location.state.location }))
-        }
-        if (location.state?.cameraConnected) {
-            setFormData(prev => ({ ...prev, cameraConnected: true }))
         }
     }, [location.state])
 
@@ -68,6 +64,17 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            setFormData(prev => ({
+                ...prev,
+                image: file,
+                imagePreview: URL.createObjectURL(file)
+            }))
+        }
+    }
+
     // Função para navegar para seleção de localização
     const handleLocationClick = () => {
         navigate('/select-location', {
@@ -79,16 +86,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         })
     }
 
-    // Função para navegar para conexão de câmera
-    const handleConnectCamera = () => {
-        navigate('/connect-camera', {
-            state: {
-                fromForm: formData,
-                origem: modo,
-                hiveId: colmeia?.id // <-- CORREÇÃO: Adicionado hiveId
-            }
-        })
-    }
 
     const isLeitura = modo === 'excluir'
 
@@ -204,21 +201,40 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                     </div>
                 )}
 
-                {!isLeitura && formData.location && (
-                    <div className="flex items-center gap-4">
-                        <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Câmera:</label>
-                        <button
-                            onClick={handleConnectCamera}
-                            className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
-                        >
-                            {formData.cameraConnected ? 'Câmera Conectada' : 'Conectar Câmera'}
-                        </button>
+                <div className="flex flex-col gap-4">
+                    <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Foto da Colmeia:</label>
+                    <div className="flex flex-col items-center gap-4">
+                        {formData.imagePreview && (
+                            <img 
+                                src={formData.imagePreview} 
+                                alt="Preview" 
+                                className="w-full h-48 object-cover rounded-xl shadow-md border-2 border-yellow-400" 
+                            />
+                        )}
+                        {!isLeitura && (
+                            <div 
+                                className="w-full bg-gray-200 border-2 border-dashed border-gray-400 rounded-xl p-4 text-center cursor-pointer hover:bg-gray-300 transition-colors"
+                                onClick={() => document.getElementById('hive-image').click()}
+                            >
+                                <p className="text-gray-600 font-bold">{formData.imagePreview ? 'Alterar Foto' : 'Clique para anexar foto'}</p>
+                                <input
+                                    id="hive-image"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+                            </div>
+                        )}
+                        {isLeitura && !formData.imagePreview && (
+                             <p className="text-gray-500 italic">Sem foto cadastrada</p>
+                        )}
                     </div>
-                )}
+                </div>
 
 
                 <div className="flex justify-center mt-8 pt-4 border-t border-gray-200">
-                    {modo === 'criar' && formData.location && formData.cameraConnected && (
+                    {modo === 'criar' && formData.location && (
                         <button
                             onClick={() => {
                                 onConfirmar(formData)

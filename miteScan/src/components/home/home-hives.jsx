@@ -93,12 +93,13 @@ export default function HomeHives() {
         const parsed = hivesWithAnalysis.map((hive) => {
           const { temperature, humidity, analysis } = hive;
           const varroa = analysis?.varroa_detected;
+          const beeStatus = analysis?.bee_status;
 
           const tempOk = temperature > 33 && temperature < 37;
           const humOk = humidity >= 33 && humidity <= 47;
 
           let status = "ok";
-          if (varroa) {
+          if (varroa || beeStatus === 'deformada') {
             status = "perigo";
           } else if (!tempOk || !humOk) {
             status = "alerta";
@@ -110,7 +111,8 @@ export default function HomeHives() {
             temperatura: temperature,
             umidade: humidity,
             status,
-            imagem: HivesImg,
+            beeStatus: beeStatus || (varroa ? 'varroa' : 'normal'),
+            imagem: hive.image_path ? `${base}/${hive.image_path}` : HivesImg,
           };
         });
 
@@ -201,12 +203,22 @@ export default function HomeHives() {
                   {renderIcon(colmeia.status)}
                 </div>
 
-                <div className="text-xs sm:text-sm font-bold text-gray-700 flex items-center mx-2 mb-3">
-                  <FaThermometerHalf size={14} />
-                  <span className="ml-1">{colmeia.temperatura ?? "--"}°C</span>
+                <div className="text-xs sm:text-sm font-bold text-gray-700 flex flex-wrap items-center mx-2 mb-3 gap-y-1">
+                  <div className="flex items-center">
+                    <FaThermometerHalf size={14} />
+                    <span className="ml-1">{colmeia.temperatura ?? "--"}°C</span>
+                  </div>
                   <span className="mx-2">|</span>
-                  <MdOutlineWaterDrop size={14} />
-                  <span className="ml-1">{colmeia.umidade ?? "--"}%</span>
+                  <div className="flex items-center">
+                    <MdOutlineWaterDrop size={14} />
+                    <span className="ml-1">{colmeia.umidade ?? "--"}%</span>
+                  </div>
+                  <span className="mx-2">|</span>
+                  <span className={`px-2 py-0.5 rounded text-[10px] uppercase ${
+                    colmeia.beeStatus === 'normal' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+                  }`}>
+                    {colmeia.beeStatus}
+                  </span>
                 </div>
               </div>
             ))}

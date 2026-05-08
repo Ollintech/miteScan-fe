@@ -70,7 +70,7 @@ export default function DeleteHiveCard() {
             lat: hiveData.location_lat,
             lng: hiveData.location_lng
           },
-          cameraConnected: true
+          image_path: hiveData.image_path
         })
         
       } catch (err) {

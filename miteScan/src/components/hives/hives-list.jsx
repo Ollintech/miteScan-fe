@@ -145,7 +145,7 @@ export default function HivesList() {
   // Função para obter estado da colmeia
   function getEstado(analysis, hive) {
     if (!analysis) return "segura";
-    if (analysis.varroa_detected) return "perigo";
+    if (analysis.varroa_detected || analysis.bee_status === 'deformada') return "perigo";
 
     const tempOk = hive.temperature >= 33.5 && hive.temperature <= 36;
     const humOk = hive.humidity >= 37 && hive.humidity <= 43;
@@ -231,7 +231,7 @@ export default function HivesList() {
                 <div className="flex flex-col sm:flex-row h-full w-full shadow-lg rounded-xl">
                   <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden sm:p-0">
                     <img
-                      src={Image}
+                      src={hive.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${hive.image_path}` : Image}
                       alt={`Colmeia ${hive.name}`}
                       className="w-full sm:w-32 h-32 sm:h-full object-cover rounded-t-xl sm:rounded-t-none sm:rounded-l-xl"
                     />
@@ -283,21 +283,21 @@ export default function HivesList() {
                       )} gap-2`}
                     >
                       {getIcon(estado)}
-                      <span className="font-bold uppercase text-sm">{estado}</span>
+                      <span className="font-bold uppercase text-[10px] sm:text-xs">
+                        {analysis?.bee_status || estado}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {isUserRoot && (
                   <div className="flex sm:flex-col flex-row gap-4 sm:ml-3 items-center mt-4 sm:mt-0">
-                    <button onClick={() => navigate(`/edit-hive/${hive.id}`)}>
-                      <MdEdit size={25} />
+                    <button onClick={() => navigate(`/edit-hive/${hive.id}`)} title="Editar Colmeia">
+                      <MdEdit size={25} className="hover:text-yellow-600 transition-colors" />
                     </button>
-                    <button onClick={() => navigate(`/delete-hive/${hive.id}`)}>
-                      <FaTrash size={20} />
+                    <button onClick={() => navigate(`/delete-hive/${hive.id}`)} title="Excluir Colmeia">
+                      <FaTrash size={20} className="hover:text-red-600 transition-colors" />
                     </button>
                   </div>
-                )}
               </div>
             );
           })}

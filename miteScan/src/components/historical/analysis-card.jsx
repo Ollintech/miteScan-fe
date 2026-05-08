@@ -138,7 +138,7 @@ export default function AnalysisHist() {
 
             <div className="flex flex-col m-3 sm:flex-row items-center sm:items-center gap-4">
               <img
-                src={Image} 
+                src={analysis.hive?.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${analysis.hive.image_path}` : Image} 
                 alt="colmeia"
                 className="w-full sm:w-1/2 h-auto rounded-xl"
               />
@@ -147,14 +147,25 @@ export default function AnalysisHist() {
                 <p className="text-xs sm:text-base"><strong>Tamanho:</strong> {analysis.hive?.size ?? '--'} cm</p>
                 <p className="text-xs sm:text-base"><strong>Temperatura:</strong> {analysis.hive?.temperature ?? '--'}°C</p>
                 <p className="text-xs sm:text-base"><strong>Umidade:</strong> {analysis.hive?.humidity ?? '--'}%</p>
-                <p className="text-xs sm:text-base"><strong>Varroa:</strong> {analysis.varroa_detected ? 'Detectada' : 'Não detectada'}</p>
+                <p className="text-xs sm:text-base"><strong>Resultado IA:</strong> <span className="uppercase">{analysis.bee_status || (analysis.varroa_detected ? 'varroa' : 'normal')}</span></p>
               </div>
             </div>
 
             <div className={`w-full min-h-[48px] rounded-b-xl font-bold flex items-center justify-center text-xs sm:text-sm px-4 py-2
-            ${analysis.varroa_detected ? 'bg-red-200 text-red-900' : 'bg-green-100 text-green-900'}
+            ${
+              analysis.bee_status === 'normal' || (!analysis.bee_status && !analysis.varroa_detected)
+                ? 'bg-green-100 text-green-900' 
+                : 'bg-red-200 text-red-900'
+            }
           `}>
-              {analysis.varroa_detected ? '⚠️ Varroa detectada' : '✅ Sem varroa detectada'}
+              {analysis.bee_status === 'normal' && '✅ Colmeia saudável'}
+              {analysis.bee_status === 'varroa' && '⚠️ Atenção: Varroa detectada'}
+              {analysis.bee_status === 'deformada' && '⚠️ Atenção: Asas Deformadas'}
+              {!analysis.bee_status && (
+                analysis.varroa_detected 
+                  ? '⚠️ Atenção: Varroa detectada' 
+                  : '✅ Colmeia saudável'
+              )}
             </div>
           </div>
         </div>
