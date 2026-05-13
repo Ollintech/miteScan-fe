@@ -95,14 +95,17 @@ export default function HomeHives() {
           const varroa = analysis?.varroa_detected;
           const beeStatus = analysis?.bee_status;
 
-          const tempOk = temperature > 33 && temperature < 37;
-          const humOk = humidity >= 33 && humidity <= 47;
+          const tempOk = temperature >= 33.5 && temperature <= 36;
+          const humOk = humidity >= 37 && humidity <= 43;
 
           let status = "ok";
+          let displayStatus = beeStatus || (varroa ? 'varroa' : 'normal');
+
           if (varroa || beeStatus === 'deformada') {
             status = "perigo";
           } else if (!tempOk || !humOk) {
             status = "alerta";
+            if (displayStatus === 'normal') displayStatus = 'alerta';
           }
 
           return {
@@ -111,7 +114,7 @@ export default function HomeHives() {
             temperatura: temperature,
             umidade: humidity,
             status,
-            beeStatus: beeStatus || (varroa ? 'varroa' : 'normal'),
+            beeStatus: displayStatus,
             imagem: hive.image_path ? `${base}/${hive.image_path}` : HivesImg,
           };
         });
@@ -215,7 +218,9 @@ export default function HomeHives() {
                   </div>
                   <span className="mx-2">|</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] uppercase ${
-                    colmeia.beeStatus === 'normal' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+                    colmeia.status === 'ok' ? 'bg-green-200 text-green-800' : 
+                    colmeia.status === 'alerta' ? 'bg-orange-200 text-orange-800' : 
+                    'bg-red-200 text-red-800'
                   }`}>
                     {colmeia.beeStatus}
                   </span>

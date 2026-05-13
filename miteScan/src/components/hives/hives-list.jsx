@@ -51,8 +51,9 @@ export default function HivesList() {
           user = userObj;
           account = userObj?.account || localStorage.getItem('account');
 
-          const accessId = userObj?.access_id ?? userObj?.access?.id;
-          setIsUserRoot(Number(accessId) === 4);
+          // Verifica se é root ou associado (ambos podem adicionar agora)
+          const userType = localStorage.getItem("user_type");
+          setIsUserRoot(userType === 'root' || userType === 'associated');
         } catch (e) {
           console.error("Erro ao parsear dados do usuário:", e);
           setError("Erro ao ler sessão. Faça login novamente.");
@@ -180,7 +181,7 @@ export default function HivesList() {
   }
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:p-6 relative min-h-[80vh]">
       <div className="w-full max-w-[90%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:max-w-full gap-4">
         <div className="flex items-center gap-4 text-base sm:text-xl font-bold">
           <button
@@ -193,13 +194,25 @@ export default function HivesList() {
         </div>
         {isUserRoot && (
           <button
-            className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold p-2 sm:p-3 text-xs sm:text-base w-full sm:w-auto"
+            className="hidden sm:flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 rounded-xl font-bold p-3 text-base shadow-md transition-colors"
             onClick={() => navigate("/create-hive")}
           >
-            <MdAdd size={20} className="sm:w-6" />
-            <span className="sm:inline">ADICIONAR</span>
-          </button>)}
+            <MdAdd size={24} />
+            <span>ADICIONAR COLMEIA</span>
+          </button>
+        )}
       </div>
+
+      {/* Floating Action Button for Mobile */}
+      {isUserRoot && (
+        <button
+          className="fixed bottom-8 right-8 z-50 flex sm:hidden items-center justify-center w-14 h-14 bg-yellow-400 hover:bg-yellow-300 rounded-full shadow-lg transition-colors"
+          onClick={() => navigate("/create-hive")}
+          title="Adicionar Colmeia"
+        >
+          <MdAdd size={32} />
+        </button>
+      )}
 
       <div className="max-h-[calc(100vh-340px)] overflow-y-auto pr-2 w-full">
 
@@ -212,7 +225,7 @@ export default function HivesList() {
               você ainda não possui colmeias.
             </p>
             <button
-              className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-2 px-4 rounded-xl flex items-center gap-2"
+              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-2 px-4 rounded-xl flex items-center gap-2"
               onClick={() => navigate("/create-hive")}
             >
               <MdAdd size={20} />

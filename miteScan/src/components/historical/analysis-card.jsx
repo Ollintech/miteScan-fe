@@ -137,11 +137,11 @@ export default function AnalysisHist() {
             </div>
 
             <div className="flex flex-col m-3 sm:flex-row items-center sm:items-center gap-4">
-              <img
-                src={analysis.hive?.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${analysis.hive.image_path}` : Image} 
-                alt="colmeia"
-                className="w-full sm:w-1/2 h-auto rounded-xl"
-              />
+              <img
+                src={analysis.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${analysis.image_path}` : Image} 
+                alt="foto da análise"
+                className="w-full sm:w-1/2 h-auto rounded-xl object-cover max-h-48 sm:max-h-64"
+              />
 
               <div className="text-sm sm:text-base w-full sm:max-w-xs space-y-2 sm:space-y-3 sm:ml-5 justify-items-start">
                 <p className="text-xs sm:text-base"><strong>Tamanho:</strong> {analysis.hive?.size ?? '--'} cm</p>
@@ -151,22 +151,34 @@ export default function AnalysisHist() {
               </div>
             </div>
 
-            <div className={`w-full min-h-[48px] rounded-b-xl font-bold flex items-center justify-center text-xs sm:text-sm px-4 py-2
-            ${
-              analysis.bee_status === 'normal' || (!analysis.bee_status && !analysis.varroa_detected)
-                ? 'bg-green-100 text-green-900' 
-                : 'bg-red-200 text-red-900'
-            }
-          `}>
-              {analysis.bee_status === 'normal' && '✅ Colmeia saudável'}
-              {analysis.bee_status === 'varroa' && '⚠️ Atenção: Varroa detectada'}
-              {analysis.bee_status === 'deformada' && '⚠️ Atenção: Asas Deformadas'}
-              {!analysis.bee_status && (
-                analysis.varroa_detected 
-                  ? '⚠️ Atenção: Varroa detectada' 
-                  : '✅ Colmeia saudável'
-              )}
-            </div>
+            {(() => {
+              const hive = analysis.hive;
+              const isDanger = analysis.bee_status === 'varroa' || analysis.bee_status === 'deformada' || analysis.varroa_detected;
+              
+              let isAlert = false;
+              if (hive && !isDanger) {
+                const tempOk = hive.temperature >= 33.5 && hive.temperature <= 36;
+                const humOk = hive.humidity >= 37 && hive.humidity <= 43;
+                if (!tempOk || !humOk) isAlert = true;
+              }
+
+              let bgColor = 'bg-green-100 text-green-900';
+              let text = '✅ Colmeia saudável';
+
+              if (isDanger) {
+                bgColor = 'bg-red-200 text-red-900';
+                text = analysis.bee_status === 'deformada' ? '⚠️ Atenção: Asas Deformadas' : '⚠️ Atenção: Varroa detectada';
+              } else if (isAlert) {
+                bgColor = 'bg-orange-200 text-orange-900';
+                text = '⚠️ Colmeia em alerta: Condições ideais não atingidas';
+              }
+
+              return (
+                <div className={`w-full min-h-[48px] rounded-b-xl font-bold flex items-center justify-center text-xs sm:text-sm px-4 py-2 ${bgColor}`}>
+                  {text}
+                </div>
+              );
+            })()}
           </div>
         </div>
       ))}
