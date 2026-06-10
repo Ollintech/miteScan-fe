@@ -35,6 +35,16 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
             }
         }
     }, [modo, colmeia?.id, location.state]);
+
+    // Pré-selecionar "Apis Mellifera" se estiver criando e houver tipos de abelha disponíveis
+    useEffect(() => {
+        if (modo === 'criar' && beeTypes.length > 0 && !formData.bee_type_id) {
+            const apis = beeTypes.find(b => b.name.toLowerCase().includes('apis')) || beeTypes[0];
+            if (apis) {
+                setFormData(prev => ({ ...prev, bee_type_id: String(apis.id) }));
+            }
+        }
+    }, [beeTypes, modo, formData.bee_type_id]);
     useEffect(() => {
         if ((modo === 'editar' || modo === 'excluir') && colmeia) {
             setFormData(prev => ({
@@ -93,6 +103,9 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         ? beeTypes.find(b => b.id === parseInt(formData.bee_type_id))?.name || 'Não informado'
         : ''
 
+    // Filtrar apenas Apis Mellifera no dropdown
+    const filteredBeeTypes = beeTypes.filter(type => type.name.toLowerCase().includes("apis mellifera"));
+
     // Função para formatar coordenadas
     const formatCoordinate = (value) => {
         if (value === null || value === undefined || value === '') return 'Não informado'
@@ -147,25 +160,9 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                 <div className="flex items-center gap-4">
                     <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
                     <div className="flex-1 relative">
-                        {isLeitura ? (
-                            <div className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm">
-                                {beeTypeName}
-                            </div>
-                        ) : (
-                            <select
-                                name="bee_type_id"
-                                value={formData.bee_type_id}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
-                            >
-                                <option value="" disabled>Selecione um tipo</option>
-                                {beeTypes.map(type => (
-                                    <option key={type.id} value={type.id}>
-                                        {type.name}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
+                        <div className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm font-medium">
+                            Apis Mellifera
+                        </div>
                     </div>
                 </div>
 

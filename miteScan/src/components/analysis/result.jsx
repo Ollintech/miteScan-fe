@@ -10,6 +10,7 @@ import { MdVerifiedUser } from "react-icons/md";
 export default function Result() {
   const location = useLocation();
   const { hiveAnalysisId } = location.state || {};
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
   const [analysis, setAnalysis] = useState(null);
   const [hive, setHive] = useState(null);
@@ -53,7 +54,6 @@ export default function Result() {
       try {
         setLoading(true);
         setError(null);
-        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         
         const analysisResponse = await axios.get(`${base}/hive_analyses/${hiveAnalysisId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -98,8 +98,10 @@ export default function Result() {
   const isHumidityOk = hive.humidity >= 33 && hive.humidity <= 47;
 
   let status = 'segura';
-  if (analysis.varroa_detected) {
+  if (analysis.varroa_detected || analysis.bee_status === 'varroa') {
     status = 'perigo';
+  } else if (analysis.bee_status === 'deformada') {
+    status = 'deformada';
   } else if (!isTempOk || !isHumidityOk) {
     status = 'alerta';
   }
@@ -108,7 +110,7 @@ export default function Result() {
     segura: {
       color: 'text-green-600',
       icon: <MdVerifiedUser size={20} />,
-      message: 'COLMEIA SEGURA, NENHUMA VARROA IDENTIFICADA.',
+      message: 'COLMEIA SEGURA, NENHUMA ANOMALIA IDENTIFICADA.',
     },
     alerta: {
       color: 'text-yellow-500',
@@ -119,6 +121,11 @@ export default function Result() {
       color: 'text-red-600',
       icon: <TbAlertOctagonFilled size={20} />,
       message: 'PERIGO! VARROA DETECTADA NA COLMEIA.',
+    },
+    deformada: {
+      color: 'text-red-600',
+      icon: <TbAlertOctagonFilled size={20} />,
+      message: 'ATENÇÃO! ASAS DEFORMADAS DETECTADAS NA COLMEIA.',
     },
   };
 
@@ -133,7 +140,7 @@ export default function Result() {
 
       <div className="bg-gray-100 rounded-xl shadow-lg w-full mx-auto">
         <img
-          src={resultImage}
+          src={analysis.image_path ? `${base}/${analysis.image_path.replace(/\\/g, '/')}` : resultImage}
           alt="Resultado da análise"
           className="w-full h-48 sm:h-64 md:h-80 object-cover rounded-md"
         />

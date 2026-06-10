@@ -157,7 +157,7 @@ export default function HomeHives() {
   return (
     <>
       <div className="bg-yellow-400 text-gray-800 text-lg font-bold py-1 rounded-t-xl shadow-md w-full mx-auto px-4">
-        SUAS COLMEIAS <span className="font-extrabold">EM TEMPO REAL! 🐝</span>
+        SUAS COLMEIAS <span className="font-extrabold"> 🐝</span>
       </div>
 
       <div className="bg-gray-100 py-4 px-10 rounded-b-xl shadow-md w-full mx-auto">
