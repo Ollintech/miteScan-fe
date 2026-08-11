@@ -93,11 +93,6 @@ export default function LoadingAnalysis() {
           </div>
         </div>
 
-        {/* Organic Honeycomb Tag */}
-        <div className="mt-6 flex items-center justify-center gap-1.5 text-xs text-amber-700/80 font-semibold bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200/50">
-          <MdHexagon className="text-yellow-500 text-sm" />
-          <span>Processando dados com precisão</span>
-        </div>
       </div>
     </div>
   );
