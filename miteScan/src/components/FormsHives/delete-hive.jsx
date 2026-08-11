@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import FormHive from './form-hive'
 import axios from 'axios'
 import Modal from '../common/Modal'
+import { MdOutlineWarning } from 'react-icons/md'
 
 export default function DeleteHiveCard() {
   const { id: hiveId } = useParams()
@@ -12,12 +13,17 @@ export default function DeleteHiveCard() {
   const [beeTypes, setBeeTypes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  
+  // Estados para o novo Pop-up de Confirmação e submissão
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  
   const [modalInfo, setModalInfo] = useState({ isOpen: false, title: "", message: "", type: "error", onClose: null });
 
   const token = localStorage.getItem("token")
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
-  // Função para buscar dados da colmeia a ser excluída
+  // Busca dados da colmeia
   useEffect(() => {
     const fetchDados = async () => {
       setLoading(true)
@@ -91,7 +97,6 @@ export default function DeleteHiveCard() {
     fetchDados()
   }, [hiveId, token, base, navigate])
 
-  // Função para fechar modal
   const closeModal = () => {
     if (modalInfo.onClose) {
       modalInfo.onClose();
@@ -99,8 +104,13 @@ export default function DeleteHiveCard() {
     setModalInfo({ isOpen: false, title: "", message: "", type: "error", onClose: null });
   };
 
-  // Função para excluir colmeia
-  const handleDelete = async () => {
+  // Etapa 1: Quando o usuário clica no botão "Excluir" do formulário, abre o pop-up
+  const handlePreDelete = () => {
+    setShowConfirmPopup(true);
+  };
+
+  // Etapa 2: Executada ao clicar em "Excluir" dentro do pop-up
+  const handleConfirmDelete = async () => {
     const userString = localStorage.getItem('user');
     let account = null;
     try {
@@ -109,6 +119,7 @@ export default function DeleteHiveCard() {
     } catch {}
     
     if (!token || !account) {
+        setShowConfirmPopup(false);
         setModalInfo({ 
           isOpen: true, 
           title: "Erro de Sessão", 
@@ -119,37 +130,84 @@ export default function DeleteHiveCard() {
         return;
     }
 
+    setIsDeleting(true);
+
     try {
       const url = `${base}/${account}/hives/${hiveId}?confirm=true`;
 
       await axios.delete(url, {
         headers: { Authorization: `Bearer ${token}` },
-      })
+      });
+
+      setShowConfirmPopup(false);
+
+      // Redireciona para /hives enviando mensagem de sucesso no estado
+      navigate('/hives', {
+        state: { successMessage: "Colmeia excluída com sucesso!" }
+      });
+
+    } catch (error) {
+      console.error('❌ Erro ao excluir colmeia:', error.response?.data || error.message);
+      setIsDeleting(false);
+      setShowConfirmPopup(false);
 
       setModalInfo({
         isOpen: true,
-        title: "Sucesso",
-        message: "Colmeia excluída com sucesso.",
-        type: "success",
-        onClose: () => navigate('/hives')
-      });
-    } catch (error) {
-      console.error('❌ Erro ao excluir colmeia:', error.response?.data || error.message)
-      setModalInfo({
-        isOpen: true,
-        title: "Erro",
-        message: "Erro ao excluir colmeia.",
-        type: "error"
+        title: "Erro ao Excluir",
+        message: "Não foi possível excluir a colmeia.",
+        type: "error",
+        onClose: null
       });
     }
-  }
+  };
 
   if (loading) return <p className="text-center p-10">Carregando...</p>
   if (error) return <p className="text-center p-10 text-red-600">{error}</p>
   if (!hive) return <p className="text-center p-10 text-red-500">Colmeia não encontrada.</p>
 
   return (
-    <>
+    <div className="relative">
+      {/* POP-UP DE CONFIRMAÇÃO FLUTUANTE DE DELEÇÃO */}
+      {showConfirmPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full text-center border border-gray-100 transform transition-all scale-100">
+            
+            {/* Ícone de aviso em vermelho */}
+            <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MdOutlineWarning size={28} />
+            </div>
+
+            <h3 className="text-lg font-bold text-gray-800 mb-2">
+              Excluir Colmeia?
+            </h3>
+
+            <p className="text-sm text-gray-600 mb-6">
+              Tem certeza que deseja excluir a colmeia <strong>"{hive?.name}"</strong>? Esta ação não pode ser desfeita.
+            </p>
+
+            <div className="flex gap-3 justify-center">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setShowConfirmPopup(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors w-1/2"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors w-1/2 flex items-center justify-center gap-1 shadow-md shadow-red-200"
+              >
+                {isDeleting ? "Excluindo..." : "Excluir"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PADRÃO DE ERROS */}
       <Modal 
         isOpen={modalInfo.isOpen} 
         onClose={closeModal} 
@@ -158,13 +216,14 @@ export default function DeleteHiveCard() {
       >
         <p className="text-gray-700">{modalInfo.message}</p>
       </Modal>
+
       <FormHive
         key={hive.id}
         modo="excluir"
         colmeia={hive}
-        onExcluir={handleDelete}
+        onExcluir={handlePreDelete}
         beeTypes={beeTypes}
       />
-    </>
+    </div>
   )
 }
