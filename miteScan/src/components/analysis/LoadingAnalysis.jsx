@@ -78,20 +78,20 @@ export default function LoadingAnalysis() {
           {steps[currentStepIndex]}
         </p>
 
-        {/* Progress Bar */}
-        <div className="w-full mt-4">
-          <div className="flex justify-between items-center text-xs font-semibold text-gray-500 mb-1.5 px-1">
-            <span>Progresso</span>
-            <span className="text-amber-600 font-bold">{progress}%</span>
-          </div>
-          
-          <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-200/60">
-            <div 
-              className="h-full bg-gradient-to-r from-yellow-400 via-amber-400 to-amber-500 rounded-full transition-all duration-100 ease-out shadow-sm"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
+      {/* Progress Bar */}
+      <div className="w-full mt-4">
+        <div className="flex justify-between items-center text-xs font-semibold text-gray-500 mb-1.5 px-0.5">
+          <span>Progresso</span>
+          <span className="text-amber-800 font-bold">{progress}%</span>
         </div>
+        
+        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden border border-gray-200/50">
+          <div 
+            className="h-full bg-amber-500 rounded-full transition-[width] duration-300 ease-in-out shadow-inner"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      </div>
 
       </div>
     </div>
