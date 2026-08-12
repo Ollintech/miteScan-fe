@@ -167,12 +167,10 @@ export default function DeleteHiveCard() {
 
   return (
     <div className="relative">
-      {/* POP-UP DE CONFIRMAÇÃO FLUTUANTE DE DELEÇÃO */}
       {showConfirmPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full text-center border border-gray-100 transform transition-all scale-100">
             
-            {/* Ícone de aviso em vermelho */}
             <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <MdOutlineWarning size={28} />
             </div>
@@ -207,7 +205,6 @@ export default function DeleteHiveCard() {
         </div>
       )}
 
-      {/* MODAL PADRÃO DE ERROS */}
       <Modal 
         isOpen={modalInfo.isOpen} 
         onClose={closeModal} 
