@@ -185,7 +185,7 @@ export default function HivesList() {
       <div className="w-full max-w-[90%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:max-w-full gap-4">
         <div className="flex items-center gap-4 text-base sm:text-xl font-bold">
           <button
-            className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-2 sm:py-3 px-3 sm:px-4"
+            className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-2 sm:py-3 px-3 sm:px-4 transition-all duration-200 active:scale-95"
             onClick={() => navigate("/home")}
           >
             <FaArrowLeft size={20} className="sm:w-6" />
@@ -194,7 +194,7 @@ export default function HivesList() {
         </div>
         {isUserRoot && (
           <button
-            className="hidden sm:flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 rounded-xl font-bold p-3 text-base shadow-md transition-colors"
+            className="hidden sm:flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 rounded-xl font-bold p-3 text-base shadow-md transition-all duration-200 active:scale-95 hover:shadow-lg"
             onClick={() => navigate("/create-hive")}
           >
             <MdAdd size={24} />
@@ -206,7 +206,7 @@ export default function HivesList() {
       {/* Floating Action Button for Mobile */}
       {isUserRoot && (
         <button
-          className="fixed bottom-8 right-8 z-50 flex sm:hidden items-center justify-center w-14 h-14 bg-yellow-400 hover:bg-yellow-300 rounded-full shadow-lg transition-colors"
+          className="fixed bottom-8 right-8 z-50 flex sm:hidden items-center justify-center w-14 h-14 bg-yellow-400 hover:bg-yellow-300 rounded-full shadow-lg transition-all duration-200 active:scale-95"
           onClick={() => navigate("/create-hive")}
           title="Adicionar Colmeia"
         >
@@ -217,7 +217,7 @@ export default function HivesList() {
       <div className="max-h-[calc(100vh-340px)] overflow-y-auto pr-2 w-full">
 
         {loading && (
-          <div className="text-center p-10 text-gray-600 font-semibold">Carregando colmeias...</div>
+          <div className="text-center p-10 text-gray-600 font-semibold animate-pulse">Carregando colmeias...</div>
         )}
         {!loading && error && hives.length === 0 && (
           <div className="text-center py-20 flex flex-col items-center gap-4">
@@ -225,7 +225,7 @@ export default function HivesList() {
               você ainda não possui colmeias.
             </p>
             <button
-              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-2 px-4 rounded-xl flex items-center gap-2"
+              className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-all duration-200 active:scale-95"
               onClick={() => navigate("/create-hive")}
             >
               <MdAdd size={20} />
@@ -240,23 +240,28 @@ export default function HivesList() {
             const estado = getEstado(analysis, hive);
 
             return (
-              <div key={hive.id} className="flex flex-col sm:flex-row items-center w-full gap-4">
-                <div className="flex flex-col sm:flex-row h-full w-full shadow-lg rounded-xl">
+              <div 
+                key={hive.id} 
+                className="flex flex-col sm:flex-row items-center w-full gap-4 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="flex flex-col sm:flex-row h-full w-full shadow-lg hover:shadow-xl rounded-xl transition-all duration-300 border border-transparent hover:border-amber-300/60 overflow-hidden">
                   <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden sm:p-0">
-                    <img
-                      src={hive.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${hive.image_path}` : Image}
-                      alt={`Colmeia ${hive.name}`}
-                      className="w-full sm:w-32 h-32 sm:h-full object-cover rounded-t-xl sm:rounded-t-none sm:rounded-l-xl"
-                    />
+                    <div className="w-full sm:w-32 h-32 sm:h-full overflow-hidden shrink-0">
+                      <img
+                        src={hive.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${hive.image_path}` : Image}
+                        alt={`Colmeia ${hive.name}`}
+                        className="w-full h-full object-cover rounded-t-xl sm:rounded-t-none sm:rounded-l-xl transition-transform duration-500 hover:scale-105"
+                      />
+                    </div>
 
                     <div className="flex flex-col gap-3 text-start font-bold text-sm p-4 w-full">
                       <div className="flex items-center gap-2">
-                        <MdHexagon size={19} />
+                        <MdHexagon size={19} className="text-amber-500" />
                         {hive.name}
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <MdHexagon size={19} />
+                        <MdHexagon size={19} className="text-gray-400" />
                         {hive.size || '--'} cm
                       </div>
 
@@ -266,22 +271,22 @@ export default function HivesList() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <TbWorldLatitude size={18} />
+                        <TbWorldLatitude size={18} className="text-gray-500" />
                         {`${hive.location_lat}, ${hive.location_lng}`}
                       </div>
                     </div>
 
-
-                    <div className="h-25 w-0.5 bg-gray-600 mx-2 rounded-xl hidden sm:block"></div>
+                    <div className="h-25 w-0.5 bg-gray-300 mx-2 rounded-xl hidden sm:block"></div>
+                    
                     <div className="flex gap-2 sm:flex-col sm:pr-3 sm:space-y-8 text-sm">
-                      <div className="flex gap-2 items-center">
+                      <div className="flex gap-2 items-center font-bold">
                         <FaThermometerHalf
                           size={22}
                           color={getTemperatureColor(hive.temperature)}
                         />
                         {hive.temperature ?? "--"}°C
                       </div>
-                      <div className="flex gap-2 items-center">
+                      <div className="flex gap-2 items-center font-bold">
                         <MdOutlineWaterDrop
                           size={22}
                           color={getHumidityColor(hive.humidity)}
@@ -293,24 +298,32 @@ export default function HivesList() {
                     <div
                       className={`flex flex-row sm:flex-col items-center justify-center p-3 w-full sm:w-28 h-20 sm:h-full ${getBgColor(
                         estado
-                      )} gap-2`}
+                      )} gap-2 transition-colors duration-300`}
                     >
                       {getIcon(estado)}
-                      <span className="font-bold uppercase text-[10px] sm:text-xs">
+                      <span className="font-bold uppercase text-[10px] sm:text-xs tracking-wider">
                         {analysis?.bee_status || estado}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                  <div className="flex sm:flex-col flex-row gap-4 sm:ml-3 items-center mt-4 sm:mt-0">
-                    <button onClick={() => navigate(`/edit-hive/${hive.id}`)} title="Editar Colmeia">
-                      <MdEdit size={25} className="hover:text-yellow-600 transition-colors" />
-                    </button>
-                    <button onClick={() => navigate(`/delete-hive/${hive.id}`)} title="Excluir Colmeia">
-                      <FaTrash size={20} className="hover:text-red-600 transition-colors" />
-                    </button>
-                  </div>
+                <div className="flex sm:flex-col flex-row gap-4 sm:ml-3 items-center mt-4 sm:mt-0">
+                  <button 
+                    onClick={() => navigate(`/edit-hive/${hive.id}`)} 
+                    title="Editar Colmeia"
+                    className="p-2 rounded-full hover:bg-yellow-100 transition-all duration-200 active:scale-90"
+                  >
+                    <MdEdit size={25} className="text-gray-700 hover:text-yellow-600 transition-colors" />
+                  </button>
+                  <button 
+                    onClick={() => navigate(`/delete-hive/${hive.id}`)} 
+                    title="Excluir Colmeia"
+                    className="p-2 rounded-full hover:bg-red-100 transition-all duration-200 active:scale-90"
+                  >
+                    <FaTrash size={20} className="text-gray-700 hover:text-red-600 transition-colors" />
+                  </button>
+                </div>
               </div>
             );
           })}
