@@ -31,7 +31,7 @@ export default function EditHiveCard() {
     setToastError({ show: true, message: msg })
     setTimeout(() => {
       setToastError({ show: false, message: '' })
-    }, 3000)
+    }, 4000)
   }
 
   useEffect(() => {
@@ -131,27 +131,56 @@ export default function EditHiveCard() {
     setModalInfo({ isOpen: false, title: "", message: "", type: "error", onClose: null });
   };
 
-  // Etapa 1: Valida os dados e abre o Pop-up de confirmação (ou avisa erro via Toast)
+  // Etapa 1: Validação equivalente à do cadastro
   const handlePreEdit = (dadosAtualizados) => {
-    if (!dadosAtualizados.name) {
-      triggerErrorToast("Por favor, insira um nome para a colmeia.");
-      return;
-    }
+    try {
+      const nameStr = String(dadosAtualizados?.name || '').trim();
+      const sizeStr = String(dadosAtualizados?.size || '').trim();
+      const beeTypeIdStr = String(dadosAtualizados?.bee_type_id || '').trim();
 
-    const size = parseInt(dadosAtualizados.size);
-    if (isNaN(size) || size <= 0) {
-      triggerErrorToast("Por favor, insira um tamanho válido.");
-      return;
-    }
+      // 1. Valida Nome
+      if (!nameStr) {
+        triggerErrorToast("Por favor, insira um nome para a colmeia.");
+        return;
+      }
 
-    const bee_type_id = parseInt(dadosAtualizados.bee_type_id);
-    if (isNaN(bee_type_id)) {
-      triggerErrorToast("Por favor, selecione um tipo de abelha.");
-      return;
-    }
+      // 2. Valida Tamanho
+      if (!sizeStr) {
+        triggerErrorToast("Por favor, insira o tamanho da colmeia.");
+        return;
+      }
 
-    setPendingData(dadosAtualizados);
-    setShowConfirmPopup(true);
+      const size = parseInt(sizeStr, 10);
+      if (isNaN(size) || size <= 0) {
+        triggerErrorToast("Por favor, insira um tamanho válido maior que zero.");
+        return;
+      }
+
+      // 3. Valida Tipo de Abelha
+      if (!beeTypeIdStr) {
+        triggerErrorToast("Por favor, selecione um tipo de abelha.");
+        return;
+      }
+
+      const bee_type_id = parseInt(beeTypeIdStr, 10);
+      if (isNaN(bee_type_id)) {
+        triggerErrorToast("Selecione um tipo de abelha válido.");
+        return;
+      }
+
+      // 4. Valida Localização
+      if (!dadosAtualizados?.location?.lat || !dadosAtualizados?.location?.lng) {
+        triggerErrorToast("Por favor, defina a localização no mapa.");
+        return;
+      }
+
+      setPendingData(dadosAtualizados);
+      setShowConfirmPopup(true);
+
+    } catch (error) {
+      console.error("Erro ao validar edição:", error);
+      triggerErrorToast("Erro ao validar os dados do formulário.");
+    }
   };
 
   // Etapa 2: Executa a requisição de edição após o clique no pop-up
@@ -181,10 +210,10 @@ export default function EditHiveCard() {
 
     const formData = new FormData();
     formData.append('name', pendingData.name);
-    formData.append('bee_type_id', parseInt(pendingData.bee_type_id));
+    formData.append('bee_type_id', parseInt(pendingData.bee_type_id, 10));
     formData.append('location_lat', parseFloat(pendingData.location?.lat) || 0);
     formData.append('location_lng', parseFloat(pendingData.location?.lng) || 0);
-    formData.append('size', parseInt(pendingData.size));
+    formData.append('size', parseInt(pendingData.size, 10));
     if (pendingData.image) {
       formData.append('image', pendingData.image);
     }
@@ -214,8 +243,8 @@ export default function EditHiveCard() {
       setIsSubmitting(false);
       setShowConfirmPopup(false);
 
-      // Exibe erro no Toast flutuante do topo
-      triggerErrorToast("Erro ao atualizar colmeia.");
+      // Exibe erro no Toast flutuante
+      triggerErrorToast("Erro ao atualizar colmeia no servidor.");
     }
   };
 
@@ -224,19 +253,17 @@ export default function EditHiveCard() {
   if (!hive) return <p className="text-center p-10 text-red-500">Colmeia não encontrada.</p>
 
   return (
-    <div className="relative">
-      {/* TOAST FLUTUANTE DE ERRO NO TOPO */}
+    <div className="w-full flex flex-col items-center pt-4 pb-10 px-4">
       {toastError.show && (
-        <div className="fixed top-5 right-5 z-50 flex items-center gap-3 bg-red-600 text-white px-5 py-3.5 rounded-xl shadow-xl transition-all duration-300 animate-bounce">
-          <MdErrorOutline size={22} />
-          <span className="font-semibold text-xs sm:text-sm">{toastError.message}</span>
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 bg-red-600 text-white px-6 py-3.5 rounded-xl shadow-2xl border border-red-500 font-semibold text-sm">
+          <MdErrorOutline size={24} />
+          <span>{toastError.message}</span>
         </div>
       )}
 
-      {/* POP-UP DE CONFIRMAÇÃO FLUTUANTE DE EDIÇÃO */}
       {showConfirmPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full text-center border border-gray-100 transform transition-all scale-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full text-center border border-gray-100">
             <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <MdOutlineHelpOutline size={28} />
             </div>
@@ -271,7 +298,6 @@ export default function EditHiveCard() {
         </div>
       )}
 
-      {/* MODAL APENAS PARA ERROS CRÍTICOS DE SESSÃO */}
       <Modal 
         isOpen={modalInfo.isOpen} 
         onClose={closeModal} 
