@@ -15,7 +15,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         imagePreview: null
     })
 
-    // Função para carregar dados da colmeia ao editar ou excluir
     useEffect(() => {
         if (modo === 'editar' || modo === 'excluir') {
             if (colmeia) {
@@ -36,7 +35,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         }
     }, [modo, colmeia?.id, location.state]);
 
-    // Pré-selecionar "Apis Mellifera" se estiver criando e houver tipos de abelha disponíveis
     useEffect(() => {
         if (modo === 'criar' && beeTypes.length > 0 && !formData.bee_type_id) {
             const apis = beeTypes.find(b => b.name.toLowerCase().includes('apis')) || beeTypes[0];
@@ -45,30 +43,19 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
             }
         }
     }, [beeTypes, modo, formData.bee_type_id]);
-    useEffect(() => {
-        if ((modo === 'editar' || modo === 'excluir') && colmeia) {
-            setFormData(prev => ({
-                ...prev,
-                location: colmeia.location || prev.location,
-            }))
-        }
-    }, [colmeia?.location?.lat, colmeia?.location?.lng])
 
-    // Função para atualizar dados do formulário a partir do estado da navegação
     useEffect(() => {
         if (location.state?.location) {
             setFormData(prev => ({ ...prev, location: location.state.location }))
         }
     }, [location.state])
 
-    // Função para salvar rascunho do formulário ao criar colmeia
     useEffect(() => {
         if (modo === 'criar') {
             localStorage.setItem('draftHiveForm', JSON.stringify(formData));
         }
     }, [formData, modo]);
 
-    // Função para atualizar campos do formulário
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
@@ -85,7 +72,6 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         }
     }
 
-    // Função para navegar para seleção de localização
     const handleLocationClick = () => {
         navigate('/select-location', {
             state: {
@@ -96,17 +82,17 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
         })
     }
 
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Impede o recarregamento da página
+        if (modo === 'excluir') {
+            if (onExcluir) onExcluir();
+        } else {
+            if (onConfirmar) onConfirmar(formData);
+        }
+    };
 
     const isLeitura = modo === 'excluir'
 
-    const beeTypeName = isLeitura
-        ? beeTypes.find(b => b.id === parseInt(formData.bee_type_id))?.name || 'Não informado'
-        : ''
-
-    // Filtrar apenas Apis Mellifera no dropdown
-    const filteredBeeTypes = beeTypes.filter(type => type.name.toLowerCase().includes("apis mellifera"));
-
-    // Função para formatar coordenadas
     const formatCoordinate = (value) => {
         if (value === null || value === undefined || value === '') return 'Não informado'
         const num = Number(value)
@@ -125,8 +111,8 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                 </h3>
             </div>
 
-            <div className="space-y-5">
-
+            {/* FORMULARIO COM ONSUBMIT */}
+            <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="flex items-center gap-4">
                     <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Nome da Colmeia:</label>
                     <div className="flex-1 relative">
@@ -149,7 +135,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                             type="number"
                             name="size"
                             value={formData.size}
-                            onChange={(e) => handleChange({ target: { name: 'size', value: e.target.value.replace(/[^0-9]/g, '') } })}
+                            onChange={handleChange}
                             readOnly={isLeitura}
                             className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
                             placeholder="Ex.: 50"
@@ -166,11 +152,11 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                     </div>
                 </div>
 
-
                 <div className="flex items-center gap-4">
                     <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Localização:</label>
                     {!isLeitura ? (
                         <button
+                            type="button"
                             onClick={handleLocationClick}
                             className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors text-center"
                         >
@@ -193,7 +179,7 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                 </div>
 
                 {formData.location && !isLeitura && (
-                    <div className="text-sm text-gray-600 pl-[124px] ">
+                    <div className="text-sm text-gray-600 pl-[124px]">
                         {formData.location.lat}, {formData.location.lng}
                     </div>
                 )}
@@ -223,31 +209,14 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                                 />
                             </div>
                         )}
-                        {isLeitura && !formData.imagePreview && (
-                             <p className="text-gray-500 italic">Sem foto cadastrada</p>
-                        )}
                     </div>
                 </div>
 
-
                 <div className="flex justify-center mt-8 pt-4 border-t border-gray-200">
-                    {modo === 'criar' && formData.location && (
+                    {(modo === 'criar' || modo === 'editar') && (
                         <button
-                            onClick={() => {
-                                onConfirmar(formData)
-                            }}
-                            className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-1 px-8 rounded-xl shadow-md transition-colors"
-                        >
-                            Confirmar
-                        </button>
-                    )}
-
-                    {modo === 'editar' && (
-                        <button
-                            onClick={() => {
-                                onConfirmar(formData)
-                            }}
-                            className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-1 px-8 rounded-xl shadow-md transition-colors"
+                            type="submit"
+                            className="bg-yellow-400 hover:bg-yellow-300 text-gray-800 font-bold py-2 px-8 rounded-xl shadow-md transition-colors"
                         >
                             Confirmar
                         </button>
@@ -255,14 +224,15 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
 
                     {modo === 'excluir' && (
                         <button
+                            type="button"
                             onClick={onExcluir}
-                            className="bg-red-500 hover:bg-red-400 text-white font-bold py-1 px-8 rounded-xl shadow-md transition-colors"
+                            className="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-8 rounded-xl shadow-md transition-colors"
                         >
                             Excluir
                         </button>
                     )}
                 </div>
-            </div>
+            </form>
         </div>
     )
 }

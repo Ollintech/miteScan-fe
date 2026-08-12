@@ -3,13 +3,17 @@ import FormHive from './form-hive'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../common/Modal'
-import { MdOutlineHelpOutline, MdCheckCircle } from 'react-icons/md'
+import { MdOutlineHelpOutline, MdErrorOutline } from 'react-icons/md'
 
 export default function CreateHiveCard() {
   const [beeTypes, setBeeTypes] = useState([]);
-  const [pendingData, setPendingData] = useState(null); // Guarda os dados enquanto aguarda confirmação
-  const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Controla o popup de confirmação
+  const [pendingData, setPendingData] = useState(null);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Estado do Toast Flutuante
+  const [toastError, setToastError] = useState({ show: false, message: '' });
+
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,
     title: "",
@@ -21,11 +25,18 @@ export default function CreateHiveCard() {
   const navigate = useNavigate();
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
+  const triggerErrorToast = (msg) => {
+    console.warn("Disparando aviso:", msg); // Para conferir no Console (F12)
+    setToastError({ show: true, message: msg });
+    setTimeout(() => {
+      setToastError({ show: false, message: '' });
+    }, 4000);
+  };
+
   useEffect(() => {
     const fetchBeeTypes = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error('Sem token, redirecionando para login');
         navigate('/login');
         return;
       }
@@ -36,7 +47,6 @@ export default function CreateHiveCard() {
         });
         setBeeTypes(response.data);
       } catch (error) {
-        console.error('Erro ao buscar tipos de abelha:', error.response?.data || error.message);
         if (error.response?.status === 401 || error.response?.status === 403) {
           navigate('/login');
         }
@@ -53,61 +63,57 @@ export default function CreateHiveCard() {
     setModalInfo({ isOpen: false, title: "", message: "", type: "error", onClose: null });
   };
 
-  // Etapa 1: Valida os dados do formulário e abre o Pop-up de Confirmação
   const handlePreCreate = (dados) => {
-    if (!dados.name) {
-      setModalInfo({
-        isOpen: true,
-        title: "Erro de Validação",
-        message: "Por favor, insira um nome para a colmeia.",
-        type: "error",
-        onClose: null
-      });
-      return;
+    try {
+      const nameStr = String(dados?.name || '').trim();
+      const sizeStr = String(dados?.size || '').trim();
+      const beeTypeIdStr = String(dados?.bee_type_id || '').trim();
+
+      // 1. Valida Nome
+      if (!nameStr) {
+        triggerErrorToast("Por favor, insira um nome para a colmeia.");
+        return;
+      }
+
+      // 2. Valida Tamanho
+      if (!sizeStr) {
+        triggerErrorToast("Por favor, insira o tamanho da colmeia.");
+        return;
+      }
+
+      const size = parseInt(sizeStr, 10);
+      if (isNaN(size) || size <= 0) {
+        triggerErrorToast("Por favor, insira um tamanho válido maior que zero.");
+        return;
+      }
+
+      // 3. Valida Tipo de Abelha
+      if (!beeTypeIdStr) {
+        triggerErrorToast("Por favor, selecione um tipo de abelha.");
+        return;
+      }
+
+      const bee_type_id = parseInt(beeTypeIdStr, 10);
+      if (isNaN(bee_type_id)) {
+        triggerErrorToast("Selecione um tipo de abelha válido.");
+        return;
+      }
+
+      // 4. Valida Localização
+      if (!dados?.location?.lat || !dados?.location?.lng) {
+        triggerErrorToast("Por favor, defina a localização no mapa.");
+        return;
+      }
+
+      setPendingData(dados);
+      setShowConfirmPopup(true);
+
+    } catch (error) {
+      console.error("Erro ao validar:", error);
+      triggerErrorToast("Erro ao validar os dados do formulário.");
     }
-
-    const size = parseInt(dados.size);
-    const bee_type_id = parseInt(dados.bee_type_id);
-
-    if (isNaN(size) || size <= 0) {
-      setModalInfo({
-        isOpen: true,
-        title: "Erro de Validação",
-        message: "Por favor, insira um tamanho válido.",
-        type: "error",
-        onClose: null
-      });
-      return;
-    }
-
-    if (isNaN(bee_type_id)) {
-      setModalInfo({
-        isOpen: true,
-        title: "Erro de Validação",
-        message: "Por favor, selecione um tipo de abelha.",
-        type: "error",
-        onClose: null
-      });
-      return;
-    }
-
-    if (!dados.location?.lat || !dados.location?.lng) {
-      setModalInfo({
-        isOpen: true,
-        title: "Erro de Validação",
-        message: "Por favor, defina uma localização.",
-        type: "error",
-        onClose: null
-      });
-      return;
-    }
-
-    // Se estiver tudo correto, salva os dados temporariamente e abre o Popup
-    setPendingData(dados);
-    setShowConfirmPopup(true);
   };
 
-  // Etapa 2: Executada apenas quando o usuário clica em "Confirmar" no Pop-up
   const handleConfirmCreate = async () => {
     if (!pendingData) return;
 
@@ -146,10 +152,10 @@ export default function CreateHiveCard() {
 
     const formData = new FormData();
     formData.append('name', pendingData.name);
-    formData.append('bee_type_id', parseInt(pendingData.bee_type_id));
+    formData.append('bee_type_id', parseInt(pendingData.bee_type_id, 10));
     formData.append('location_lat', parseFloat(pendingData.location.lat));
     formData.append('location_lng', parseFloat(pendingData.location.lng));
-    formData.append('size', parseInt(pendingData.size));
+    formData.append('size', parseInt(pendingData.size, 10));
     if (pendingData.image) {
       formData.append('image', pendingData.image);
     }
@@ -164,7 +170,6 @@ export default function CreateHiveCard() {
       localStorage.removeItem('draftHiveForm');
       setShowConfirmPopup(false);
 
-      // Redireciona para /hives enviando a mensagem de sucesso
       navigate('/hives', {
         state: { successMessage: "Colmeia cadastrada com sucesso!" }
       });
@@ -174,22 +179,24 @@ export default function CreateHiveCard() {
       setIsSubmitting(false);
       setShowConfirmPopup(false);
 
-      setModalInfo({
-        isOpen: true,
-        title: "Erro ao Cadastrar",
-        message: "Erro ao cadastrar colmeia.",
-        type: "error",
-        onClose: null
-      });
+      triggerErrorToast("Erro ao cadastrar colmeia no servidor.");
     }
   };
 
   return (
-    <div className="relative">
-      {/* POP-UP DE CONFIRMAÇÃO FLUTUANTE */}
+    <div className="relative min-h-screen">
+      {/* TOAST FLUTUANTE VISÍVEL COM Z-INDEX MÁXIMO E ESTILO GARANTIDO */}
+      {toastError.show && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 bg-red-600 text-white px-6 py-3.5 rounded-xl shadow-2xl border border-red-500 font-semibold text-sm">
+          <MdErrorOutline size={24} />
+          <span>{toastError.message}</span>
+        </div>
+      )}
+
+      {/* POP-UP DE CONFIRMAÇÃO */}
       {showConfirmPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full text-center border border-gray-100 transform transition-all scale-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full text-center border border-gray-100">
             <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <MdOutlineHelpOutline size={28} />
             </div>
@@ -223,7 +230,7 @@ export default function CreateHiveCard() {
         </div>
       )}
 
-      {/* MODAL PADRÃO APENAS PARA ERROS */}
+      {/* MODAL DE SESSÃO */}
       <Modal
         isOpen={modalInfo.isOpen}
         onClose={closeModal}
