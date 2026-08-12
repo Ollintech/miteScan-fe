@@ -182,7 +182,8 @@ export default function HivesList() {
 
   return (
     <div className="p-4 sm:p-6 relative min-h-[80vh]">
-      <div className="w-full max-w-[90%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:max-w-full gap-4">
+      {/* HEADER ALINHADO À BORDA DIREITA DO CARD */}
+      <div className="w-full max-w-[95%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 sm:pr-14">
         <div className="flex items-center gap-4 text-base sm:text-xl font-bold">
           <button
             className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-2 sm:py-3 px-3 sm:px-4 transition-all duration-200 active:scale-95"
@@ -192,6 +193,7 @@ export default function HivesList() {
           </button>
           <span className="text-sm sm:text-base lg:text-xl">MINHAS COLMEIAS</span>
         </div>
+
         {isUserRoot && (
           <button
             className="hidden sm:flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 rounded-xl font-bold p-3 text-base shadow-md transition-all duration-200 active:scale-95 hover:shadow-lg"
@@ -234,7 +236,7 @@ export default function HivesList() {
           </div>
         )}
 
-        <div className="grid gap-6 sm:mx-0 mx-auto max-w-[95%]">
+        <div className="grid gap-6 mx-auto max-w-[95%]">
           {!loading && hives.map((hive) => {
             const analysis = hive.analysis;
             const estado = getEstado(analysis, hive);
