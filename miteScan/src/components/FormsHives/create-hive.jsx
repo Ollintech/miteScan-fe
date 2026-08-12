@@ -11,9 +11,10 @@ export default function CreateHiveCard() {
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Estado do Toast Flutuante
+  // Estado para o Toast Flutuante de Erro
   const [toastError, setToastError] = useState({ show: false, message: '' });
 
+  // Modal para erros de sessão
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,
     title: "",
@@ -25,8 +26,8 @@ export default function CreateHiveCard() {
   const navigate = useNavigate();
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
+  // Dispara o Toast Flutuante de erro
   const triggerErrorToast = (msg) => {
-    console.warn("Disparando aviso:", msg); // Para conferir no Console (F12)
     setToastError({ show: true, message: msg });
     setTimeout(() => {
       setToastError({ show: false, message: '' });
@@ -63,19 +64,18 @@ export default function CreateHiveCard() {
     setModalInfo({ isOpen: false, title: "", message: "", type: "error", onClose: null });
   };
 
+  // Validação dos campos do formulário
   const handlePreCreate = (dados) => {
     try {
       const nameStr = String(dados?.name || '').trim();
       const sizeStr = String(dados?.size || '').trim();
       const beeTypeIdStr = String(dados?.bee_type_id || '').trim();
 
-      // 1. Valida Nome
       if (!nameStr) {
         triggerErrorToast("Por favor, insira um nome para a colmeia.");
         return;
       }
 
-      // 2. Valida Tamanho
       if (!sizeStr) {
         triggerErrorToast("Por favor, insira o tamanho da colmeia.");
         return;
@@ -87,7 +87,6 @@ export default function CreateHiveCard() {
         return;
       }
 
-      // 3. Valida Tipo de Abelha
       if (!beeTypeIdStr) {
         triggerErrorToast("Por favor, selecione um tipo de abelha.");
         return;
@@ -99,7 +98,6 @@ export default function CreateHiveCard() {
         return;
       }
 
-      // 4. Valida Localização
       if (!dados?.location?.lat || !dados?.location?.lng) {
         triggerErrorToast("Por favor, defina a localização no mapa.");
         return;
@@ -184,8 +182,8 @@ export default function CreateHiveCard() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      {/* TOAST FLUTUANTE VISÍVEL COM Z-INDEX MÁXIMO E ESTILO GARANTIDO */}
+    <div className="w-full flex flex-col items-center pt-4 pb-10 px-4">
+      {/* TOAST FLUTUANTE */}
       {toastError.show && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 bg-red-600 text-white px-6 py-3.5 rounded-xl shadow-2xl border border-red-500 font-semibold text-sm">
           <MdErrorOutline size={24} />
