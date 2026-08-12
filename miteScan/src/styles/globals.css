@@ -1,48 +1,57 @@
 @import "tailwindcss";
 
+/* 1. Garante fundo branco total e zera rolagens laterais */
+:root, html, body, #root {
+  background-color: #ffffff !important;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: 'Arial', sans-serif;
-  overflow-x: hidden;
 }
 
 /* Background geral e organização de conteudo */
 .container-all {
-    min-height: 100vh;
-    min-width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: black;
-    background-color: #FFFFFF;
-    margin-top: 8vh;
-    padding: 1rem; 
-    box-sizing: border-box; 
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza todo o conteúdo no meio da tela */
+  justify-content: flex-start;
+  text-align: center;
+  color: black;
+  background-color: #FFFFFF;
+  margin-top: 0;
+  padding: 2rem 1rem; 
+  box-sizing: border-box; 
 
-    background-image: url('.././assets/images/icon-favo-top.png'), url('.././assets/images/icon-favo-bottom.png');
-    background-repeat: no-repeat, no-repeat;
-    background-position: left -140px top, right -220px bottom;
-    background-size: auto
-  }
+  background-image: url('.././assets/images/icon-favo-top.png'), url('.././assets/images/icon-favo-bottom.png');
+  background-repeat: no-repeat, no-repeat;
+  background-position: left -140px top, right -220px bottom;
+  background-size: auto;
+}
 
-  .bg-auth {
-    background-image: url('.././assets/images/bees.png');
-    background-color: #ffbb00;
-    min-height: 100vh;
-    min-width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-size: cover;
-    padding: 1rem; 
-    box-sizing: border-box; 
-  }
+.bg-auth {
+  background-image: url('.././assets/images/bees.png');
+  background-color: #ffbb00;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  padding: 1rem; 
+  box-sizing: border-box; 
+}
 
-  @media (max-width: 640px) {
+@media (max-width: 640px) {
   .container-all {
-    margin-top: 8vh;
-    padding: 3rem 0.5rem;
+    margin-top: 0;
+    padding: 2rem 0.5rem;
     background-position: left -80px top, right -150px bottom;
     background-size: 200px, 200px;
   }
