@@ -162,7 +162,10 @@ export default function Result() {
   };
 
   const currentStatus = statusConfig[statusKey];
-  const imageUrl = analysis.image_path ? `${base}/${analysis.image_path.replace(/\\/g, '/')}` : resultImage;
+  
+  // Linha antiga comentada caso queira reverter no futuro:
+  // const imageUrl = analysis.image_path ? `${base}/${analysis.image_path.replace(/\\/g, '/')}` : resultImage;
+  const imageUrl = analysis.image_path || resultImage;
 
   return (
     <div className="w-full space-y-5 my-2 text-left">
@@ -209,6 +212,9 @@ export default function Result() {
             <img 
               src={imageUrl} 
               alt="Foto da Colmeia Analisada"
+              onError={(e) => {
+                e.currentTarget.src = resultImage;
+              }}
               className="w-full h-full object-cover"
             />
           </div>
@@ -335,6 +341,3 @@ export default function Result() {
     </div>
   );
 }
-
-
-
