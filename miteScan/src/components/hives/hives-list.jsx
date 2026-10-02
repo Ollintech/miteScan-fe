@@ -250,7 +250,13 @@ export default function HivesList() {
                   <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden sm:p-0">
                     <div className="w-full sm:w-32 h-32 sm:h-full overflow-hidden shrink-0">
                       <img
-                        src={hive.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${hive.image_path}` : Image}
+                        src={
+                          hive.image_path
+                            ? hive.image_path.startsWith('http')
+                              ? hive.image_path
+                              : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${hive.image_path}`
+                            : Image
+                        }
                         alt={`Colmeia ${hive.name}`}
                         className="w-full h-full object-cover rounded-t-xl sm:rounded-t-none sm:rounded-l-xl transition-transform duration-500 hover:scale-105"
                       />
