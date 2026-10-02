@@ -7,7 +7,9 @@ import {
   MdCalendarToday,
   MdFilterList,
   MdHive,
+  MdHelpOutline,
 } from 'react-icons/md'
+import { FaTrash } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
@@ -16,105 +18,121 @@ export default function AnalysisHist() {
   const [loading, setLoading] = useState(true)
   const [selectedHive, setSelectedHive] = useState('all')
 
-  useEffect(() => {
-    const fetchAnalyses = async () => {
-      try {
-        const token = localStorage.getItem('token')
-        const userString = localStorage.getItem('user')
+  // Estado para controlar o modal de confirmação de exclusão
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [analysisToDelete, setAnalysisToDelete] = useState(null)
 
-        if (!token || !userString) {
-          console.error('Token ou usuário não encontrado')
-          setLoading(false)
-          return
-        }
+  const token = localStorage.getItem('token')
+  const userString = localStorage.getItem('user')
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
-        let account
+  let account = ''
+  try {
+    const userObj = JSON.parse(userString)
+    account = userObj?.account || localStorage.getItem('account')
+  } catch (e) {
+    console.error('Erro ao parsear user:', e)
+  }
 
-        try {
-          const userObj = JSON.parse(userString)
-
-          account =
-            userObj?.account ||
-            localStorage.getItem('account')
-        } catch (e) {
-          console.error('Erro ao parsear user:', e)
-          setLoading(false)
-          return
-        }
-
-        if (!account) {
-          console.error('Account não encontrado')
-          setLoading(false)
-          return
-        }
-
-        const base =
-          import.meta.env.VITE_API_BASE_URL ||
-          'http://localhost:8000'
-
-        const response = await axios.get(
-          `${base}/hive_analyses/all`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: {
-              account,
-            },
-          }
-        )
-
-        const sortedAnalyses = (response.data || []).sort(
-          (a, b) =>
-            new Date(b.created_at) -
-            new Date(a.created_at)
-        )
-
-        const analysesWithHive = await Promise.all(
-          sortedAnalyses.map(async (analysis) => {
-            try {
-              const hiveRes = await axios.get(
-                `${base}/${account}/hives/${analysis.hive_id}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              )
-
-              return {
-                ...analysis,
-                hive: hiveRes.data,
-              }
-            } catch (err) {
-              console.error(
-                `Erro ao buscar colmeia ${analysis.hive_id}:`,
-                err
-              )
-
-              return {
-                ...analysis,
-                hive: null,
-              }
-            }
-          })
-        )
-
-        setAnalyses(analysesWithHive)
-      } catch (error) {
-        console.error(
-          'Erro ao buscar análises:',
-          error
-        )
-
-        setAnalyses([])
-      } finally {
+  const fetchAnalyses = async () => {
+    try {
+      if (!token || !account) {
+        console.error('Token ou usuário não encontrado')
         setLoading(false)
+        return
       }
-    }
 
+      const response = await axios.get(
+        `${base}/hive_analyses/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            account,
+          },
+        }
+      )
+
+      const sortedAnalyses = (response.data || []).sort(
+        (a, b) =>
+          new Date(b.created_at) -
+          new Date(a.created_at)
+      )
+
+      const analysesWithHive = await Promise.all(
+        sortedAnalyses.map(async (analysis) => {
+          try {
+            const hiveRes = await axios.get(
+              `${base}/${account}/hives/${analysis.hive_id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+
+            return {
+              ...analysis,
+              hive: hiveRes.data,
+            }
+          } catch (err) {
+            console.error(
+              `Erro ao buscar colmeia ${analysis.hive_id}:`,
+              err
+            )
+
+            return {
+              ...analysis,
+              hive: null,
+            }
+          }
+        })
+      )
+
+      setAnalyses(analysesWithHive)
+    } catch (error) {
+      console.error(
+        'Erro ao buscar análises:',
+        error
+      )
+      setAnalyses([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
     fetchAnalyses()
   }, [])
+
+  // Abre o modal de confirmação
+  const openDeleteModal = (analysis) => {
+    setAnalysisToDelete(analysis)
+    setDeleteModalOpen(true)
+  }
+
+  // Confirma e executa a exclusão da análise
+  const confirmDeleteAnalysis = async () => {
+    if (!analysisToDelete) return
+
+    const analysisId = analysisToDelete.id
+
+    try {
+      await axios.delete(`${base}/hive_analyses/${analysisId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      // Remove o item da lista localmente para atualizar a tela na hora
+      setAnalyses((prev) => prev.filter((item) => item.id !== analysisId))
+    } catch (err) {
+      console.error('Erro ao excluir análise:', err)
+      alert('Não foi possível excluir a análise.')
+    } finally {
+      setDeleteModalOpen(false)
+      setAnalysisToDelete(null)
+    }
+  }
 
   /* =========================
       LOADING
@@ -196,8 +214,10 @@ export default function AnalysisHist() {
     )
   })
 
+  const hiveNameForModal = analysisToDelete?.hive?.name || `Colmeia ${analysisToDelete?.hive_id}`
+
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 pb-10">
+    <div className="w-full px-4 sm:px-6 lg:px-8 pb-10 relative">
 
       {/* =========================
           FILTRO
@@ -377,12 +397,11 @@ export default function AnalysisHist() {
                 ? 'Asas deformadas'
                 : 'Normal'
 
-          // Pega especificamente a URL correta da imagem desta análise no Supabase
           const imageUrl =
             analysis.image_path
               ? (analysis.image_path.startsWith('http')
                   ? analysis.image_path
-                  : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${analysis.image_path}`)
+                  : `${base}/${analysis.image_path}`)
               : Image
 
           return (
@@ -393,270 +412,290 @@ export default function AnalysisHist() {
                 analysis._id ||
                 `${analysis.hive_id}-${analysis.created_at}`
               }
-              className="
-                bg-white
-                border border-gray-200
-                rounded-2xl
-                overflow-hidden
-                shadow-sm
-                hover:shadow-md
-                transition-shadow
-              "
+              className="transition-all duration-300 hover:-translate-y-1"
             >
+              <div
+                className="
+                  bg-white
+                  border border-gray-200
+                  rounded-2xl
+                  overflow-hidden
+                  shadow-sm
+                  hover:shadow-xl
+                  hover:border-amber-300/60
+                  transition-all
+                  duration-300
+                "
+              >
 
-              {/* =========================
-                  CABEÇALHO DO CARD
-              ========================== */}
+                {/* =========================
+                    CABEÇALHO DO CARD
+                ========================== */}
 
-              <div className="px-4 sm:px-6 py-4 border-b border-gray-100">
+                <div className="px-4 sm:px-6 py-4 border-b border-gray-100">
 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
 
-                    <div className="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center shrink-0">
-                      <MdHive className="text-2xl text-yellow-600" />
-                    </div>
+                      <div className="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center shrink-0">
+                        <MdHive className="text-2xl text-yellow-600" />
+                      </div>
 
-                    <div>
+                      <div>
 
-                      <h3 className="font-bold text-gray-800">
-                        {hive?.name ||
-                          `Colmeia ${analysis.hive_id}`}
-                      </h3>
+                        <h3 className="font-bold text-gray-800">
+                          {hive?.name ||
+                            `Colmeia ${analysis.hive_id}`}
+                        </h3>
 
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
-                        <MdCalendarToday className="text-sm" />
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+                          <MdCalendarToday className="text-sm" />
 
-                        {new Date(
-                          analysis.created_at
-                        ).toLocaleDateString('pt-BR')}
+                          {new Date(
+                            analysis.created_at
+                          ).toLocaleDateString('pt-BR')}
+                        </div>
+
                       </div>
 
                     </div>
 
-                  </div>
+                    {/* LADO DIREITO: Selo da IA e Botão de Excluir alinhados sem sobreposição */}
+                    <div className="flex items-center gap-3 self-end sm:self-auto">
+                      <div
+                        className={`
+                          px-3 py-1.5
+                          rounded-full
+                          text-xs
+                          font-bold
+                          ${
+                            isDanger
+                              ? 'bg-red-100 text-red-700'
+                              : isAlert
+                                ? 'bg-orange-100 text-orange-700'
+                                : 'bg-green-100 text-green-700'
+                          }
+                        `}
+                      >
+                        IA: {resultLabel}
+                      </div>
 
-                  <div
-                    className={`
-                      self-start sm:self-auto
-                      px-3 py-1.5
-                      rounded-full
-                      text-xs
-                      font-bold
-                      ${
-                        isDanger
-                          ? 'bg-red-100 text-red-700'
-                          : isAlert
-                            ? 'bg-orange-100 text-orange-700'
-                            : 'bg-green-100 text-green-700'
-                      }
-                    `}
-                  >
-                    IA: {resultLabel}
+                      <button
+                        onClick={() => openDeleteModal(analysis)}
+                        title="Excluir Análise"
+                        className="text-gray-400 hover:text-red-600 bg-gray-50 hover:bg-red-50 p-2 rounded-xl transition-all duration-200 active:scale-95 shadow-sm border border-gray-200"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
+
                   </div>
 
                 </div>
 
-              </div>
+                {/* =========================
+                    CONTEÚDO DO CARD
+                ========================== */}
 
-              {/* =========================
-                  CONTEÚDO DO CARD
-              ========================== */}
+                <div className="p-4 sm:p-6">
 
-              <div className="p-4 sm:p-6">
+                  <div className="flex flex-col lg:flex-row gap-6">
 
-                <div className="flex flex-col lg:flex-row gap-6">
+                    {/* =========================
+                        IMAGEM ESPECÍFICA DA ANÁLISE
+                    ========================== */}
 
-                  {/* =========================
-                      IMAGEM ESPECÍFICA DA ANÁLISE
-                  ========================== */}
+                    <div className="w-full lg:w-[42%] shrink-0">
 
-                  <div className="w-full lg:w-[42%] shrink-0">
+                      <div className="relative overflow-hidden rounded-xl bg-gray-100">
 
-                    <div className="relative overflow-hidden rounded-xl bg-gray-100">
+                        <img
+                          src={imageUrl}
+                          alt="Foto específica da análise"
+                          onError={(e) => {
+                            e.currentTarget.src = Image
+                          }}
+                          className="
+                            w-full
+                            h-52
+                            sm:h-64
+                            lg:h-60
+                            object-cover
+                            transition-transform
+                            duration-500
+                            hover:scale-105
+                          "
+                        />
 
-                      <img
-                        src={imageUrl}
-                        alt="Foto específica da análise"
-                        onError={(e) => {
-                          e.currentTarget.src = Image
-                        }}
-                        className="
-                          w-full
-                          h-52
-                          sm:h-64
-                          lg:h-60
-                          object-cover
-                        "
-                      />
+                        <div className="absolute bottom-3 left-3">
 
-                      <div className="absolute bottom-3 left-3">
-
-                        <div
-                          className={`
-                            px-3 py-1.5
-                            rounded-full
-                            text-xs
-                            font-bold
-                            shadow-md
-                            ${
-                              isDanger
-                                ? 'bg-red-600 text-white'
-                                : isAlert
-                                  ? 'bg-orange-500 text-white'
-                                  : 'bg-green-600 text-white'
-                            }
-                          `}
-                        >
-                          {resultLabel}
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                  {/* =========================
-                      INFORMAÇÕES
-                  ========================== */}
-
-                  <div className="flex-1">
-
-                    <h4 className="text-sm font-bold text-gray-800 mb-4">
-                      Informações da colmeia
-                    </h4>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-
-                      {/* TAMANHO */}
-
-                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-
-                        <div className="flex items-center gap-2 mb-2">
-
-                          <MdStraighten className="text-xl text-gray-500" />
-
-                          <span className="text-xs text-gray-500">
-                            Tamanho
-                          </span>
+                          <div
+                            className={`
+                              px-3 py-1.5
+                              rounded-full
+                              text-xs
+                              font-bold
+                              shadow-md
+                              ${
+                                isDanger
+                                  ? 'bg-red-600 text-white'
+                                  : isAlert
+                                    ? 'bg-orange-500 text-white'
+                                    : 'bg-green-600 text-white'
+                              }
+                            `}
+                          >
+                            {resultLabel}
+                          </div>
 
                         </div>
-
-                        <p className="text-lg font-bold text-gray-800">
-                          {hive?.size ?? '--'}
-
-                          <span className="text-xs font-medium text-gray-500 ml-1">
-                            cm
-                          </span>
-                        </p>
-
-                      </div>
-
-                      {/* TEMPERATURA */}
-
-                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-
-                        <div className="flex items-center gap-2 mb-2">
-
-                          <MdThermostat className="text-xl text-gray-500" />
-
-                          <span className="text-xs text-gray-500">
-                            Temperatura
-                          </span>
-
-                        </div>
-
-                        <p className="text-lg font-bold text-gray-800">
-                          {hive?.temperature ?? '--'}
-
-                          <span className="text-xs font-medium text-gray-500 ml-1">
-                            °C
-                          </span>
-                        </p>
-
-                      </div>
-
-                      {/* UMIDADE */}
-
-                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-
-                        <div className="flex items-center gap-2 mb-2">
-
-                          <MdWaterDrop className="text-xl text-gray-500" />
-
-                          <span className="text-xs text-gray-500">
-                            Umidade
-                          </span>
-
-                        </div>
-
-                        <p className="text-lg font-bold text-gray-800">
-                          {hive?.humidity ?? '--'}
-
-                          <span className="text-xs font-medium text-gray-500 ml-1">
-                            %
-                          </span>
-                        </p>
 
                       </div>
 
                     </div>
 
                     {/* =========================
-                        ALERTA
+                        INFORMAÇÕES
                     ========================== */}
 
-                    <div
-                      className={`
-                        mt-5
-                        rounded-xl
-                        border
-                        ${statusConfig.border}
-                        ${statusConfig.bg}
-                        p-4
-                      `}
-                    >
+                    <div className="flex-1">
 
-                      <div className="flex items-center gap-3">
+                      <h4 className="text-sm font-bold text-gray-800 mb-4">
+                        Informações da colmeia
+                      </h4>
 
-                        <div
-                          className={`
-                            w-9 h-9
-                            rounded-full
-                            ${statusConfig.icon}
-                            ${statusConfig.text}
-                            flex items-center justify-center
-                            font-bold
-                            shrink-0
-                          `}
-                        >
-                          {statusConfig.symbol}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                        {/* TAMANHO */}
+
+                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+
+                          <div className="flex items-center gap-2 mb-2">
+
+                            <MdStraighten className="text-xl text-gray-500" />
+
+                            <span className="text-xs text-gray-500">
+                              Tamanho
+                            </span>
+
+                          </div>
+
+                          <p className="text-lg font-bold text-gray-800">
+                            {hive?.size ?? '--'}
+
+                            <span className="text-xs font-medium text-gray-500 ml-1">
+                              cm
+                            </span>
+                          </p>
+
                         </div>
 
-                        <div>
+                        {/* TEMPERATURA */}
 
-                          <p
+                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+
+                          <div className="flex items-center gap-2 mb-2">
+
+                            <MdThermostat className="text-xl text-gray-500" />
+
+                            <span className="text-xs text-gray-500">
+                              Temperatura
+                            </span>
+
+                          </div>
+
+                          <p className="text-lg font-bold text-gray-800">
+                            {hive?.temperature ?? '--'}
+
+                            <span className="text-xs font-medium text-gray-500 ml-1">
+                              °C
+                            </span>
+                          </p>
+
+                        </div>
+
+                        {/* UMIDADE */}
+
+                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+
+                          <div className="flex items-center gap-2 mb-2">
+
+                            <MdWaterDrop className="text-xl text-gray-500" />
+
+                            <span className="text-xs text-gray-500">
+                              Umidade
+                            </span>
+
+                          </div>
+
+                          <p className="text-lg font-bold text-gray-800">
+                            {hive?.humidity ?? '--'}
+
+                            <span className="text-xs font-medium text-gray-500 ml-1">
+                              %
+                            </span>
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      {/* =========================
+                          ALERTA
+                      ========================= */}
+
+                      <div
+                        className={`
+                          mt-5
+                          rounded-xl
+                          border
+                          ${statusConfig.border}
+                          ${statusConfig.bg}
+                          p-4
+                        `}
+                      >
+
+                        <div className="flex items-center gap-3">
+
+                          <div
                             className={`
-                              text-sm
+                              w-9 h-9
+                              rounded-full
+                              ${statusConfig.icon}
+                              ${statusConfig.text}
+                              flex items-center justify-center
                               font-bold
-                              ${statusConfig.text}
+                              shrink-0
                             `}
                           >
-                            {statusConfig.status}
-                          </p>
+                            {statusConfig.symbol}
+                          </div>
 
-                          <p
-                            className={`
-                              text-xs
-                              ${statusConfig.text}
-                              opacity-80
-                              mt-1
-                            `}
-                          >
-                            {statusConfig.description}
-                          </p>
+                          <div>
+
+                            <p
+                              className={`
+                                text-sm
+                                font-bold
+                                ${statusConfig.text}
+                              `}
+                            >
+                              {statusConfig.status}
+                            </p>
+
+                            <p
+                              className={`
+                                text-xs
+                                ${statusConfig.text}
+                                opacity-80
+                                mt-1
+                              `}
+                            >
+                              {statusConfig.description}
+                            </p>
+
+                          </div>
 
                         </div>
 
@@ -669,7 +708,6 @@ export default function AnalysisHist() {
                 </div>
 
               </div>
-
             </div>
 
           )
@@ -699,6 +737,48 @@ export default function AnalysisHist() {
 
         </div>
 
+      )}
+
+      {/* =========================
+          MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+      ========================== */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs px-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl flex flex-col items-center text-center animate-in fade-in zoom-in duration-200">
+            
+            {/* Ícone de interrogação estilizado */}
+            <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mb-5 text-amber-500 shadow-xs">
+              <MdHelpOutline className="text-4xl" />
+            </div>
+
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              Excluir Análise?
+            </h3>
+
+            <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+              Deseja realmente excluir a análise da colmeia <span className="font-semibold text-gray-700">"{hiveNameForModal}"</span>? Esta ação não poderá ser desfeita.
+            </p>
+
+            <div className="flex items-center gap-3 w-full">
+              <button
+                type="button"
+                onClick={() => setDeleteModalOpen(false)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-2xl transition duration-200 active:scale-95 text-sm"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={confirmDeleteAnalysis}
+                className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-4 rounded-2xl transition duration-200 active:scale-95 shadow-md shadow-amber-500/20 text-sm"
+              >
+                Confirmar
+              </button>
+            </div>
+
+          </div>
+        </div>
       )}
 
     </div>
