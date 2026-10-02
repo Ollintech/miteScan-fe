@@ -117,7 +117,7 @@ export default function AnalysisHist() {
   }, [])
 
   /* =========================
-     LOADING
+      LOADING
   ========================== */
 
   if (loading) {
@@ -133,7 +133,7 @@ export default function AnalysisHist() {
   }
 
   /* =========================
-     SEM ANÁLISES
+      SEM ANÁLISES
   ========================== */
 
   if (analyses.length === 0) {
@@ -155,7 +155,7 @@ export default function AnalysisHist() {
   }
 
   /* =========================
-     COLMEIAS
+      COLMEIAS
   ========================== */
 
   const hiveMap = new Map()
@@ -182,7 +182,7 @@ export default function AnalysisHist() {
   }))
 
   /* =========================
-     FILTRO
+      FILTRO
   ========================== */
 
   const visible = analyses.filter((item) => {
@@ -295,7 +295,7 @@ export default function AnalysisHist() {
           const hive = analysis.hive
 
           /* =========================
-             STATUS
+              STATUS
           ========================== */
 
           const isDanger =
@@ -377,9 +377,12 @@ export default function AnalysisHist() {
                 ? 'Asas deformadas'
                 : 'Normal'
 
+          // Pega especificamente a URL correta da imagem desta análise no Supabase
           const imageUrl =
             analysis.image_path
-              ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${analysis.image_path}`
+              ? (analysis.image_path.startsWith('http')
+                  ? analysis.image_path
+                  : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${analysis.image_path}`)
               : Image
 
           return (
@@ -466,7 +469,7 @@ export default function AnalysisHist() {
                 <div className="flex flex-col lg:flex-row gap-6">
 
                   {/* =========================
-                      IMAGEM
+                      IMAGEM ESPECÍFICA DA ANÁLISE
                   ========================== */}
 
                   <div className="w-full lg:w-[42%] shrink-0">
@@ -475,7 +478,7 @@ export default function AnalysisHist() {
 
                       <img
                         src={imageUrl}
-                        alt="Foto da análise"
+                        alt="Foto específica da análise"
                         onError={(e) => {
                           e.currentTarget.src = Image
                         }}
