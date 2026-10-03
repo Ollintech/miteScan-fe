@@ -59,8 +59,7 @@ export default function HomeHives() {
            return;
         }
 
-        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-        
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         const url = `${base}/${account}/hives/all`;
 
         const hivesResponse = await axios.get(url, {
@@ -79,8 +78,8 @@ export default function HomeHives() {
           hivesData.map(async (hive) => {
             try {
               const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`, {
-                  headers: { Authorization: `Bearer ${token}` },
-                  timeout: 8000
+                headers: { Authorization: `Bearer ${token}` },
+                timeout: 8000
               });
               return { ...hive, analysis: analysisResponse.data };
             } catch {
@@ -115,7 +114,8 @@ export default function HomeHives() {
             umidade: humidity,
             status,
             beeStatus: displayStatus,
-            imagem: hive.image_path ? `${base}/${hive.image_path}` : HivesImg,
+            // CORRIGIDO AQUI: Usa diretamente a URL completa do Supabase que vem do banco
+            imagem: hive.image_path ? hive.image_path : HivesImg,
           };
         });
 
@@ -128,7 +128,6 @@ export default function HomeHives() {
                 setError("Sessão expirada. Faça login novamente.");
                 navigate('/login');
             } else if (error.response.status === 404) {
-                // Tratar 404 como lista vazia para exibir estado "Comece aqui!"
                 setError("");
                 setHives([]);
                 return;
