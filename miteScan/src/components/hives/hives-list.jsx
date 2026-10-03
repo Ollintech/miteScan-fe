@@ -1,4 +1,3 @@
-import Image from "../../assets/images/colmeia2.jpg";
 import Bee from "../../assets/images/miniBee.png";
 import {
   FaMapMarkerAlt,
@@ -51,7 +50,6 @@ export default function HivesList() {
           user = userObj;
           account = userObj?.account || localStorage.getItem('account');
 
-          // Verifica se é root ou associado (ambos podem adicionar agora)
           const userType = localStorage.getItem("user_type");
           setIsUserRoot(userType === 'root' || userType === 'associated');
         } catch (e) {
@@ -180,6 +178,23 @@ export default function HivesList() {
     return beeType ? beeType.name : (typeId || '--').toString();
   }
 
+  // Função limpa e definitiva para o Supabase (remove lixo de rotas locais e extrai só o arquivo)
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "";
+
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+
+    const SUPABASE_PROJECT_URL = "https://angzdelcvwneuqwhmfbd.supabase.co"; 
+    const BUCKET_NAME = "images-mitescan";
+
+    // Pega estritamente a última parte do caminho (o nome real do arquivo de imagem)
+    const cleanFileName = imagePath.split('/').filter(Boolean).pop();
+
+    return `${SUPABASE_PROJECT_URL}/storage/v1/object/public/${BUCKET_NAME}/hives/${encodeURIComponent(cleanFileName)}`;
+  };
+
   return (
     <div className="p-4 sm:p-6 relative min-h-[80vh]">
       {/* HEADER ALINHADO À BORDA DIREITA DO CARD */}
@@ -250,7 +265,7 @@ export default function HivesList() {
                   <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden sm:p-0">
                     <div className="w-full sm:w-32 h-32 sm:h-full overflow-hidden shrink-0">
                       <img
-                        src={hive.image_path ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/${hive.image_path}` : Image}
+                        src={getImageUrl(hive.image_path)}
                         alt={`Colmeia ${hive.name}`}
                         className="w-full h-full object-cover rounded-t-xl sm:rounded-t-none sm:rounded-l-xl transition-transform duration-500 hover:scale-105"
                       />
