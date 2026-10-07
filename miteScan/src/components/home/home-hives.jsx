@@ -60,34 +60,42 @@ export default function HomeHives() {
         }
 
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-        const url = `${base}/${account}/hives/all`;
 
-        const hivesResponse = await axios.get(url, {
-          headers: { Authorization: `Bearer ${token}` },
-          timeout: 8000
-        });
-        const hivesData = hivesResponse.data;
+        // 1. Busca as colmeias e todas as análises em paralelo
+        const [hivesResponse, analysesResponse] = await Promise.all([
+          axios.get(`${base}/${account}/hives/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 8000
+          }),
+          axios.get(`${base}/hive_analyses/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { account },
+            timeout: 8000
+          }).catch(() => ({ data: [] }))
+        ]);
+
+        const hivesData = hivesResponse.data || [];
+        const analysesData = analysesResponse.data || [];
 
         // Caso não existam colmeias, evitar chamadas adicionais e exibir estado vazio
         if (!Array.isArray(hivesData) || hivesData.length === 0) {
           setHives([]);
+          setLoading(false);
           return;
         }
 
-        const hivesWithAnalysis = await Promise.all(
-          hivesData.map(async (hive) => {
-            try {
-              const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-                timeout: 8000
-              });
-              return { ...hive, analysis: analysisResponse.data };
-            } catch {
-              console.warn(`Nenhuma análise encontrada para colmeia ${hive.id}`);
-              return { ...hive, analysis: null };
-            }
-          })
-        );
+        // 2. Mapeia a análise mais recente de cada colmeia em memória
+        const latestAnalysisMap = new Map();
+        analysesData.forEach((analysis) => {
+          if (!latestAnalysisMap.has(analysis.hive_id)) {
+            latestAnalysisMap.set(analysis.hive_id, analysis);
+          }
+        });
+
+        const hivesWithAnalysis = hivesData.map((hive) => ({
+          ...hive,
+          analysis: latestAnalysisMap.get(hive.id) || null,
+        }));
 
         const parsed = hivesWithAnalysis.map((hive) => {
           const { temperature, humidity, analysis } = hive;
@@ -114,7 +122,6 @@ export default function HomeHives() {
             umidade: humidity,
             status,
             beeStatus: displayStatus,
-            // CORRIGIDO AQUI: Usa diretamente a URL completa do Supabase que vem do banco
             imagem: hive.image_path ? hive.image_path : HivesImg,
           };
         });

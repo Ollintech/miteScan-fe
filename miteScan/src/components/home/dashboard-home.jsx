@@ -50,27 +50,35 @@ export default function InfoHome() {
         }
         
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-        const url = `${base}/${account}/hives/all`;
 
-        const hivesResponse = await axios.get(url, {
-          headers: { Authorization: `Bearer ${token}` },
+        // 1. Busca as colmeias e todas as análises em paralelo (muito mais rápido)
+        const [hivesResponse, analysesResponse] = await Promise.all([
+          axios.get(`${base}/${account}/hives/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${base}/hive_analyses/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { account },
+          }).catch(() => ({ data: [] }))
+        ]);
+
+        const hives = hivesResponse.data || [];
+        const analyses = analysesResponse.data || [];
+
+        // 2. Mapeia a análise mais recente de cada colmeia em memória
+        const latestAnalysisMap = new Map();
+        analyses.forEach((analysis) => {
+          if (!latestAnalysisMap.has(analysis.hive_id)) {
+            latestAnalysisMap.set(analysis.hive_id, analysis);
+          }
         });
-        const hives = hivesResponse.data;
 
-        const hivesWithAnalysis = await Promise.all(
-          hives.map(async (hive) => {
-            try {
-              const analysisResponse = await axios.get(`${base}/hive_analyses/hive/${hive.id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              return { ...hive, analysis: analysisResponse.data };
-            } catch (err) {
-              console.warn(`Colmeia ${hive.id} sem análise ou erro na busca:`, err.message);
-              return { ...hive, analysis: null };
-            }
-          })
-        );
+        const hivesWithAnalysis = hives.map((hive) => ({
+          ...hive,
+          analysis: latestAnalysisMap.get(hive.id) || null,
+        }));
 
+        // 3. Calcula os dados do dashboard
         const total = hivesWithAnalysis.length;
         const comVarroa = hivesWithAnalysis.filter(
           (h) => h.analysis?.varroa_detected === true
@@ -118,7 +126,6 @@ export default function InfoHome() {
         <div className="text-center py-8">
           <div className="text-lg font-semibold text-gray-600">Carregando dados...</div>
         </div>
-     
       ) : (
         dashboard.map((item) => (
           <div
