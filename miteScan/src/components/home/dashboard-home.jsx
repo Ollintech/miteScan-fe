@@ -10,22 +10,18 @@ export default function InfoHome() {
     { id: 3, label: "COLMEIAS + VARROA", value: 0 },
   ]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      setLoading(true);
-      setError("");
+    let isMounted = true;
 
+    const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
         const userString = localStorage.getItem("user");
 
         if (!token || !userString) {
-          setError("Sessão inválida. Faça login novamente.");
-          setLoading(false);
-          navigate('/login');
+          if (isMounted) navigate('/login');
           return;
         }
         
@@ -33,39 +29,37 @@ export default function InfoHome() {
         try {
           const userObj = JSON.parse(userString);
           account = userObj?.account || localStorage.getItem('account');
-        } catch (e) {
-          console.error("Erro ao parsear dados do usuário:", e);
-          setError("Erro ao ler sessão. Faça login novamente.");
-          setLoading(false);
-          navigate('/login');
+        } catch {
+          if (isMounted) navigate('/login');
           return;
         }
 
         if (!account) {
-          console.error("Erro: account não encontrado.");
-          setError("Account não encontrado. Faça login novamente.");
-          setLoading(false);
-          navigate('/login');
+          if (isMounted) navigate('/login');
           return;
         }
         
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
-        // 1. Busca as colmeias e todas as análises em paralelo (muito mais rápido)
-        const [hivesResponse, analysesResponse] = await Promise.all([
+        // Requisições paralelas com timeout estrito para responder instantaneamente
+        const [hivesRes, analysesRes] = await Promise.all([
           axios.get(`${base}/${account}/hives/all`, {
             headers: { Authorization: `Bearer ${token}` },
-          }),
+            timeout: 5000
+          }).catch(() => ({ data: [] })),
           axios.get(`${base}/hive_analyses/all`, {
             headers: { Authorization: `Bearer ${token}` },
             params: { account },
+            timeout: 5000
           }).catch(() => ({ data: [] }))
         ]);
 
-        const hives = hivesResponse.data || [];
-        const analyses = analysesResponse.data || [];
+        if (!isMounted) return;
 
-        // 2. Mapeia a análise mais recente de cada colmeia em memória
+        const hives = hivesRes.data || [];
+        const analyses = analysesRes.data || [];
+
+        // Mapeamento rápido em memória usando Map
         const latestAnalysisMap = new Map();
         analyses.forEach((analysis) => {
           if (!latestAnalysisMap.has(analysis.hive_id)) {
@@ -73,17 +67,15 @@ export default function InfoHome() {
           }
         });
 
-        const hivesWithAnalysis = hives.map((hive) => ({
-          ...hive,
-          analysis: latestAnalysisMap.get(hive.id) || null,
-        }));
+        let comVarroa = 0;
+        hives.forEach((hive) => {
+          const analysis = latestAnalysisMap.get(hive.id);
+          if (analysis?.varroa_detected === true) {
+            comVarroa++;
+          }
+        });
 
-        // 3. Calcula os dados do dashboard
-        const total = hivesWithAnalysis.length;
-        const comVarroa = hivesWithAnalysis.filter(
-          (h) => h.analysis?.varroa_detected === true
-        ).length;
-
+        const total = hives.length;
         const taxaVarroa = total > 0 ? `${((comVarroa / total) * 100).toFixed(0)}%` : "0%";
 
         setDashboard([
@@ -91,33 +83,20 @@ export default function InfoHome() {
           { id: 2, label: "TAXA DE VARROA", value: taxaVarroa },
           { id: 3, label: "COLMEIAS + VARROA", value: comVarroa },
         ]);
-
       } catch (error) {
-        console.error("Erro ao carregar dados do dashboard:", error.message);
-        
-        if (error.response) {
-          if (error.response.status === 401 || error.response.status === 403) {
-            setError("Sessão expirada. Faça login novamente.");
-            navigate('/login');
-          } else if (error.response.status === 404) {
-            setError("Nenhuma colmeia encontrada.");
-            setDashboard([
-              { id: 1, label: "COLMEIAS", value: 0 },
-              { id: 2, label: "TAXA DE VARROA", value: "0%" },
-              { id: 3, label: "COLMEIAS + VARROA", value: 0 },
-            ]);
-          } else {
-            setError("Erro ao carregar dados do dashboard.");
-          }
-        } else {
-            setError("Erro de rede. Verifique sua conexão.");
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          if (isMounted) navigate('/login');
         }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchDashboardData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [navigate]);
 
   return (

@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import HivesImg from "../../assets/images/colmeia1.png";
-import {
-  FaThermometerHalf,
-  FaMapMarkerAlt,
-} from 'react-icons/fa';
+import { FaThermometerHalf } from 'react-icons/fa';
 import {
   MdHexagon,
   MdOutlineWaterDrop,
@@ -24,18 +21,19 @@ export default function HomeHives() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchHivesWithAnalysis = async () => {
-      setLoading(true);
-      setError("");
+    let isMounted = true;
 
+    const fetchHivesWithAnalysis = async () => {
       try {
         const token = localStorage.getItem("token");
         const userString = localStorage.getItem("user");
 
         if (!token || !userString) {
-          setError("Sessão inválida. Faça login novamente.");
-          setLoading(false);
-          navigate('/login');
+          if (isMounted) {
+            setError("Sessão inválida. Faça login novamente.");
+            setLoading(false);
+            navigate('/login');
+          }
           return;
         }
 
@@ -43,48 +41,51 @@ export default function HomeHives() {
         try {
           const userObj = JSON.parse(userString);
           account = userObj?.account || localStorage.getItem('account');
-        } catch (e) {
-          console.error("Erro ao parsear dados do usuário:", e);
-          setError("Erro ao ler sessão. Faça login novamente.");
-          setLoading(false);
-          navigate('/login');
+        } catch {
+          if (isMounted) {
+            setError("Erro ao ler sessão. Faça login novamente.");
+            setLoading(false);
+            navigate('/login');
+          }
           return;
         }
         
         if (!account) {
-           console.error("Erro: account não encontrado.");
-           setError("Account não encontrado. Faça login novamente.");
-           setLoading(false);
-           navigate('/login');
+           if (isMounted) {
+             setError("Account não encontrado. Faça login novamente.");
+             setLoading(false);
+             navigate('/login');
+           }
            return;
         }
 
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
-        // 1. Busca as colmeias e todas as análises em paralelo
-        const [hivesResponse, analysesResponse] = await Promise.all([
+        // Busca rápida e paralela de colmeias e análises globais
+        const [hivesRes, analysesRes] = await Promise.all([
           axios.get(`${base}/${account}/hives/all`, {
             headers: { Authorization: `Bearer ${token}` },
-            timeout: 8000
+            timeout: 5000
           }),
           axios.get(`${base}/hive_analyses/all`, {
             headers: { Authorization: `Bearer ${token}` },
             params: { account },
-            timeout: 8000
+            timeout: 5000
           }).catch(() => ({ data: [] }))
         ]);
 
-        const hivesData = hivesResponse.data || [];
-        const analysesData = analysesResponse.data || [];
+        if (!isMounted) return;
 
-        // Caso não existam colmeias, evitar chamadas adicionais e exibir estado vazio
+        const hivesData = hivesRes.data || [];
+        const analysesData = analysesRes.data || [];
+
         if (!Array.isArray(hivesData) || hivesData.length === 0) {
           setHives([]);
           setLoading(false);
           return;
         }
 
-        // 2. Mapeia a análise mais recente de cada colmeia em memória
+        // Mapeia análises em memória para acesso instantâneo O(1)
         const latestAnalysisMap = new Map();
         analysesData.forEach((analysis) => {
           if (!latestAnalysisMap.has(analysis.hive_id)) {
@@ -92,13 +93,9 @@ export default function HomeHives() {
           }
         });
 
-        const hivesWithAnalysis = hivesData.map((hive) => ({
-          ...hive,
-          analysis: latestAnalysisMap.get(hive.id) || null,
-        }));
-
-        const parsed = hivesWithAnalysis.map((hive) => {
-          const { temperature, humidity, analysis } = hive;
+        const parsed = hivesData.map((hive) => {
+          const analysis = latestAnalysisMap.get(hive.id) || null;
+          const { temperature, humidity } = hive;
           const varroa = analysis?.varroa_detected;
           const beeStatus = analysis?.bee_status;
 
@@ -128,7 +125,7 @@ export default function HomeHives() {
 
         setHives(parsed);
       } catch (error) {
-        console.error("Erro ao buscar colmeias:", error);
+        if (!isMounted) return;
         
         if (error.response) {
             if (error.response.status === 401 || error.response.status === 403) {
@@ -144,14 +141,17 @@ export default function HomeHives() {
         } else {
             setError("Erro de rede. Verifique sua conexão.");
         }
-        
         setHives([]);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchHivesWithAnalysis();
+
+    return () => {
+      isMounted = false;
+    };
   }, [navigate]);
 
   const renderIcon = (status) => {
@@ -173,9 +173,7 @@ export default function HomeHives() {
           </div>
         ) : error ? ( 
             <div className="text-center py-20 flex flex-col items-center gap-4">
-                <p className="text-lg font-semibold text-red-600">
-                    {error}
-                </p>
+                <p className="text-lg font-semibold text-red-600">{error}</p>
             </div>
         ) : hives.length === 0 ? (
           <div className="text-center py-20 flex flex-col items-center gap-4">
