@@ -25,9 +25,8 @@ export default function HivesList() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Função para listar colmeias
   useEffect(() => {
-    const fetchHivesWithAnalysis = async () => {
+    const fetchHivesAndAnalyses = async () => {
       setLoading(true);
       setError("");
 
@@ -43,11 +42,8 @@ export default function HivesList() {
         }
 
         let account;
-        let user;
-
         try {
           const userObj = JSON.parse(userString);
-          user = userObj;
           account = userObj?.account || localStorage.getItem('account');
 
           const userType = localStorage.getItem("user_type");
@@ -61,7 +57,6 @@ export default function HivesList() {
         }
 
         if (!account) {
-          console.error("Erro: account não encontrado.");
           setError("Account não encontrado. Faça login novamente.");
           setLoading(false);
           setTimeout(() => navigate('/login'), 2000);
@@ -70,38 +65,39 @@ export default function HivesList() {
 
         const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
-        try {
-          const beeTypesResponse = await axios.get(`${base}/bee_types/all`, {
+        // 1. Busca tipos de abelha, colmeias e todas as análises em paralelo (muito mais rápido)
+        const [beeTypesRes, hivesRes, analysesRes] = await Promise.all([
+          axios.get(`${base}/bee_types/all`, {
             headers: { Authorization: `Bearer ${token}` },
-          });
-          setBeeTypes(beeTypesResponse.data);
-        } catch (e) {
-          console.error("Erro ao buscar tipos de abelha:", e);
-        }
+          }).catch(() => ({ data: [] })),
+          
+          axios.get(`${base}/${account}/hives/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
 
-        const url = `${base}/${account}/hives/all`;
+          axios.get(`${base}/hive_analyses/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { account },
+          }).catch(() => ({ data: [] }))
+        ]);
 
-        const hivesResponse = await axios.get(url, {
-          headers: { Authorization: `Bearer ${token}` },
+        setBeeTypes(beeTypesRes.data);
+        const hivesData = hivesRes.data || [];
+        const analysesData = analysesRes.data || [];
+
+        // 2. Associa a análise mais recente de cada colmeia em memória (sem requisições extras)
+        const latestAnalysisMap = new Map();
+        analysesData.forEach((analysis) => {
+          // Se houver várias análises para a mesma colmeia, guarda a mais recente
+          if (!latestAnalysisMap.has(analysis.hive_id)) {
+            latestAnalysisMap.set(analysis.hive_id, analysis);
+          }
         });
-        const hivesData = hivesResponse.data;
 
-        const hivesWithAnalysis = await Promise.all(
-          hivesData.map(async (hive) => {
-            try {
-              const analysisResponse = await axios.get(
-                `${base}/hive_analyses/hive/${hive.id}`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
-              return { ...hive, analysis: analysisResponse.data };
-            } catch {
-              console.warn(`Nenhuma análise encontrada para colmeia ${hive.id}`);
-              return { ...hive, analysis: null };
-            }
-          })
-        );
+        const hivesWithAnalysis = hivesData.map((hive) => ({
+          ...hive,
+          analysis: latestAnalysisMap.get(hive.id) || null,
+        }));
 
         setHives(hivesWithAnalysis);
       } catch (error) {
@@ -124,24 +120,21 @@ export default function HivesList() {
       }
     };
 
-    fetchHivesWithAnalysis();
+    fetchHivesAndAnalyses();
   }, [navigate]);
 
-  // Função para obter cor da temperatura
   function getTemperatureColor(temp) {
     if (temp == null) return "gray";
     if (temp >= 33.5 && temp <= 36) return "green";
     return "red";
   }
 
-  // Função para obter cor da umidade
   function getHumidityColor(hum) {
     if (hum == null) return "gray";
     if (hum >= 37 && hum <= 43) return "green";
     return "red";
   }
 
-  // Função para obter estado da colmeia
   function getEstado(analysis, hive) {
     if (!analysis) return "segura";
     if (analysis.varroa_detected || analysis.bee_status === 'deformada') return "perigo";
@@ -153,7 +146,6 @@ export default function HivesList() {
     return "segura";
   }
 
-  // Função para obter ícone do estado
   function getIcon(estado) {
     if (estado === "segura")
       return <MdVerifiedUser size={28} className="text-green-600" />;
@@ -162,14 +154,12 @@ export default function HivesList() {
     return <TbAlertOctagonFilled size={25} className="text-red-600" />;
   }
 
-  // Função para obter cor de fundo do estado
   function getBgColor(estado) {
     if (estado === "segura") return "bg-green-200";
     if (estado === "alerta") return "bg-yellow-200";
     return "bg-red-200";
   }
 
-  // Função para obter nome do tipo de abelha
   function getBeeTypeName(typeId) {
     if (!beeTypes || beeTypes.length === 0) {
       return (typeId || '--').toString();
@@ -178,7 +168,6 @@ export default function HivesList() {
     return beeType ? beeType.name : (typeId || '--').toString();
   }
 
-  // Função limpa e definitiva para o Supabase (remove lixo de rotas locais e extrai só o arquivo)
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "";
 
@@ -189,7 +178,6 @@ export default function HivesList() {
     const SUPABASE_PROJECT_URL = "https://angzdelcvwneuqwhmfbd.supabase.co"; 
     const BUCKET_NAME = "images-mitescan";
 
-    // Pega estritamente a última parte do caminho (o nome real do arquivo de imagem)
     const cleanFileName = imagePath.split('/').filter(Boolean).pop();
 
     return `${SUPABASE_PROJECT_URL}/storage/v1/object/public/${BUCKET_NAME}/hives/${encodeURIComponent(cleanFileName)}`;
@@ -197,7 +185,6 @@ export default function HivesList() {
 
   return (
     <div className="p-4 sm:p-6 relative min-h-[80vh]">
-      {/* HEADER ALINHADO À BORDA DIREITA DO CARD */}
       <div className="w-full max-w-[95%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 sm:pr-14">
         <div className="flex items-center gap-4 text-base sm:text-xl font-bold">
           <button
@@ -220,7 +207,6 @@ export default function HivesList() {
         )}
       </div>
 
-      {/* Floating Action Button for Mobile */}
       {isUserRoot && (
         <button
           className="fixed bottom-8 right-8 z-50 flex sm:hidden items-center justify-center w-14 h-14 bg-yellow-400 hover:bg-yellow-300 rounded-full shadow-lg transition-all duration-200 active:scale-95"
