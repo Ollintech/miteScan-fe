@@ -198,7 +198,7 @@ export default function Result() {
 
           <div className="shrink-0 flex items-center gap-1.5 bg-white/80 px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700">
             <MdHexagon className="text-yellow-500" />
-            <span>Colmeia #{analysis.hive_id}</span>
+            <span>{hive?.name || `Colmeia #${analysis.hive_id}`}</span>
           </div>
         </div>
       </div>

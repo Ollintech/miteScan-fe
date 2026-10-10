@@ -114,7 +114,7 @@ export default function HomeHives() {
 
           return {
             id: hive.id,
-            nome: `COLMEIA ${hive.id}`,
+            nome: hive.name ? hive.name : `Colmeia ${hive.id}`,
             temperatura: temperature,
             umidade: humidity,
             status,
@@ -202,15 +202,17 @@ export default function HomeHives() {
                   className="h-18 sm:h-26 w-full object-cover rounded-xl mb-2"
                 />
 
-                <div className="flex items-center justify-between mx-2 w-full">
-                  <div className="flex gap-1 items-center">
-                    <MdHexagon size={18} />
-                    <h3 className="text-gray-800 font-semibold text-xs sm:text-sm">{colmeia.nome}</h3>
+                <div className="flex items-center justify-between px-2 w-full">
+                  <div className="flex gap-1 items-center min-w-0 pr-2">
+                    <MdHexagon size={18} className="shrink-0" />
+                    <h3 className="text-gray-800 font-semibold text-xs sm:text-sm truncate" title={colmeia.nome}>{colmeia.nome}</h3>
                   </div>
-                  {renderIcon(colmeia.status)}
+                  <div className="shrink-0">
+                    {renderIcon(colmeia.status)}
+                  </div>
                 </div>
 
-                <div className="text-xs sm:text-sm font-bold text-gray-700 flex flex-wrap items-center mx-2 mb-3 gap-y-1">
+                <div className="text-xs sm:text-sm font-bold text-gray-700 flex flex-wrap items-center px-2 mb-3 gap-y-1">
                   <div className="flex items-center">
                     <FaThermometerHalf size={14} />
                     <span className="ml-1">{colmeia.temperatura ?? "--"}°C</span>

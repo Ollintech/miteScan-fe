@@ -15,6 +15,7 @@ import axios from 'axios'
 
 export default function AnalysisHist() {
   const [analyses, setAnalyses] = useState([])
+  const [hivesMap, setHivesMap] = useState(new Map())
   const [loading, setLoading] = useState(true)
   const [selectedHive, setSelectedHive] = useState('all')
 
@@ -42,14 +43,29 @@ export default function AnalysisHist() {
           return
         }
 
-        // Busca apenas as análises de forma limpa e direta
-        const analysesRes = await axios.get(
-          `${base}/hive_analyses/all`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { account },
-          }
-        )
+        // Busca análises e colmeias em paralelo
+        const [analysesRes, hivesRes] = await Promise.all([
+          axios.get(
+            `${base}/hive_analyses/all`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+              params: { account },
+            }
+          ),
+          axios.get(
+            `${base}/${account}/hives/all`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ).catch(() => ({ data: [] }))
+        ])
+
+        const hivesData = hivesRes.data || []
+        const map = new Map()
+        hivesData.forEach((h) => {
+          map.set(h.id, h.name)
+        })
+        setHivesMap(map)
 
         const sortedAnalyses = (analysesRes.data || []).sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
@@ -122,7 +138,8 @@ export default function AnalysisHist() {
   const hiveMap = new Map()
   analyses.forEach((analysis) => {
     if (analysis.hive_id) {
-      hiveMap.set(analysis.hive_id, `Colmeia ${analysis.hive_id}`)
+      const name = hivesMap.get(analysis.hive_id) || `Colmeia ${analysis.hive_id}`
+      hiveMap.set(analysis.hive_id, name)
     }
   })
 
@@ -138,7 +155,9 @@ export default function AnalysisHist() {
     return String(item.hive_id) === String(selectedHive)
   })
 
-  const hiveNameForModal = `Colmeia ${analysisToDelete?.hive_id}`
+  const hiveNameForModal = analysisToDelete
+    ? (hivesMap.get(analysisToDelete.hive_id) || `Colmeia ${analysisToDelete.hive_id}`)
+    : ''
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 pb-10 relative">
@@ -251,7 +270,7 @@ export default function AnalysisHist() {
                       </div>
                       <div>
                         <h3 className="font-bold text-gray-800">
-                          Colmeia {analysis.hive_id}
+                          {hivesMap.get(analysis.hive_id) || `Colmeia ${analysis.hive_id}`}
                         </h3>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
                           <MdCalendarToday className="text-sm" />
