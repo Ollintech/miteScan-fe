@@ -1,6 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaChevronLeft, FaChevronRight, FaBell } from 'react-icons/fa';
+import NotificationManagerModal from './common/NotificationManagerModal';
+import { checkIsSubscribed } from '../services/notificationService';
 
 import logoImg from '../assets/images/logo-nav.png';
 import homeIcon from '../assets/images/home-icon.png';
@@ -16,6 +18,12 @@ export default function Sidebar() {
 
   // Estado para controlar se a sidebar está recolhida ou não
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isNotifModalOpen, setIsNotifModalOpen] = useState(false);
+  const [hasActiveNotif, setHasActiveNotif] = useState(false);
+
+  useEffect(() => {
+    checkIsSubscribed().then((sub) => setHasActiveNotif(sub));
+  }, [isNotifModalOpen]);
 
   // Toggle do menu
   const toggleSidebar = () => {
@@ -139,27 +147,59 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Rodapé: Botão de Logout */}
-      <div className="pt-4 border-t border-black/10">
+      {/* Rodapé: Botões de Ação */}
+      <div className="pt-3 border-t border-black/10 flex flex-col gap-2">
+        {/* Botão de Alertas no Computador */}
+        <button
+          onClick={() => setIsNotifModalOpen(true)}
+          title={isCollapsed ? "Alertas no Computador" : undefined}
+          className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-bold text-sm bg-white/40 hover:bg-white/70 text-black transition-all duration-200 active:scale-95 ${
+            isCollapsed ? 'justify-center px-0' : 'justify-start'
+          }`}
+        >
+          <div className="relative shrink-0 flex items-center justify-center">
+            <FaBell className="w-4 h-4 text-black" />
+            {hasActiveNotif && (
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 border-2 border-yellow-400 rounded-full" />
+            )}
+          </div>
+          {!isCollapsed && (
+            <div className="flex flex-col text-left">
+              <span className="text-black font-bold text-xs leading-tight whitespace-nowrap overflow-hidden">
+                Alertas no PC
+              </span>
+              <span className="text-[10px] text-black/70 font-medium">
+                {hasActiveNotif ? '● Ativado' : '○ Desativado'}
+              </span>
+            </div>
+          )}
+        </button>
+
+        {/* Botão de Logout */}
         <button
           onClick={handleLogout}
           title={isCollapsed ? "Sair" : undefined}
-          className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-sm bg-white/40 hover:bg-red-500/20 hover:text-red-700 text-black transition-all duration-200 active:scale-95 ${
+          className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-bold text-sm bg-white/40 hover:bg-red-500/20 hover:text-red-700 text-black transition-all duration-200 active:scale-95 ${
             isCollapsed ? 'justify-center px-0' : 'justify-start'
           }`}
         >
           <img
             src={logoutIcon}
             alt="Sair"
-            className="w-5 h-5 object-contain brightness-0 shrink-0"
+            className="w-4 h-4 object-contain brightness-0 shrink-0"
           />
           {!isCollapsed && (
-            <span className="text-black font-bold text-sm whitespace-nowrap overflow-hidden">
+            <span className="text-black font-bold text-xs whitespace-nowrap overflow-hidden">
               Sair
             </span>
           )}
         </button>
       </div>
+
+      <NotificationManagerModal
+        isOpen={isNotifModalOpen}
+        onClose={() => setIsNotifModalOpen(false)}
+      />
     </aside>
   );
 }
