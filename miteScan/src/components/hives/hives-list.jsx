@@ -11,121 +11,133 @@ import {
   MdHexagon,
   MdOutlineWaterDrop,
   MdVerifiedUser,
+  MdRefresh,
 } from "react-icons/md";
 import { TbAlertTriangleFilled, TbAlertOctagonFilled, TbWorldLatitude } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 export default function HivesList() {
   const [hives, setHives] = useState([]);
   const [beeTypes, setBeeTypes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [isUserRoot, setIsUserRoot] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Função para listar colmeias
-  useEffect(() => {
-    const fetchHivesWithAnalysis = async () => {
+  // Função para listar e atualizar colmeias
+  const fetchHivesWithAnalysis = useCallback(async (isInitial = false) => {
+    if (isInitial) {
       setLoading(true);
-      setError("");
+    } else {
+      setRefreshing(true);
+    }
+    setError("");
 
-      try {
-        const token = localStorage.getItem("token");
-        const userString = localStorage.getItem("user");
+    try {
+      const token = localStorage.getItem("token");
+      const userString = localStorage.getItem("user");
 
-        if (!token || !userString) {
+      if (!token || !userString) {
+        if (isInitial) {
           setError("Sessão inválida. Faça login novamente.");
-          setLoading(false);
           setTimeout(() => navigate('/login'), 2000);
-          return;
         }
-
-        let account;
-        let user;
-
-        try {
-          const userObj = JSON.parse(userString);
-          user = userObj;
-          account = userObj?.account || localStorage.getItem('account');
-
-          const userType = localStorage.getItem("user_type");
-          setIsUserRoot(userType === 'root' || userType === 'associated');
-        } catch (e) {
-          console.error("Erro ao parsear dados do usuário:", e);
-          setError("Erro ao ler sessão. Faça login novamente.");
-          setLoading(false);
-          setTimeout(() => navigate('/login'), 2000);
-          return;
-        }
-
-        if (!account) {
-          console.error("Erro: account não encontrado.");
-          setError("Account não encontrado. Faça login novamente.");
-          setLoading(false);
-          setTimeout(() => navigate('/login'), 2000);
-          return;
-        }
-
-        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
-        // Buscas paralelas otimizadas (sem loops lentos)
-        const [beeTypesResponse, hivesResponse, analysesResponse] = await Promise.all([
-          axios.get(`${base}/bee_types/all`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }).catch(() => ({ data: [] })),
-          
-          axios.get(`${base}/${account}/hives/all`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-
-          axios.get(`${base}/hive_analyses/all`, {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { account },
-          }).catch(() => ({ data: [] }))
-        ]);
-
-        setBeeTypes(beeTypesResponse.data);
-        const hivesData = hivesResponse.data;
-        const analysesData = analysesResponse.data || [];
-
-        // Associação rápida em memória usando Map
-        const latestAnalysisMap = new Map();
-        analysesData.forEach((analysis) => {
-          if (!latestAnalysisMap.has(analysis.hive_id)) {
-            latestAnalysisMap.set(analysis.hive_id, analysis);
-          }
-        });
-
-        const hivesWithAnalysis = hivesData.map((hive) => ({
-          ...hive,
-          analysis: latestAnalysisMap.get(hive.id) || null,
-        }));
-
-        setHives(hivesWithAnalysis);
-      } catch (error) {
-        console.error("Erro ao buscar colmeias:", error);
-        if (error.response) {
-          if (error.response.status === 401 || error.response.status === 403) {
-            setError("Sessão expirada. Faça login novamente.");
-            setTimeout(() => navigate('/login'), 2000);
-          } else if (error.response.status === 404) {
-            setError("Nenhuma colmeia encontrada.");
-          } else {
-            setError("Erro ao carregar colmeias.");
-          }
-        } else {
-          setError("Erro de rede ao buscar colmeias.");
-        }
-        setHives([]);
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
 
-    fetchHivesWithAnalysis();
+      let account;
+      try {
+        const userObj = JSON.parse(userString);
+        account = userObj?.account || localStorage.getItem('account');
+
+        const userType = localStorage.getItem("user_type");
+        setIsUserRoot(userType === 'root' || userType === 'associated');
+      } catch (e) {
+        console.error("Erro ao parsear dados do usuário:", e);
+        if (isInitial) {
+          setError("Erro ao ler sessão. Faça login novamente.");
+          setTimeout(() => navigate('/login'), 2000);
+        }
+        return;
+      }
+
+      if (!account) {
+        console.error("Erro: account não encontrado.");
+        if (isInitial) {
+          setError("Account não encontrado. Faça login novamente.");
+          setTimeout(() => navigate('/login'), 2000);
+        }
+        return;
+      }
+
+      const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+      const [beeTypesResponse, hivesResponse, analysesResponse] = await Promise.all([
+        axios.get(`${base}/bee_types/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }).catch(() => ({ data: [] })),
+        
+        axios.get(`${base}/${account}/hives/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+
+        axios.get(`${base}/hive_analyses/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { account },
+        }).catch(() => ({ data: [] }))
+      ]);
+
+      setBeeTypes(beeTypesResponse.data);
+      const hivesData = hivesResponse.data;
+      const analysesData = analysesResponse.data || [];
+
+      const latestAnalysisMap = new Map();
+      analysesData.forEach((analysis) => {
+        if (!latestAnalysisMap.has(analysis.hive_id)) {
+          latestAnalysisMap.set(analysis.hive_id, analysis);
+        }
+      });
+
+      const hivesWithAnalysis = hivesData.map((hive) => ({
+        ...hive,
+        analysis: latestAnalysisMap.get(hive.id) || null,
+      }));
+
+      setHives(hivesWithAnalysis);
+    } catch (error) {
+      console.error("Erro ao buscar colmeias:", error);
+      if (error.response) {
+        if (error.response.status === 401 || error.response.status === 403) {
+          setError("Sessão expirada. Faça login novamente.");
+          setTimeout(() => navigate('/login'), 2000);
+        } else if (error.response.status === 404) {
+          setError("Nenhuma colmeia encontrada.");
+        } else if (isInitial) {
+          setError("Erro ao carregar colmeias.");
+        }
+      } else if (isInitial) {
+        setError("Erro de rede ao buscar colmeias.");
+      }
+      if (isInitial) setHives([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    fetchHivesWithAnalysis(true);
+
+    // Atualização automática em segundo plano a cada 20 segundos
+    const interval = setInterval(() => {
+      fetchHivesWithAnalysis(false);
+    }, 20000);
+
+    return () => clearInterval(interval);
+  }, [fetchHivesWithAnalysis]);
 
   // Função para obter cor da temperatura
   function getTemperatureColor(temp) {
@@ -159,7 +171,7 @@ export default function HivesList() {
       return <MdVerifiedUser size={28} className="text-green-600" />;
     if (estado === "alerta")
       return <TbAlertTriangleFilled size={28} className="text-yellow-500" />;
-    return <TbAlertOctagonFilled size={25} className="text-red-600" />;
+    return <TbAlertOctagonFilled size={28} className="text-red-600" />;
   }
 
   // Função para obter cor de fundo do estado
@@ -198,7 +210,7 @@ export default function HivesList() {
     <div className="p-4 sm:p-6 relative min-h-screen w-full">
       {/* HEADER ALINHADO À BORDA DIREITA DO CARD */}
       <div className="w-full max-w-[95%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 sm:pr-14">
-        <div className="flex items-center gap-4 text-base sm:text-xl font-bold">
+        <div className="flex items-center gap-3 sm:gap-4 text-base sm:text-xl font-bold">
           <button
             className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-2 sm:py-3 px-3 sm:px-4 transition-all duration-200 active:scale-95"
             onClick={() => navigate("/home")}
@@ -208,15 +220,26 @@ export default function HivesList() {
           <span className="text-sm sm:text-base lg:text-xl">MINHAS COLMEIAS</span>
         </div>
 
-        {isUserRoot && (
+        <div className="flex items-center gap-3">
           <button
-            className="hidden sm:flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 rounded-xl font-bold p-3 text-base shadow-md transition-all duration-200 active:scale-95 hover:shadow-lg"
-            onClick={() => navigate("/create-hive")}
+            onClick={() => fetchHivesWithAnalysis(false)}
+            disabled={refreshing || loading}
+            title="Atualizar"
+            className="p-2.5 rounded-full text-gray-500 hover:text-black hover:bg-gray-200/80 transition-all active:scale-90 disabled:opacity-30 flex items-center justify-center"
           >
-            <MdAdd size={24} />
-            <span>ADICIONAR COLMEIA</span>
+            <MdRefresh size={20} className={refreshing ? "animate-spin" : ""} />
           </button>
-        )}
+
+          {isUserRoot && (
+            <button
+              className="hidden sm:flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 rounded-xl font-bold p-3 text-base shadow-md transition-all duration-200 active:scale-95 hover:shadow-lg"
+              onClick={() => navigate("/create-hive")}
+            >
+              <MdAdd size={24} />
+              <span>ADICIONAR COLMEIA</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Floating Action Button for Mobile */}
