@@ -4,18 +4,24 @@ import {
   checkIsSubscribed,
   subscribeToNotifications,
   unsubscribeFromNotifications,
-  triggerTestNotification,
   getNotificationPermission,
   getAlertThresholds
 } from '../../services/notificationService';
-import { FaBell, FaBellSlash, FaCheckCircle, FaExclamationTriangle, FaTimes, FaVial } from 'react-icons/fa';
+import {
+  FaBell,
+  FaBellSlash,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaTimes,
+  FaThermometerHalf,
+  FaTint
+} from 'react-icons/fa';
 
 export default function NotificationManagerModal({ isOpen, onClose }) {
   const [supported, setSupported] = useState(true);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [permission, setPermission] = useState('default');
   const [loading, setLoading] = useState(false);
-  const [testLoading, setTestLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [thresholds, setThresholds] = useState({
     temp_min: 20.0,
@@ -49,100 +55,93 @@ export default function NotificationManagerModal({ isOpen, onClose }) {
       if (isSubscribed) {
         await unsubscribeFromNotifications();
         setIsSubscribed(false);
-        setMessage({ type: 'success', text: 'Notificações no computador desativadas.' });
+        setMessage({
+          type: 'info',
+          text: 'Notificações desativadas.'
+        });
       } else {
         await subscribeToNotifications();
         setIsSubscribed(true);
         setPermission('granted');
         setMessage({
           type: 'success',
-          text: '✅ Notificações ativadas! Seu computador agora receberá alertas de temperatura e umidade.'
+          text: 'Notificações ativadas com sucesso.'
         });
       }
     } catch (err) {
       console.error(err);
       setMessage({
         type: 'error',
-        text: err.message || 'Erro ao configurar notificações no computador.'
+        text:
+          err.message ||
+          'Não foi possível ativar. Verifique se o navegador tem permissão para emitir notificações.'
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTest = async () => {
-    setTestLoading(true);
-    setMessage(null);
-    try {
-      await triggerTestNotification();
-      setMessage({
-        type: 'success',
-        text: '🔔 Notificação enviada! Verifique o canto inferior direito da sua tela (Windows/Mac).'
-      });
-    } catch (err) {
-      console.error(err);
-      setMessage({
-        type: 'error',
-        text: 'Erro ao disparar notificação de teste. Verifique se as notificações estão ativadas.'
-      });
-    } finally {
-      setTestLoading(false);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white text-gray-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-100 transition-all">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="bg-white text-gray-900 rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-gray-100 transition-all">
         {/* Cabeçalho */}
-        <div className="bg-gradient-to-r from-amber-400 to-yellow-400 p-5 flex items-center justify-between">
+        <div className="bg-yellow-400 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-black/10 p-2.5 rounded-xl">
-              <FaBell className="text-black text-xl" />
+            <div className="bg-black/10 p-2 rounded-xl">
+              <FaBell className="text-black text-lg" />
             </div>
             <div>
-              <h3 className="font-bold text-lg text-black leading-tight">
-                Notificações no Computador
+              <h3 className="font-bold text-base text-black leading-tight">
+                Notificações no computador
               </h3>
               <p className="text-xs text-black/80 font-medium">
-                Alertas nativos de temperatura e umidade
+                Acompanhe o estado das colmeias em tempo real
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-black/70 hover:text-black hover:bg-black/10 p-2 rounded-full transition-colors"
+            className="text-black/70 hover:text-black hover:bg-black/10 p-1.5 rounded-lg transition-colors"
             title="Fechar"
           >
-            <FaTimes size={18} />
+            <FaTimes size={16} />
           </button>
         </div>
 
-        {/* Corpo */}
+        {/* Conteúdo */}
         <div className="p-6 space-y-5">
           {!supported ? (
-            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex gap-3 items-start">
-              <FaExclamationTriangle className="text-lg shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 text-sm flex gap-3 items-start">
+              <FaExclamationTriangle className="text-base shrink-0 mt-0.5 text-amber-600" />
               <div>
-                <p className="font-semibold">Navegador não suportado</p>
-                <p className="text-xs mt-1">
-                  Este navegador não possui suporte para Web Push. Recomendamos utilizar Google Chrome ou Microsoft Edge no computador.
+                <p className="font-semibold text-xs text-gray-900">Navegador não suportado</p>
+                <p className="text-xs mt-1 text-gray-600 leading-relaxed">
+                  Este navegador não possui suporte a notificações push. Para utilizar este recurso, utilize o Google Chrome ou o Microsoft Edge.
                 </p>
               </div>
             </div>
           ) : (
             <>
-              {/* Card de Status */}
+              {/* Controle Principal */}
               <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-full ${isSubscribed ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
+                  <div
+                    className={`p-2.5 rounded-xl transition-colors ${
+                      isSubscribed
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-gray-200 text-gray-500'
+                    }`}
+                  >
                     {isSubscribed ? <FaBell size={18} /> : <FaBellSlash size={18} />}
                   </div>
                   <div>
                     <p className="font-semibold text-sm text-gray-800">
-                      Status no Computador
+                      Alertas no sistema
                     </p>
                     <p className="text-xs text-gray-500">
-                      {isSubscribed ? 'Alertas ativos no sistema' : 'Alertas desativados'}
+                      {isSubscribed
+                        ? 'Ativo — notificações habilitadas'
+                        : 'Desativado'}
                     </p>
                   </div>
                 </div>
@@ -152,29 +151,51 @@ export default function NotificationManagerModal({ isOpen, onClose }) {
                   type="button"
                   onClick={handleToggle}
                   disabled={loading}
-                  className={`relative inline-flex h-7 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    isSubscribed ? 'bg-green-600' : 'bg-gray-300'
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    isSubscribed ? 'bg-black' : 'bg-gray-300'
                   } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <span
-                    className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                      isSubscribed ? 'translate-x-7' : 'translate-x-0'
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      isSubscribed ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
                 </button>
               </div>
 
-              {/* Informações dos Limiares */}
-              <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 text-xs text-amber-900 space-y-1">
-                <p className="font-semibold flex items-center gap-1.5">
-                  <span>🐝 Faixas de monitoramento ativas:</span>
+              {/* Informações dos Parâmetros */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-gray-700">
+                  Condições de disparo
                 </p>
-                <ul className="list-disc list-inside space-y-0.5 text-amber-800/90 pl-1">
-                  <li>Alerta de temperatura: <strong>acima de {thresholds.temp_max}°C</strong> (ou abaixo de {thresholds.temp_min}°C)</li>
-                  <li>Alerta de umidade: <strong>acima de {thresholds.humidity_max}%</strong> (ou abaixo de {thresholds.humidity_min}%)</li>
-                </ul>
-                <p className="text-[11px] text-amber-700 mt-1 italic">
-                  * As notificações surgem no canto da tela do Windows mesmo se o site não estiver aberto.
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Você receberá um aviso na tela se as medições ficarem fora dos limites seguros:
+                </p>
+
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="border border-gray-200 p-3 rounded-xl bg-white">
+                    <div className="flex items-center gap-1.5 text-gray-500 mb-1">
+                      <FaThermometerHalf size={12} />
+                      <span className="text-[11px] font-medium">Temperatura</span>
+                    </div>
+                    <span className="font-bold text-gray-900 text-xs">
+                      {thresholds.temp_min}°C a {thresholds.temp_max}°C
+                    </span>
+                  </div>
+
+                  <div className="border border-gray-200 p-3 rounded-xl bg-white">
+                    <div className="flex items-center gap-1.5 text-gray-500 mb-1">
+                      <FaTint size={12} />
+                      <span className="text-[11px] font-medium">Umidade</span>
+                    </div>
+                    <span className="font-bold text-gray-900 text-xs">
+                      {thresholds.humidity_min}% a {thresholds.humidity_max}%
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-gray-400 pt-1">
+                  Os avisos continuam funcionando mesmo com a janela do sistema fechada.
                 </p>
               </div>
 
@@ -184,29 +205,20 @@ export default function NotificationManagerModal({ isOpen, onClose }) {
                   className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
                     message.type === 'success'
                       ? 'bg-green-50 text-green-800 border border-green-200'
+                      : message.type === 'info'
+                      ? 'bg-gray-100 text-gray-700 border border-gray-200'
                       : 'bg-red-50 text-red-800 border border-red-200'
                   }`}
                 >
                   {message.type === 'success' ? (
-                    <FaCheckCircle className="shrink-0 text-green-600" />
+                    <FaCheckCircle className="shrink-0 text-green-600 text-xs" />
+                  ) : message.type === 'info' ? (
+                    <FaBell className="shrink-0 text-gray-500 text-xs" />
                   ) : (
-                    <FaExclamationTriangle className="shrink-0 text-red-600" />
+                    <FaExclamationTriangle className="shrink-0 text-red-600 text-xs" />
                   )}
-                  <span>{message.text}</span>
+                  <span className="font-medium">{message.text}</span>
                 </div>
-              )}
-
-              {/* Botão de Teste */}
-              {isSubscribed && (
-                <button
-                  type="button"
-                  onClick={handleTest}
-                  disabled={testLoading}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-xs bg-yellow-400 hover:bg-yellow-500 text-black shadow-sm transition-all active:scale-[0.98] disabled:opacity-50"
-                >
-                  <FaVial />
-                  {testLoading ? 'Disparando teste...' : 'Testar Notificação no Computador Agora'}
-                </button>
               )}
             </>
           )}
@@ -216,7 +228,7 @@ export default function NotificationManagerModal({ isOpen, onClose }) {
         <div className="bg-gray-50 px-6 py-3 border-t border-gray-100 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-xs font-semibold text-gray-700 hover:text-black hover:bg-gray-200 rounded-lg transition-colors"
           >
             Fechar
           </button>
