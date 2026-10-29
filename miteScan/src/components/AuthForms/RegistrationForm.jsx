@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import BeeIcon from '../../assets/images/bee-icon.png';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Modal from '../common/Modal';
 
@@ -209,7 +209,7 @@ export default function RegistrationForm() {
         </div>
 
         <p className="text-sm text-center mt-6">
-          Já possui conta? <a href="/login">Voltar ao login!</a>
+          Já possui conta? <Link to="/login">Voltar ao login!</Link>
         </p>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import BeeIcon from '../../assets/images/bee-icon.png';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 export default function LoginForm() {
@@ -144,7 +144,7 @@ export default function LoginForm() {
             </form>
             {erro && <p className="text-red-600 mt-2 font-semibold">{erro}</p>}
             <p className="text-md text-gray-600 mt-4">
-                Não possui conta? <a href="/registration" className="font-bold">Cadastre-se!</a>
+                Não possui conta? <Link to="/registration" className="font-bold">Cadastre-se!</Link>
             </p>
         </div>
     );
