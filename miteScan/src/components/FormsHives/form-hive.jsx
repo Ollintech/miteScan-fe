@@ -113,8 +113,8 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
 
             {/* FORMULARIO COM ONSUBMIT */}
             <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="flex items-center gap-4">
-                    <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Nome da Colmeia:</label>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                    <label className="sm:min-w-[120px] text-gray-800 font-semibold text-xs sm:text-sm">Nome da Colmeia:</label>
                     <div className="flex-1 relative">
                         <input
                             type="text"
@@ -128,8 +128,8 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tamanho (cm):</label>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                    <label className="sm:min-w-[120px] text-gray-800 font-semibold text-xs sm:text-sm">Tamanho (cm):</label>
                     <div className="flex-1 relative">
                         <input
                             type="number"
@@ -143,8 +143,8 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Tipo de Abelha:</label>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                    <label className="sm:min-w-[120px] text-gray-800 font-semibold text-xs sm:text-sm">Tipo de Abelha:</label>
                     <div className="flex-1 relative">
                         <div className="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-800 shadow-sm font-medium">
                             Apis Mellifera
@@ -152,8 +152,8 @@ export default function FormHive({ modo, colmeia = {}, onConfirmar, onExcluir, b
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <label className="min-w-[120px] text-gray-800 font-semibold text-sm">Localização:</label>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                    <label className="sm:min-w-[120px] text-gray-800 font-semibold text-xs sm:text-sm">Localização:</label>
                     {!isLeitura ? (
                         <button
                             type="button"

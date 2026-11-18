@@ -254,8 +254,8 @@ export default function UserForm({ mode = 'create', userId = null }) {
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Nome:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <label className="sm:min-w-[90px] text-gray-800 font-semibold text-xs sm:text-sm">Nome:</label>
           <input
             type="text"
             value={form.name}
@@ -266,8 +266,8 @@ export default function UserForm({ mode = 'create', userId = null }) {
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Email:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <label className="sm:min-w-[90px] text-gray-800 font-semibold text-xs sm:text-sm">Email:</label>
           <input
             type="email"
             value={form.email}
@@ -278,8 +278,8 @@ export default function UserForm({ mode = 'create', userId = null }) {
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Senha:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <label className="sm:min-w-[90px] text-gray-800 font-semibold text-xs sm:text-sm">Senha:</label>
           <input
             type="password"
             value={form.password}
@@ -290,8 +290,8 @@ export default function UserForm({ mode = 'create', userId = null }) {
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Nível:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <label className="sm:min-w-[90px] text-gray-800 font-semibold text-xs sm:text-sm">Nível:</label>
           <select
             value={form.access_id}
             onChange={(e) => handleChange('access_id', e.target.value)}
@@ -306,8 +306,8 @@ export default function UserForm({ mode = 'create', userId = null }) {
         </div>
 
         {mode !== 'create' && (
-          <div className="flex items-center gap-4">
-            <label className="min-w-[90px] text-gray-800 font-semibold text-sm">Status:</label>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+            <label className="sm:min-w-[90px] text-gray-800 font-semibold text-xs sm:text-sm">Status:</label>
             <select
               value={form.status}
               onChange={(e) => handleChange('status', e.target.value)}

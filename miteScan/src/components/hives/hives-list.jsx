@@ -168,10 +168,10 @@ export default function HivesList() {
   // Função para obter ícone do estado
   function getIcon(estado) {
     if (estado === "segura")
-      return <MdVerifiedUser size={28} className="text-green-600" />;
+      return <MdVerifiedUser size={20} className="text-green-600 sm:text-2xl" />;
     if (estado === "alerta")
-      return <TbAlertTriangleFilled size={28} className="text-yellow-500" />;
-    return <TbAlertOctagonFilled size={28} className="text-red-600" />;
+      return <TbAlertTriangleFilled size={20} className="text-yellow-500 sm:text-2xl" />;
+    return <TbAlertOctagonFilled size={20} className="text-red-600 sm:text-2xl" />;
   }
 
   // Função para obter cor de fundo do estado
@@ -207,9 +207,9 @@ export default function HivesList() {
   };
 
   return (
-    <div className="p-4 sm:p-6 relative min-h-screen w-full">
+    <div className="p-3 sm:p-4 md:p-6 relative min-h-screen w-full">
       {/* HEADER ALINHADO À BORDA DIREITA DO CARD */}
-      <div className="w-full max-w-[95%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 sm:pr-14">
+      <div className="w-full max-w-[95%] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-4 sm:pr-14">
         <div className="flex items-center gap-3 sm:gap-4 text-base sm:text-xl font-bold">
           <button
             className="bg-yellow-400 hover:bg-yellow-300 rounded-lg shadow-md py-2 sm:py-3 px-3 sm:px-4 transition-all duration-200 active:scale-95"
@@ -245,7 +245,7 @@ export default function HivesList() {
       {/* Floating Action Button for Mobile */}
       {isUserRoot && (
         <button
-          className="fixed bottom-8 right-8 z-50 flex sm:hidden items-center justify-center w-14 h-14 bg-yellow-400 hover:bg-yellow-300 rounded-full shadow-lg transition-all duration-200 active:scale-95"
+          className="fixed bottom-20 right-4 z-50 flex sm:hidden items-center justify-center w-12 h-12 bg-yellow-400 hover:bg-yellow-300 rounded-full shadow-lg transition-all duration-200 active:scale-95"
           onClick={() => navigate("/create-hive")}
           title="Adicionar Colmeia"
         >
@@ -285,7 +285,7 @@ export default function HivesList() {
               >
                 <div className="flex flex-col sm:flex-row h-full w-full shadow-lg hover:shadow-xl rounded-xl transition-all duration-300 border border-transparent hover:border-amber-300/60 overflow-hidden">
                   <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 shadow-md rounded-xl bg-gray-100 overflow-hidden sm:p-0">
-                    <div className="w-full sm:w-32 h-32 sm:h-full overflow-hidden shrink-0">
+                    <div className="w-full sm:w-28 h-28 sm:h-full overflow-hidden shrink-0">
                       <img
                         src={getImageUrl(hive.image_path)}
                         alt={`Colmeia ${hive.name}`}
@@ -293,7 +293,7 @@ export default function HivesList() {
                       />
                     </div>
 
-                    <div className="flex flex-col gap-3 text-start font-bold text-sm p-4 w-full">
+                    <div className="flex flex-col gap-2 sm:gap-3 text-start font-bold text-xs sm:text-sm p-3 sm:p-4 w-full">
                       <div className="flex items-center gap-2">
                         <MdHexagon size={19} className="text-amber-500" />
                         {hive.name}
@@ -320,14 +320,14 @@ export default function HivesList() {
                     <div className="flex gap-2 sm:flex-col sm:pr-3 sm:space-y-8 text-sm">
                       <div className="flex gap-2 items-center font-bold">
                         <FaThermometerHalf
-                          size={22}
+                          size={16}
                           color={getTemperatureColor(hive.temperature)}
                         />
                         {hive.temperature ?? "--"}°C
                       </div>
                       <div className="flex gap-2 items-center font-bold">
                         <MdOutlineWaterDrop
-                          size={22}
+                          size={16}
                           color={getHumidityColor(hive.humidity)}
                         />
                         {hive.humidity ?? "--"}%
@@ -353,14 +353,14 @@ export default function HivesList() {
                     title="Editar Colmeia"
                     className="p-2 rounded-full hover:bg-yellow-100 transition-all duration-200 active:scale-90"
                   >
-                    <MdEdit size={25} className="text-gray-700 hover:text-yellow-600 transition-colors" />
+                    <MdEdit size={20} className="text-gray-700 hover:text-yellow-600 transition-colors" />
                   </button>
                   <button 
                     onClick={() => navigate(`/delete-hive/${hive.id}`)} 
                     title="Excluir Colmeia"
                     className="p-2 rounded-full hover:bg-red-100 transition-all duration-200 active:scale-90"
                   >
-                    <FaTrash size={20} className="text-gray-700 hover:text-red-600 transition-colors" />
+                    <FaTrash size={16} className="text-gray-700 hover:text-red-600 transition-colors" />
                   </button>
                 </div>
               </div>

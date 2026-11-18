@@ -87,119 +87,181 @@ export default function Sidebar() {
   }
 
   return (
-    <aside
-      className={`h-screen bg-yellow-400 text-black flex flex-col justify-between p-4 fixed left-0 top-0 z-50 shadow-xl transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'w-20' : 'w-64'
-      }`}
-    >
-      {/* Botão de Toggle (Retrair / Expandir) */}
-      <button
-        onClick={toggleSidebar}
-        title={isCollapsed ? "Expandir menu" : "Recolher menu"}
-        className="absolute -right-3 top-8 bg-black text-yellow-400 p-1.5 rounded-full shadow-md hover:scale-110 transition-transform duration-200 z-50 focus:outline-none"
+    <>
+      {/* =============== DESKTOP SIDEBAR (md and up) =============== */}
+      <aside
+        className={`hidden md:flex h-screen bg-yellow-400 text-black flex-col justify-between p-4 fixed left-0 top-0 z-50 shadow-xl transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'w-20' : 'w-64'
+        }`}
       >
-        {isCollapsed ? <FaChevronRight size={12} /> : <FaChevronLeft size={12} />}
-      </button>
-
-      {/* Topo: Logo & Navegação */}
-      <div className="flex flex-col gap-6">
-        {/* Container da Logo */}
-        <div className={`flex items-center justify-center pt-2 pb-4 border-b border-black/10 overflow-hidden`}>
-          <img
-            src={logoImg}
-            alt="Logo"
-            className={`object-contain transition-all duration-300 ${
-              isCollapsed ? 'h-8 w-8' : 'h-10'
-            }`}
-          />
-        </div>
-
-        {/* Lista de Navegação */}
-        <nav className="flex flex-col gap-2">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                title={isCollapsed ? item.label : undefined}
-                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 no-underline ${
-                  isCollapsed ? 'justify-center px-0' : 'justify-start'
-                } ${
-                  isActive
-                    ? 'bg-white/70 text-black shadow-sm font-bold'
-                    : 'hover:bg-white/50 text-black font-semibold'
-                }`}
-              >
-                <img
-                  src={item.icon}
-                  alt={item.label}
-                  className="w-5 h-5 object-contain brightness-0 shrink-0"
-                />
-                {!isCollapsed && (
-                  <span className="text-black font-bold text-sm whitespace-nowrap overflow-hidden transition-all duration-200">
-                    {item.label}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-
-      {/* Rodapé: Botões de Ação */}
-      <div className="pt-3 border-t border-black/10 flex flex-col gap-2">
-        {/* Botão de Alertas no Computador */}
+        {/* Botão de Toggle (Retrair / Expandir) */}
         <button
-          onClick={() => setIsNotifModalOpen(true)}
-          title={isCollapsed ? "Alertas no Computador" : undefined}
-          className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-bold text-sm bg-white/40 hover:bg-white/70 text-black transition-all duration-200 active:scale-95 ${
-            isCollapsed ? 'justify-center px-0' : 'justify-start'
-          }`}
+          onClick={toggleSidebar}
+          title={isCollapsed ? "Expandir menu" : "Recolher menu"}
+          className="absolute -right-3 top-8 bg-black text-yellow-400 p-1.5 rounded-full shadow-md hover:scale-110 transition-transform duration-200 z-50 focus:outline-none"
         >
-          <div className="relative shrink-0 flex items-center justify-center">
-            <FaBell className="w-4 h-4 text-black" />
-            {hasActiveNotif && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 border-2 border-yellow-400 rounded-full" />
-            )}
-          </div>
-          {!isCollapsed && (
-            <div className="flex flex-col text-left">
-              <span className="text-black font-bold text-xs leading-tight whitespace-nowrap overflow-hidden">
-                Alertas no PC
-              </span>
-              <span className="text-[10px] text-black/70 font-medium">
-                {hasActiveNotif ? '● Ativado' : '○ Desativado'}
-              </span>
-            </div>
-          )}
+          {isCollapsed ? <FaChevronRight size={12} /> : <FaChevronLeft size={12} />}
         </button>
 
-        {/* Botão de Logout */}
+        {/* Topo: Logo & Navegação */}
+        <div className="flex flex-col gap-6">
+          {/* Container da Logo */}
+          <div className={`flex items-center justify-center pt-2 pb-4 border-b border-black/10 overflow-hidden`}>
+            <img
+              src={logoImg}
+              alt="Logo"
+              className={`object-contain transition-all duration-300 ${
+                isCollapsed ? 'h-8 w-8' : 'h-10'
+              }`}
+            />
+          </div>
+
+          {/* Lista de Navegação */}
+          <nav className="flex flex-col gap-2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  title={isCollapsed ? item.label : undefined}
+                  className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 no-underline ${
+                    isCollapsed ? 'justify-center px-0' : 'justify-start'
+                  } ${
+                    isActive
+                      ? 'bg-white/70 text-black shadow-sm font-bold'
+                      : 'hover:bg-white/50 text-black font-semibold'
+                  }`}
+                >
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    className="w-5 h-5 object-contain brightness-0 shrink-0"
+                  />
+                  {!isCollapsed && (
+                    <span className="text-black font-bold text-sm whitespace-nowrap overflow-hidden transition-all duration-200">
+                      {item.label}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Rodapé: Botões de Ação */}
+        <div className="pt-3 border-t border-black/10 flex flex-col gap-2">
+          {/* Botão de Alertas no Computador */}
+          <button
+            onClick={() => setIsNotifModalOpen(true)}
+            title={isCollapsed ? "Alertas no Computador" : undefined}
+            className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-bold text-sm bg-white/40 hover:bg-white/70 text-black transition-all duration-200 active:scale-95 ${
+              isCollapsed ? 'justify-center px-0' : 'justify-start'
+            }`}
+          >
+            <div className="relative shrink-0 flex items-center justify-center">
+              <FaBell className="w-4 h-4 text-black" />
+              {hasActiveNotif && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 border-2 border-yellow-400 rounded-full" />
+              )}
+            </div>
+            {!isCollapsed && (
+              <div className="flex flex-col text-left">
+                <span className="text-black font-bold text-xs leading-tight whitespace-nowrap overflow-hidden">
+                  Alertas no PC
+                </span>
+                <span className="text-[10px] text-black/70 font-medium">
+                  {hasActiveNotif ? '● Ativado' : '○ Desativado'}
+                </span>
+              </div>
+            )}
+          </button>
+
+          {/* Botão de Logout */}
+          <button
+            onClick={handleLogout}
+            title={isCollapsed ? "Sair" : undefined}
+            className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-bold text-sm bg-white/40 hover:bg-red-500/20 hover:text-red-700 text-black transition-all duration-200 active:scale-95 ${
+              isCollapsed ? 'justify-center px-0' : 'justify-start'
+            }`}
+          >
+            <img
+              src={logoutIcon}
+              alt="Sair"
+              className="w-4 h-4 object-contain brightness-0 shrink-0"
+            />
+            {!isCollapsed && (
+              <span className="text-black font-bold text-xs whitespace-nowrap overflow-hidden">
+                Sair
+              </span>
+            )}
+          </button>
+        </div>
+      </aside>
+
+      {/* =============== MOBILE/TABLET BOTTOM NAV (<md) =============== */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 h-14 bg-yellow-400 z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.15)] flex items-center justify-around px-2"
+        aria-label="Navegação móvel"
+      >
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex flex-col items-center justify-center gap-0.5 px-1.5 py-1 rounded-lg min-w-0 flex-1 no-underline transition-all duration-150 ${
+                isActive
+                  ? 'bg-white/50 text-black'
+                  : 'text-black hover:bg-white/30'
+              }`}
+            >
+              <img
+                src={item.icon}
+                alt={item.label}
+                className="w-4 h-4 object-contain brightness-0 shrink-0"
+              />
+              <span className={`text-[9px] leading-tight truncate max-w-full ${
+                isActive ? 'font-bold' : 'font-medium'
+              }`}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+
+        {/* Notifications icon in bottom bar */}
+        <button
+          onClick={() => setIsNotifModalOpen(true)}
+          className="flex flex-col items-center justify-center gap-0.5 px-1.5 py-1 rounded-lg min-w-0 flex-1 text-black hover:bg-white/30 transition-all duration-150"
+        >
+          <div className="relative flex items-center justify-center">
+            <FaBell className="w-4 h-4 text-black" />
+            {hasActiveNotif && (
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 border border-yellow-400 rounded-full" />
+            )}
+          </div>
+          <span className="text-[9px] leading-tight font-medium text-black">Alertas</span>
+        </button>
+
+        {/* Logout icon in bottom bar */}
         <button
           onClick={handleLogout}
-          title={isCollapsed ? "Sair" : undefined}
-          className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-bold text-sm bg-white/40 hover:bg-red-500/20 hover:text-red-700 text-black transition-all duration-200 active:scale-95 ${
-            isCollapsed ? 'justify-center px-0' : 'justify-start'
-          }`}
+          className="flex flex-col items-center justify-center gap-0.5 px-1.5 py-1 rounded-lg min-w-0 flex-1 text-black hover:bg-red-500/20 transition-all duration-150"
         >
           <img
             src={logoutIcon}
             alt="Sair"
             className="w-4 h-4 object-contain brightness-0 shrink-0"
           />
-          {!isCollapsed && (
-            <span className="text-black font-bold text-xs whitespace-nowrap overflow-hidden">
-              Sair
-            </span>
-          )}
+          <span className="text-[9px] leading-tight font-medium text-black">Sair</span>
         </button>
-      </div>
+      </nav>
 
       <NotificationManagerModal
         isOpen={isNotifModalOpen}
         onClose={() => setIsNotifModalOpen(false)}
       />
-    </aside>
+    </>
   );
 }

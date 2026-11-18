@@ -14,20 +14,20 @@ body {
   font-family: 'Arial', sans-serif;
 }
 
-/* Background geral e organização de conteudo */
+/* Background geral e organização de conteúdo */
 .container-all {
   min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centraliza todo o conteúdo no meio da tela */
+  align-items: center;
   justify-content: flex-start;
   text-align: center;
   color: black;
   background-color: #FFFFFF;
   margin-top: 0;
-  padding: 2rem 1rem; 
-  box-sizing: border-box; 
+  padding: 2rem 1rem;
+  box-sizing: border-box;
 
   background-image: url('.././assets/images/icon-favo-top.png'), url('.././assets/images/icon-favo-bottom.png');
   background-repeat: no-repeat, no-repeat;
@@ -44,15 +44,45 @@ body {
   justify-content: center;
   align-items: center;
   background-size: cover;
-  padding: 1rem; 
-  box-sizing: border-box; 
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
-@media (max-width: 640px) {
+/* ========== MOBILE (até 480px) ========== */
+@media (max-width: 480px) {
   .container-all {
-    margin-top: 0;
-    padding: 2rem 0.5rem;
-    background-position: left -80px top, right -150px bottom;
+    padding: 1rem 0.5rem;
+    padding-bottom: 5rem;
+    background-position: left -80px top, right -120px bottom;
+    background-size: 120px, 120px;
+  }
+}
+
+/* ========== SMALL (481px - 640px) ========== */
+@media (min-width: 481px) and (max-width: 640px) {
+  .container-all {
+    padding: 1.25rem 0.75rem;
+    padding-bottom: 5rem;
+    background-position: left -90px top, right -140px bottom;
+    background-size: 160px, 160px;
+  }
+}
+
+/* ========== TABLET (641px - 767px) ========== */
+@media (min-width: 641px) and (max-width: 767px) {
+  .container-all {
+    padding: 1.5rem 1rem;
+    padding-bottom: 5rem;
+    background-position: left -100px top, right -170px bottom;
     background-size: 200px, 200px;
+  }
+}
+
+/* ========== INTERMEDIATE TABLET (768px - 1023px) ========== */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .container-all {
+    padding: 2rem 1.5rem;
+    background-position: left -120px top, right -200px bottom;
+    background-size: 240px, 240px;
   }
 }

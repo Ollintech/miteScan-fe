@@ -100,14 +100,14 @@ export default function LoginForm() {
     };
 
     return (
-        <div className="w-full px-[13vw] bg-gray-100 rounded-xl p-6 shadow-lg flex flex-col items-center">
-            <div className="w-30 h-30 rounded-full bg-black flex items-center justify-center -mt-24 mb-4">
-                <img src={BeeIcon} alt="Ícone" className="w-30" />
+        <div className="w-full max-w-md mx-auto px-4 sm:px-8 bg-gray-100 rounded-xl p-5 sm:p-6 shadow-lg flex flex-col items-center">
+            <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-black flex items-center justify-center -mt-16 sm:-mt-20 mb-3 sm:mb-4">
+                <img src={BeeIcon} alt="Ícone" className="w-20 sm:w-28" />
             </div>
-            <h2 className="text-xl text-gray-600 font-bold mb-4">Login</h2>
+            <h2 className="text-lg sm:text-xl text-gray-600 font-bold mb-3 sm:mb-4">Login</h2>
 
-            <form onSubmit={handleLogin} className="w-full flex text-gray-600 flex-col gap-2">
-                <label className="text-md">Conta:</label>
+            <form onSubmit={handleLogin} className="w-full flex text-gray-600 flex-col gap-1.5 sm:gap-2">
+                <label className="text-sm sm:text-md">Conta:</label>
                 <input
                     placeholder="Insira sua conta"
                     type="text"
@@ -116,7 +116,7 @@ export default function LoginForm() {
                     className="bg-gray-200 rounded p-2 w-full"
                     disabled={loading}
                 />
-                <label className="text-md">Email:</label>
+                <label className="text-sm sm:text-md">Email:</label>
                 <input
                     placeholder="Insira seu email"
                     type="text"
@@ -125,7 +125,7 @@ export default function LoginForm() {
                     className="bg-gray-200 rounded p-2 w-full"
                     disabled={loading}
                 />
-                <label className="text-md">Senha:</label>
+                <label className="text-sm sm:text-md">Senha:</label>
                 <input
                     placeholder="Insira sua senha"
                     type="password"
@@ -136,15 +136,15 @@ export default function LoginForm() {
                 />
                 <button
                     type="submit"
-                    className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 rounded-xl shadow-md mt-6 mx-auto w-1/2 disabled:bg-gray-400"
+                    className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 rounded-xl shadow-md mt-4 sm:mt-6 mx-auto w-2/3 sm:w-1/2 text-sm sm:text-base disabled:bg-gray-400"
                     disabled={loading}
                 >
                     {loading ? 'ENTRANDO...' : 'ENTRAR'}
                 </button>
             </form>
             {erro && <p className="text-red-600 mt-2 font-semibold">{erro}</p>}
-            <p className="text-md text-gray-600 mt-4">
-                Não possui conta? <Link to="/registration" className="font-bold">Cadastre-se!</Link>
+            <p className="text-sm sm:text-md text-gray-600 mt-3 sm:mt-4">
+                Não possui conta? <Link to="/registration" className="font-bold text-black">Cadastre-se!</Link>
             </p>
         </div>
     );

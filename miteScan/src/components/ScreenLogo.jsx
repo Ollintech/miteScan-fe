@@ -3,7 +3,7 @@ import Logo from '../assets/images/logo.png'
 export default function LogoScreen({ showText = false }) {
     return (
         <div className="w-full space-y-30 flex flex-col items-center">
-            <img src={Logo} alt="Logo" className="w-1/5" />
+            <img src={Logo} alt="Logo" className="w-2/5 sm:w-1/4 md:w-1/5" />
             {showText && <h2 className="mt-4 text-gray-600 text-2xl">Aguarde, análise sendo feita...</h2>}
         </div>
     );

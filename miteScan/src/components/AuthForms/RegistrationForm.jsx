@@ -109,7 +109,7 @@ export default function RegistrationForm() {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="relative w-full max-w-3xl bg-white text-gray-700 rounded-xl p-8 shadow-lg">
+      <div className="relative w-full max-w-3xl bg-white text-gray-700 rounded-xl p-5 sm:p-6 md:p-8 shadow-lg">
         <Modal
           isOpen={modalInfo.isOpen}
           onClose={() => {
@@ -121,15 +121,15 @@ export default function RegistrationForm() {
         >
           <p className="text-gray-700">{modalInfo.message}</p>
         </Modal>
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-25 h-25 rounded-full bg-black flex items-center justify-center shadow-lg">
-          <img src={BeeIcon} alt="Ícone" className="w-25" />
+        <div className="absolute -top-10 sm:-top-12 left-1/2 -translate-x-1/2 w-20 h-20 sm:w-25 sm:h-25 rounded-full bg-black flex items-center justify-center shadow-lg">
+          <img src={BeeIcon} alt="Ícone" className="w-20 sm:w-25" />
         </div>
-        <h2 className="text-2xl font-extrabold text-center mt-8 mb-6">Cadastrar-se</h2>
+        <h2 className="text-xl sm:text-2xl font-extrabold text-center mt-6 sm:mt-8 mb-4 sm:mb-6">Cadastrar-se</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <label htmlFor="nome" className="w-28 text-sm font-semibold">Nome:</label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <label htmlFor="nome" className="sm:w-28 text-xs sm:text-sm font-semibold">Nome:</label>
               <input
                 id="nome"
                 name="nome"
@@ -140,8 +140,8 @@ export default function RegistrationForm() {
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <label htmlFor="email" className="w-28 text-sm font-semibold">Email:</label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <label htmlFor="email" className="sm:w-28 text-xs sm:text-sm font-semibold">Email:</label>
               <input
                 id="email"
                 name="email"
@@ -152,8 +152,8 @@ export default function RegistrationForm() {
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <label htmlFor="senha" className="w-28 text-sm font-semibold">Senha:</label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <label htmlFor="senha" className="sm:w-28 text-xs sm:text-sm font-semibold">Senha:</label>
               <input
                 id="senha"
                 name="senha"
@@ -165,8 +165,8 @@ export default function RegistrationForm() {
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <label htmlFor="account" className="w-28 text-sm font-semibold">Conta:</label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <label htmlFor="account" className="sm:w-28 text-xs sm:text-sm font-semibold">Conta:</label>
               <input
                 id="account"
                 name="account"
@@ -180,7 +180,7 @@ export default function RegistrationForm() {
             {erro && <p className="text-red-600 mt-1 font-semibold">{erro}</p>}
           </form>
 
-          <div className="md:border-l md:pl-6 text-lg leading-relaxed font-medium content-center">
+          <div className="md:border-l md:pl-6 text-sm sm:text-base md:text-lg leading-relaxed font-medium content-center">
             <p>
               Este será o <span className="font-bold">usuário principal (root)</span> da conta.
             </p>
@@ -208,8 +208,8 @@ export default function RegistrationForm() {
           </button>
         </div>
 
-        <p className="text-sm text-center mt-6">
-          Já possui conta? <Link to="/login">Voltar ao login!</Link>
+        <p className="text-xs sm:text-sm text-center mt-4 sm:mt-6">
+          Já possui conta? <Link to="/login" className="text-black font-bold">Voltar ao login!</Link>
         </p>
       </div>
     </div>

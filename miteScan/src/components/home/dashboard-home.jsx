@@ -100,7 +100,7 @@ export default function InfoHome() {
   }, [navigate]);
 
   return (
-    <div className="flex flex-wrap justify-center gap-8 py-6 w-full">
+    <div className="flex flex-wrap justify-center gap-3 sm:gap-5 md:gap-8 py-4 sm:py-6 w-full">
       {loading ? (
         <div className="text-center py-8">
           <div className="text-lg font-semibold text-gray-600">Carregando dados...</div>
@@ -109,15 +109,15 @@ export default function InfoHome() {
         dashboard.map((item) => (
           <div
             key={item.id}
-            className="bg-gray-100 rounded-xl shadow-lg w-full sm:w-1/2 md:w-[30%] h-32 flex flex-col items-center justify-center"
+            className="bg-gray-100 rounded-xl shadow-lg w-full sm:w-[45%] md:w-[30%] h-24 sm:h-28 md:h-32 flex flex-col items-center justify-center"
           >
             <div className="flex items-center gap-1 mb-1">
-              <MdHexagon size={23} className="text-yellow-400" />
-              <span className="text-md font-semibold text-gray-700 text-center">
+              <MdHexagon size={18} className="text-yellow-400 sm:text-xl" />
+              <span className="text-xs sm:text-sm md:text-md font-semibold text-gray-700 text-center">
                 {item.label}
               </span>
             </div>
-            <span className="text-4xl font-bold text-gray-800 mt-2">{item.value}</span>
+            <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mt-1 sm:mt-2">{item.value}</span>
           </div>
         ))
       )}

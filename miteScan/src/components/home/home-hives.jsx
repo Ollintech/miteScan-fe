@@ -155,14 +155,14 @@ export default function HomeHives() {
   }, [fetchHivesWithAnalysis]);
 
   const renderIcon = (status) => {
-    if (status === "ok") return <MdVerifiedUser size={25} className="text-green-600 mr-2" />;
-    if (status === "alerta") return <TbAlertTriangleFilled size={25} className="text-yellow-500 mr-3" />;
-    return <TbAlertOctagonFilled size={24} className="text-red-600 mr-2" />;
+    if (status === "ok") return <MdVerifiedUser size={16} className="text-green-600 mr-1 sm:mr-2" />;
+    if (status === "alerta") return <TbAlertTriangleFilled size={16} className="text-yellow-500 mr-1 sm:mr-2" />;
+    return <TbAlertOctagonFilled size={16} className="text-red-600 mr-1 sm:mr-2" />;
   };
 
   return (
     <>
-      <div className="bg-yellow-400 text-gray-800 text-base sm:text-lg font-bold py-2 rounded-t-xl shadow-md w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
+      <div className="bg-yellow-400 text-gray-800 text-sm sm:text-base md:text-lg font-bold py-1.5 sm:py-2 rounded-t-xl shadow-md w-full mx-auto px-3 sm:px-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span>SUAS COLMEIAS</span>
           <span className="font-extrabold">🐝</span>
@@ -178,7 +178,7 @@ export default function HomeHives() {
         </button>
       </div>
 
-      <div className="bg-gray-100 py-4 px-10 rounded-b-xl shadow-md w-full mx-auto">
+      <div className="bg-gray-100 py-3 sm:py-4 px-3 sm:px-6 md:px-10 rounded-b-xl shadow-md w-full mx-auto">
         {loading ? (
           <div className="text-center py-20">
             <div className="text-lg font-semibold text-gray-600">Carregando colmeias...</div>
@@ -201,22 +201,22 @@ export default function HomeHives() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-10 gap-y-4 sm:gap-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {hives.slice(0, 5).map((colmeia) => (
               <div
                 key={colmeia.id}
-                className="text-sm flex flex-col items-start bg-gray-200 rounded-xl shadow-md hover:scale-105 transition-transform w-full max-w-sm mx-auto cursor-pointer"
+                className="text-xs sm:text-sm flex flex-col items-start bg-gray-200 rounded-lg sm:rounded-xl shadow-md hover:scale-105 transition-transform w-full max-w-[180px] sm:max-w-sm mx-auto cursor-pointer"
                 onClick={() => navigate(`/hives/${colmeia.id}`)}
               >
                 <img
                   src={colmeia.imagem}
                   alt={colmeia.nome}
-                  className="h-18 sm:h-26 w-full object-cover rounded-xl mb-2"
+                  className="h-16 sm:h-20 md:h-24 w-full object-cover rounded-lg sm:rounded-xl mb-1 sm:mb-2"
                 />
 
                 <div className="flex items-center justify-between px-2 w-full">
                   <div className="flex gap-1 items-center min-w-0 pr-2">
-                    <MdHexagon size={18} className="shrink-0" />
+                    <MdHexagon size={14} className="shrink-0 sm:text-lg" />
                     <h3 className="text-gray-800 font-semibold text-xs sm:text-sm truncate" title={colmeia.nome}>{colmeia.nome}</h3>
                   </div>
                   <div className="shrink-0">
@@ -224,14 +224,14 @@ export default function HomeHives() {
                   </div>
                 </div>
 
-                <div className="text-xs sm:text-sm font-bold text-gray-700 flex flex-wrap items-center px-2 mb-3 gap-y-1">
+                <div className="text-[10px] sm:text-xs md:text-sm font-bold text-gray-700 flex flex-wrap items-center px-1.5 sm:px-2 mb-2 sm:mb-3 gap-y-0.5 sm:gap-y-1">
                   <div className="flex items-center">
-                    <FaThermometerHalf size={14} />
+                    <FaThermometerHalf size={11} className="sm:text-sm" />
                     <span className="ml-1">{colmeia.temperatura ?? "--"}°C</span>
                   </div>
                   <span className="mx-2">|</span>
                   <div className="flex items-center">
-                    <MdOutlineWaterDrop size={14} />
+                    <MdOutlineWaterDrop size={11} className="sm:text-sm" />
                     <span className="ml-1">{colmeia.umidade ?? "--"}%</span>
                   </div>
                   <span className="mx-2">|</span>
@@ -249,7 +249,7 @@ export default function HomeHives() {
               <div className="flex items-center justify-center w-full max-w-sm mx-auto">
                 <button
                   onClick={() => navigate("/hives")}
-                  className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-3 px-6 rounded-xl shadow-md transition-colors w-40 h-25 flex items-center justify-center"
+                  className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-xl shadow-md transition-colors text-xs sm:text-sm w-full sm:w-40 flex items-center justify-center"
                 >
                   Ver mais...
                 </button>
